@@ -127,6 +127,7 @@
   {#if preloadReady}
   <p class="fixed bottom-2 left-0 right-0 w-full text-center z-[999] bg-[#fff] text-[10px]">Section {index + 1}, Section Progress: {Math.round(offset*100)}%, Scene Progress: {Math.round(progress*100)}%</p>
   <img src="/images/tl-scroll-bg-2.png" class="w-full h-screen object-cover fixed inset-0" alt="">
+  <img src="/images/tl-scroll-bg-4.png" class="w-full h-screen object-cover fixed inset-0" style="visibility: {index + 1 > 6 ? "visible" : "hidden"}" alt="">
 
   <Scroller top={0.1} bottom={0.1} threshold={0.1} bind:index bind:offset bind:progress>
     <div slot="background">
@@ -138,12 +139,12 @@
         <!-- Lifestyle Background -->
         <section class="sticky top-0" style="visibility: {index+1 > 2 ? "hidden": "auto"}">
           <div class="image-mask w-full overflow-hidden" style="height: {index+1 > 1 ? 100-(offset*100) : 100}%;">
-            <img src="/images/tl-scroll-bg-1.png" class="w-full h-full object-cover object-top" alt="">
+            <img src="/images/tl-scroll-bg-1.png" class="w-screen h-screen object-cover object-top" alt="">
           </div>
         </section>
 
         <!-- Lifestyle Text -->
-        <section class="relative flex items-center justify-center text-[#fff]">
+        <section class="sticky top-0 flex items-center justify-center text-[#fff]">
           <h1 class="font-serif uppercase text-[24px]">I want to</h1>
         </section>
 
@@ -164,7 +165,7 @@
       <!-- PRODUCT 2: -->
         <section class="sticky top-0" style="visibility: {index+1 > 7 ? "hidden": "auto"}">
           <div class="image-mask w-full overflow-hidden" style="height: {index+1 > 6 ? 100-(offset*100) : 100}%;">
-            <img src="/images/tl-scroll-bg-3.png" class="w-full h-full object-cover object-top" alt="">
+            <img src="/images/tl-scroll-bg-3.png" class="w-screen h-screen object-cover object-top" alt="">
           </div>
         </section>
 
