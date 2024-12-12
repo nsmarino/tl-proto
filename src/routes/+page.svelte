@@ -99,7 +99,7 @@
 
 <!-- Splash video; removed after it plays -->
 {#if showSplash}
-  <div class="fixed inset-0 bg-[#0f0] z-20">
+  <div class="fixed inset-0 bg-[#0f0] z-40">
     <video class="w-full h-full object-cover" bind:this={splashVideo} muted autoplay playsinline preload="auto" onended={()=>{heroVideo.play(); splashVideo.parentElement.remove();document.documentElement.style.overflow="unset"}}>
         <source src="/videos/splash.mp4" type="video/mp4" />
     </video> 
@@ -213,7 +213,7 @@
   </Scroller>
   <div class="w-full h-[200vh] bg-[#0f0] relative z-40">Placeholder Footer</div>
   {:else}
-      <div class="border border-black h-dvh w-full flex flex-col items-center justify-center fixed inset-0 bg-[#fff] z-30">
+      <div class="border border-black h-dvh w-full flex flex-col items-center justify-center fixed inset-0 bg-[#fff] z-[60]">
         <div>Preloading...</div>
         <p bind:this={videoLoadInfo}></p>
         <p bind:this={imageLoadInfo}></p>
