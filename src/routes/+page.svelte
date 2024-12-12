@@ -34,7 +34,7 @@
           videosReady = true;
           clearInterval(videoLoadChecker);
           document.documentElement.style.overflow="unset"
-      } 
+      }
     }
   }, 200)
 
@@ -91,7 +91,7 @@
 <!-- Splash video; removed after it plays -->
 {#if showSplash}
   <div class="fixed inset-0 bg-[#0f0] z-20">
-    <video class="w-full h-full object-cover" bind:this={splashVideo} muted playsinline preload="auto" onended={()=>{heroVideo.play(); splashVideo.parentElement.remove();document.documentElement.style.overflow="unset"}}>
+    <video class="w-full h-full object-cover" bind:this={splashVideo} muted autoplay playsinline preload="auto" onended={()=>{heroVideo.play(); splashVideo.parentElement.remove();document.documentElement.style.overflow="unset"}}>
         <source src="/videos/splash.mp4" type="video/mp4" />
     </video> 
   </div>
@@ -99,7 +99,7 @@
 
 <div class="container">
   <div class="hero snap w-full h-[100vh] bg-[#fff]">
-      <video class="w-full h-1/2 object-cover" bind:this={heroVideo} loop muted playsinline preload="auto">
+      <video class="w-full h-1/2 object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
           <source src="/videos/placeholder.mp4" type="video/mp4" />
       </video>
       <div class="w-full h-[50vh] p-8">
