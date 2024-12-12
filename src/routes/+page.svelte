@@ -3,7 +3,7 @@
   import Scroller from "@sveltejs/svelte-scroller";
 
   // Toggle splash during development:
-  let showSplash = true
+  let showSplash = true;
 
   let index, offset, progress;
 
@@ -47,7 +47,8 @@
   // Remove preload screen:
   $: if (loadTracker === (bgImageCount + fgImageCount) && videosReady) {
       preloadReady = true;
-      showSplash ? splashVideo?.play() : heroVideo?.play() 
+      showSplash ? splashVideo?.play() : heroVideo?.play()
+      if (!showSplash) document.querySelector(".hero").classList.add("entered")
   }
 
   onMount(() => {
@@ -100,14 +101,14 @@
 <!-- Splash video; removed after it plays -->
 {#if showSplash}
   <div class="fixed inset-0 bg-[#0f0] z-40">
-    <video class="w-full h-full object-cover" bind:this={splashVideo} muted autoplay playsinline preload="auto" onended={()=>{heroVideo.play(); splashVideo.parentElement.remove();document.documentElement.style.overflow="unset"}}>
+    <video class="w-full h-full object-cover" bind:this={splashVideo} muted autoplay playsinline preload="auto" onended={()=>{heroVideo.play(); splashVideo.parentElement.remove();document.documentElement.style.overflow="unset";if (showSplash) document.querySelector(".hero").classList.add("entered")}}>
         <source src="/videos/splash.mp4" type="video/mp4" />
-    </video> 
+    </video>
   </div>
 {/if}
 
-<div class="container">
-  <div class="hero snap w-full h-[100vh] bg-[#fff] relative z-20">
+<div>
+  <div class="hero w-full h-[100vh] bg-[#fff] relative z-20 md:w-[50vw] md:fixed md:top-0">
       <video class="w-full h-1/2 object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
           <source src="/videos/placeholder.mp4" type="video/mp4" />
       </video>
@@ -116,7 +117,7 @@
         <h1>Meet Body Mist.</h1>
         <p>Mood-boosting formulas for soothed skin and uplifted senses.</p>
         <button>Join the waitlist</button>
-        <button aria-label="Begin Scroll" class="absolute bottom-8 right-8" onclick={()=>{scrollContainer.scrollIntoView({behavior:"smooth",block:"start"})}}>
+        <button aria-label="Begin Scroll" class="absolute bottom-8 right-8 md:hidden" onclick={()=>{scrollContainer.scrollIntoView({behavior:"smooth",block:"start"})}}>
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_406_643)">
             <rect x="36" width="36" height="36" rx="18" transform="rotate(90 36 0)" fill="black"/>
@@ -134,8 +135,8 @@
 
   {#if preloadReady}
   <p class="fixed bottom-2 left-0 right-0 w-full text-center z-[999] bg-[#fff] text-[10px]">Section {index + 1}, Section Progress: {Math.round(offset*100)}%, Scene Progress: {Math.round(progress*100)}%</p>
-  <img src="/images/tl-scroll-bg-2.png" class="product-bg-1 w-full h-screen object-cover fixed inset-0" alt="">
-  <img src="/images/tl-scroll-bg-4.png" class="product-bg-2 w-full h-screen object-cover fixed inset-0" style="visibility: {index + 1 > 6 ? "visible" : "hidden"}" alt="">
+  <img src="/images/tl-scroll-bg-2.png" class="product-bg-1 w-full h-screen top-0 left-0 bottom-0 right-0 object-cover fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+  <img src="/images/tl-scroll-bg-4.png" class="product-bg-2 w-full h-screen object-cover fixed top-0 left-0 bottom-0 right-0 md:w-[50vw] md:right-0 md:left-1/2" style="visibility: {index + 1 > 6 ? "visible" : "hidden"}" alt="">
 
   <Scroller top={0.1} bottom={0.1} threshold={0.1} bind:index bind:offset bind:progress>
     <div slot="background">
@@ -154,7 +155,7 @@
         <!-- Lifestyle Text -->
         <section class="sticky top-0 text-[#fff] overflow-hidden" style="visibility: {index+1 > 3 ? "hidden": "auto"}">
           <div class="w-full" style="overflow: hidden; height: {index+1 > 2 ? 100-(offset*100) : 100}%;">
-            <div class="w-screen h-screen flex items-center justify-center">
+            <div class="w-screen md:w-[50vw] h-screen flex items-center justify-center">
               <h1 class="font-serif uppercase text-[24px]">I want to</h1>
             </div>
           </div>
@@ -187,7 +188,7 @@
       <!-- Lifestyle Text -->
       <section class="sticky top-0 text-[#fff] overflow-hidden" style="visibility: {index+1 > 9 ? "hidden": "auto"}">
         <div class="w-full" style="border: 2px solid green; overflow: hidden; height: {index+1 > 8 ? 100-(offset*100) : 100}%;">
-          <div class="w-screen h-screen flex items-center justify-center">
+          <div class="w-screen h-screen md:w-[50vw] flex items-center justify-center">
             <h1 class="font-serif uppercase text-[24px]">I want to</h1>
           </div>
         </div>
@@ -228,6 +229,12 @@
 
   .foreground-slot section {
     height: 100vh;
+  }
+  @media (min-width: 768px) {
+    .foreground-slot section {
+      width: 50%;
+      margin-left: 50%;
+    }
   }
 
   :global(.lifestyle-bg .image-mask) {
@@ -275,5 +282,15 @@
   }
   :global(.product-bg-1.entered, .product-bg-2.entered) {
     transform: scale(1);
+  }
+
+  :global(.hero) {
+    transform: translateY(40px);
+    opacity: 0;
+    transition: all 0.6s ease-in-out
+  }
+  :global(.hero.entered) {
+    transform: translateY(0px);
+    opacity: 1;
   }
 </style>
