@@ -3,7 +3,7 @@
   import Scroller from "@sveltejs/svelte-scroller";
 
   // Toggle splash during development:
-  let showSplash = true
+  let showSplash = false
 
   let index, offset, progress;
 
@@ -18,6 +18,7 @@
   $: preloadForegroundUrls = [...Array(fgImageCount).keys()].map((key) => `/images/tl-scroll-fg-${key+1}.png`);
   let loadTracker = 0, imageLoadInfo, videoLoadInfo;
 
+  let scrollContainer;
   let splashVideo, heroVideo;
   let videosReady = false
 
@@ -98,7 +99,7 @@
 {/if}
 
 <div class="container">
-  <div class="hero snap w-full h-[100vh] bg-[#fff]">
+  <div class="hero snap w-full h-[100vh] bg-[#fff] relative z-20">
       <video class="w-full h-1/2 object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
           <source src="/videos/placeholder.mp4" type="video/mp4" />
       </video>
@@ -107,7 +108,7 @@
         <h1>Meet Body Mist.</h1>
         <p>Mood-boosting formulas for soothed skin and uplifted senses.</p>
         <button>Join the waitlist</button>
-        <button aria-label="Begin Scroll" class="absolute bottom-8 right-8">
+        <button aria-label="Begin Scroll" class="absolute bottom-8 right-8" onclick={()=>{scrollContainer.scrollIntoView({behavior:"smooth",block:"start"})}}>
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_406_643)">
             <rect x="36" width="36" height="36" rx="18" transform="rotate(90 36 0)" fill="black"/>
@@ -125,15 +126,20 @@
 
   {#if preloadReady}
   <p class="fixed bottom-2 left-0 right-0 w-full text-center z-[999] bg-[#fff] text-[10px]">Section {index + 1}, Section Progress: {Math.round(offset*100)}%, Scene Progress: {Math.round(progress*100)}%</p>
+  <img src="/images/tl-scroll-bg-2.png" class="w-full h-screen object-cover fixed inset-0" alt="">
 
   <Scroller top={0.1} bottom={0.1} threshold={0.1} bind:index bind:offset bind:progress>
-    <div slot="background"></div>
+    <div slot="background">
+    </div>
   
-    <div class="foreground-slot" slot="foreground">
+    <div class="foreground-slot" slot="foreground" bind:this={scrollContainer}>
+
       <!-- PRODUCT 1: -->
         <!-- Lifestyle Background -->
-        <section class="sticky top-0">
-          <img src="/images/tl-scroll-bg-1.png" class="w-full h-full object-cover" alt="">
+        <section class="sticky top-0" style="visibility: {index+1 > 2 ? "hidden": "auto"}">
+          <div class="image-mask w-full overflow-hidden" style="height: {index+1 > 1 ? 100-(offset*100) : 100}%;">
+            <img src="/images/tl-scroll-bg-1.png" class="w-full h-full object-cover object-top" alt="">
+          </div>
         </section>
 
         <!-- Lifestyle Text -->
@@ -142,8 +148,7 @@
         </section>
 
         <!-- Product Background -->
-        <section class="sticky top-0 overflow-hidden">
-          <img src="/images/tl-scroll-bg-2.png" class="w-full h-full object-cover" alt="" style="transform: translate3d(0, {calculateBackgroundOffset(2)}%, 0)">
+        <section class="">
         </section>
 
         <!-- Product Text -->
@@ -157,9 +162,10 @@
           </section>
 
       <!-- PRODUCT 2: -->
-        <!-- Lifestyle Background -->
-        <section class="sticky top-0">
-          <img src="/images/tl-scroll-bg-3.png" class="w-full h-full object-cover" alt="">
+        <section class="sticky top-0" style="visibility: {index+1 > 7 ? "hidden": "auto"}">
+          <div class="image-mask w-full overflow-hidden" style="height: {index+1 > 6 ? 100-(offset*100) : 100}%;">
+            <img src="/images/tl-scroll-bg-3.png" class="w-full h-full object-cover object-top" alt="">
+          </div>
         </section>
 
         <!-- Lifestyle Text -->
@@ -168,8 +174,8 @@
         </section>
 
         <!-- Product Background -->
-        <section class="sticky top-0 overflow-hidden">
-          <img src="/images/tl-scroll-bg-4.png" class="w-full h-full object-cover" alt="" style="transform: translate3d(0, {index + 1 > 7 ? 0 : (100 - (offset*100))*-1}%, 0)">
+        <section class="">
+          <!-- <img src="/images/tl-scroll-bg-4.png" class="w-full h-full object-cover" alt="" style="transform: translate3d(0, {index + 1 > 7 ? 0 : (100 - (offset*100))*-1}%, 0)"> -->
         </section>
 
         <!-- Product Text -->
@@ -183,7 +189,7 @@
           </section>
     </div>
   </Scroller>
-  <div class="w-full h-[200vh] bg-[#0f0]">Placeholder Footer</div>
+  <div class="w-full h-[200vh] bg-[#0f0] relative z-40">Placeholder Footer</div>
   {:else}
       <div class="border border-black h-dvh w-full flex flex-col items-center justify-center fixed inset-0 bg-[#fff] z-30">
         <div>Preloading...</div>
@@ -200,7 +206,6 @@
 
   .foreground-slot section {
     height: 100vh;
-    border: 2px solid red;
   }
 
   
