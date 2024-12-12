@@ -16,7 +16,7 @@
   // This will generate an array of urls such as /images/1.png, /images/2.png, up to numberOfImages
   $: preloadBackgroundUrls = [...Array(bgImageCount).keys()].map((key) => `/images/tl-scroll-bg-${key+1}.png`);
   $: preloadForegroundUrls = [...Array(fgImageCount).keys()].map((key) => `/images/tl-scroll-fg-${key+1}.png`);
-  let loadTracker = 0
+  let loadTracker = 0, imageLoadInfo, videoLoadInfo;
 
   let splashVideo, heroVideo;
   let videosReady = false
@@ -27,6 +27,7 @@
       if (splashVideo?.readyState > 3 && heroVideo?.readyState > 3) {
           videosReady = true;
           clearInterval(videoLoadChecker);
+          videoLoadInfo.innerHTML = "Videos Ready!"
       }    
     } else {
       if (heroVideo?.readyState > 3) {
@@ -36,10 +37,16 @@
       } 
     }
   }, 200)
+
+  function updateImageLoadProgress(){
+    loadTracker ++
+    imageLoadInfo.innerHTML = `Loading ${loadTracker} of ${bgImageCount + fgImageCount} images...`
+  }
+
+  // Remove preload screen:
   $: if (loadTracker === (bgImageCount + fgImageCount) && videosReady) {
       preloadReady = true;
-      showSplash ? splashVideo?.play() : heroVideo?.play()
-      
+      showSplash ? splashVideo?.play() : heroVideo?.play() 
   }
 
   onMount(() => {
@@ -72,10 +79,10 @@
 
 <svelte:head>
   {#each preloadBackgroundUrls as image, i}
-    <link rel="preload" as="image" href={image} onload={()=>loadTracker++} />
+    <link rel="preload" as="image" href={image} onload={updateImageLoadProgress} />
   {/each}
   {#each preloadForegroundUrls as image, i}
-    <link rel="preload" as="image" href={image} onload={()=>loadTracker++} />
+    <link rel="preload" as="image" href={image} onload={updateImageLoadProgress} />
   {/each}
 </svelte:head>
 
@@ -178,7 +185,11 @@
   </Scroller>
   <div class="w-full h-[200vh] bg-[#0f0]">Placeholder Footer</div>
   {:else}
-      <div class="border border-black h-dvh w-full flex items-center justify-center fixed inset-0 bg-[#fff] z-30">Preloading...</div>
+      <div class="border border-black h-dvh w-full flex flex-col items-center justify-center fixed inset-0 bg-[#fff] z-30">
+        <div>Preloading...</div>
+        <p bind:this={videoLoadInfo}></p>
+        <p bind:this={imageLoadInfo}></p>
+      </div>
   {/if}
 </div>
 
