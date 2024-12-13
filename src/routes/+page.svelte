@@ -9,10 +9,22 @@
     {
       line1: "I want to",
       line2: "Feel Transported",
+      visOffset: 2,
     },
     {
       line1: "I want ~2~",
       line2: "Break from Boredom",
+      visOffset: 8,
+    },
+    {
+      line1: "I want THREE",
+      line2: "Live My Heart Out",
+      visOffset: 14,
+    },
+    {
+      line1: "This is Four",
+      line2: "Read text some more",
+      visOffset: 20,
     },
   ]
 
@@ -157,7 +169,7 @@
   </div>
 
   {#if preloadReady}
-    <p class="fixed bottom-2 left-0 right-0 w-full text-center z-[999] bg-[#fff] text-[10px]">Section {index + 1}, Section Progress: {Math.round(offset*100)}%, Scene Progress: {Math.round(progress*100)}%</p>
+    <p class="fixed bottom-2 left-0 right-0 w-full text-center z-[999] bg-[#fff] text-[10px]">Index: {index}, Section Progress: {Math.round(offset*100)}%, Scene Progress: {Math.round(progress*100)}%</p>
 
     <!-- Product Backgrounds - fixed to viewport and managed via triggers inside Scroller -->
     {#each products as product, i}
@@ -170,15 +182,15 @@
       <div class="foreground-slot" slot="foreground" bind:this={scrollContainer}>
         {#each products as product, i}
           <!-- Lifestyle Background -->
-          <section use:attachEntrance data-lifestyle-bg={i+1} class="sticky top-0 overflow-hidden" style="visibility:{index > (i==0 ? 2 : 8) ? "hidden":"visible"};">
-            <div class="image-mask w-full overflow-hidden" style="height: {index > (i==0 ? 1 : 7) ? 100-(offset*100) : 100}%;">
+          <section use:attachEntrance data-lifestyle-bg={i+1} class="sticky top-0 overflow-hidden" style="visibility:{index > product.visOffset ? "hidden":"visible"};">
+            <div class="image-mask w-full overflow-hidden" style="height: {index > product.visOffset-1 ? 100-(offset*100) : 100}%;">
               <img src="/images/lifestyle-bg-{i+1}.png" class="w-screen h-screen object-cover object-top" alt="">
             </div>
           </section>
 
           <!-- Lifestyle Text -->
-          <section use:attachEntrance data-lifestyle-text={i+1} class="sticky top-0 text-[#fff] overflow-hidden" style="visibility:{index > (i==0 ? 2 : 8) ? "hidden":"visible"};">
-            <div class="w-full" style="overflow: hidden; height: {index > (i==0 ? 1 : 7) ? 100-(offset*100) : 100}%;">
+          <section use:attachEntrance data-lifestyle-text={i+1} class="sticky top-0 text-[#fff] overflow-hidden" style="visibility:{index > product.visOffset ? "hidden":"visible"};">
+            <div class="w-full" style="overflow: hidden; height: {index > product.visOffset-1 ? 100-(offset*100) : 100}%;">
               <div class="w-screen md:w-[50vw] h-screen flex items-center justify-center">
                 <h1 class="font-serif uppercase text-[24px]">{product.line1}</h1>
               </div>
