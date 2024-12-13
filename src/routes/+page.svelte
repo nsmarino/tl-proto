@@ -3,19 +3,31 @@
   import Scroller from "@sveltejs/svelte-scroller";
 
   // Toggle splash during development:
-  let showSplash = true;
+  let showSplash = false;
 
+  const products = [
+    {
+      line1: "I want to",
+      line2: "Feel Transported",
+    },
+    {
+      line1: "I want ~2~",
+      line2: "Break from Boredom",
+    },
+  ]
+
+  // Scroller variables:
   let index, offset, progress;
 
   let entranceManager;
 
   let preloadReady = false;
-  const bgImageCount = 4;
-  const fgImageCount = 2
 
-  // This will generate an array of urls such as /images/1.png, /images/2.png, up to numberOfImages
-  $: preloadBackgroundUrls = [...Array(bgImageCount).keys()].map((key) => `/images/tl-scroll-bg-${key+1}.png`);
-  $: preloadForegroundUrls = [...Array(fgImageCount).keys()].map((key) => `/images/tl-scroll-fg-${key+1}.png`);
+  $: preloadImageUrls = [
+    ...[...Array(products.length).keys()].map(key => `/images/lifestyle-bg-${key+1}.png`),
+    ...[...Array(products.length).keys()].map(key => `/images/product-bg-${key+1}.png`),
+    ...[...Array(products.length).keys()].map(key => `/images/product-${key+1}.png`),
+  ]
   let loadTracker = 0, imageLoadInfo, videoLoadInfo;
 
   let scrollContainer;
@@ -41,11 +53,11 @@
 
   function updateImageLoadProgress(){
     loadTracker ++
-    imageLoadInfo.innerHTML = `Loading ${loadTracker} of ${bgImageCount + fgImageCount} images...`
+    imageLoadInfo.innerHTML = `Loading ${loadTracker} of ${preloadImageUrls.length} images...`
   }
 
   // Remove preload screen:
-  $: if (loadTracker === (bgImageCount + fgImageCount) && videosReady) {
+  $: if (loadTracker === (preloadImageUrls.length) && videosReady) {
       preloadReady = true;
       showSplash ? splashVideo?.play() : heroVideo?.play()
       if (!showSplash) document.querySelector(".hero").classList.add("entered")
@@ -55,43 +67,54 @@
     entranceManager = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("entered");
-          if (entry.target.classList.contains("product-image-1")) {
-            document.querySelector(".product-text-1").classList.add("exited")
-          }
-          if (entry.target.classList.contains("product-image-2")) {
-            document.querySelector(".product-text-2").classList.add("exited")
-          }
-          if (entry.target.classList.contains("product-bg-1-trigger")) {
-            document.querySelector(".product-bg-1").classList.add("entered")
-          }
-          if (entry.target.classList.contains("product-bg-2-trigger")) {
-            document.querySelector(".product-bg-2").classList.add("entered")
-          }
+          handleEntrance(entry)
         } else {
-          // entry.target.classList.remove("entered");
-          if (entry.target.classList.contains("product-image-2")) {
-            document.querySelector(".product-text-2").classList.remove("exited")
-          }
+          handleExit(entry)
         }
       });
     }, {
       threshold: [0.2]
     });
   })
+
+  function handleEntrance(entry){
+    entry.target.classList.add("entered");
+    // Side effects of entrances are handled via data attributes:
+    if (entry.target.dataset.lifestyleText) {
+      document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleText}"]`).classList.add("pre-entered")
+      document.querySelector(`[data-product-image="${entry.target.dataset.lifestyleText-1}"]`)?.classList.remove("entered")
+    }
+    if (entry.target.dataset.productImage) {
+      document.querySelector(`[data-product-text="${entry.target.dataset.productImage}"]`).classList.add("exited")
+    }
+    if (entry.target.dataset.bgTrigger) {
+      document.querySelector(`[data-product-bg="${entry.target.dataset.bgTrigger}"]`).classList.add("entered")
+      document.querySelector(`[data-product-bg="${entry.target.dataset.bgTrigger-1}"]`)?.classList.remove("entered")
+    }
+  }
+
+  function handleExit(entry){
+    entry.target.classList.remove("entered");
+    // Side effects of entrances are handled via data attributes:
+    if (entry.target.dataset.lifestyleText) {
+      document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleText}"]`).classList.remove("pre-entered")
+      document.querySelector(`[data-product-image="${entry.target.dataset.lifestyleText-1}"]`)?.classList.add("entered")
+
+    }
+    if (entry.target.dataset.productImage) {
+      document.querySelector(`[data-product-text="${entry.target.dataset.productImage}"]`).classList.remove("exited")
+    }
+  }
+
   // SCROLL PHASE
   function attachEntrance(node){
-    console.log("Attaching node to entranceManager", node)
     entranceManager.observe(node);
   }
 
 </script>
 
 <svelte:head>
-  {#each preloadBackgroundUrls as image, i}
-    <link rel="preload" as="image" href={image} onload={updateImageLoadProgress} />
-  {/each}
-  {#each preloadForegroundUrls as image, i}
+  {#each preloadImageUrls as image, i}
     <link rel="preload" as="image" href={image} onload={updateImageLoadProgress} />
   {/each}
 </svelte:head>
@@ -107,7 +130,7 @@
   </div>
 {/if}
 
-<div>
+<div class="experience-container">
   <div class="hero w-full h-[100vh] bg-[#fff] relative z-20 md:w-[50vw] md:fixed md:top-0">
       <video class="w-full h-1/2 object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
           <source src="/videos/placeholder.mp4" type="video/mp4" />
@@ -134,85 +157,54 @@
   </div>
 
   {#if preloadReady}
-  <p class="fixed bottom-2 left-0 right-0 w-full text-center z-[999] bg-[#fff] text-[10px]">Section {index + 1}, Section Progress: {Math.round(offset*100)}%, Scene Progress: {Math.round(progress*100)}%</p>
-  <img src="/images/tl-scroll-bg-2.png" class="product-bg-1 w-full h-screen top-0 left-0 bottom-0 right-0 object-cover fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
-  <img src="/images/tl-scroll-bg-4.png" class="product-bg-2 w-full h-screen object-cover fixed top-0 left-0 bottom-0 right-0 md:w-[50vw] md:right-0 md:left-1/2" style="visibility: {index + 1 > 6 ? "visible" : "hidden"}" alt="">
+    <p class="fixed bottom-2 left-0 right-0 w-full text-center z-[999] bg-[#fff] text-[10px]">Section {index + 1}, Section Progress: {Math.round(offset*100)}%, Scene Progress: {Math.round(progress*100)}%</p>
 
-  <Scroller top={0.1} bottom={0.1} threshold={0.1} bind:index bind:offset bind:progress>
-    <div slot="background">
-    </div>
-  
-    <div class="foreground-slot" slot="foreground" bind:this={scrollContainer}>
+    <!-- Product Backgrounds - fixed to viewport and managed via triggers inside Scroller -->
+    {#each products as product, i}
+      <img data-product-bg={i+1} src="/images/product-bg-{i+1}.png" class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+    {/each}
 
-      <!-- PRODUCT 1: -->
-        <!-- Lifestyle Background -->
-        <section use:attachEntrance class="lifestyle-bg sticky top-0 overflow-hidden" style="visibility: {index+1 > 3 ? "hidden": "auto"}">
-          <div class="image-mask w-full overflow-hidden" style="height: {index+1 > 2 ? 100-(offset*100) : 100}%;">
-            <img src="/images/tl-scroll-bg-1.png" class="w-screen h-screen object-cover object-top" alt="">
-          </div>
-        </section>
-
-        <!-- Lifestyle Text -->
-        <section class="sticky top-0 text-[#fff] overflow-hidden" style="visibility: {index+1 > 3 ? "hidden": "auto"}">
-          <div class="w-full" style="overflow: hidden; height: {index+1 > 2 ? 100-(offset*100) : 100}%;">
-            <div class="w-screen md:w-[50vw] h-screen flex items-center justify-center">
-              <h1 class="font-serif uppercase text-[24px]">I want to</h1>
+    <Scroller top={0.2} bottom={0.2} threshold={0.2} bind:index bind:offset bind:progress>
+      <div slot="background">
+      </div>
+      <div class="foreground-slot" slot="foreground" bind:this={scrollContainer}>
+        {#each products as product, i}
+          <!-- Lifestyle Background -->
+          <section use:attachEntrance data-lifestyle-bg={i+1} class="sticky top-0 overflow-hidden" style="visibility:{index > (i==0 ? 2 : 8) ? "hidden":"visible"};">
+            <div class="image-mask w-full overflow-hidden" style="height: {index > (i==0 ? 1 : 7) ? 100-(offset*100) : 100}%;">
+              <img src="/images/lifestyle-bg-{i+1}.png" class="w-screen h-screen object-cover object-top" alt="">
             </div>
-          </div>
-        </section>
-
-        <section class="relative"></section>
-
-        <!-- Product Background -->
-        <section class="relative product-bg-1-trigger" use:attachEntrance>
-        </section>
-
-        <!-- Product Text -->
-        <section class="sticky top-0 flex items-center justify-center text-[#fff]">
-          <h1 class="product-text-1 font-serif uppercase text-[24px]">Feel Transported</h1>
-        </section>
-
-        <!-- Product Image -->
-          <section class="product-image-1 sticky top-0" use:attachEntrance style="visibility: {index+1 > 6 ? "hidden": "auto"}">
-            <img src="/images/tl-scroll-fg-1.png" alt="" class="h-full w-full object-contain">
           </section>
 
-      <!-- PRODUCT 2: -->
-       <!-- Lifestyle Background -->
-       <section use:attachEntrance class="lifestyle-bg sticky top-0 overflow-hidden" style="visibility: {index+1 > 9 ? "hidden": "auto"}">
-        <div class="image-mask w-full overflow-hidden" style="height: {index+1 > 8 ? 100-(offset*100) : 100}%;">
-          <img src="/images/tl-scroll-bg-3.png" class="w-screen h-screen object-cover object-top" alt="">
-        </div>
-      </section>
+          <!-- Lifestyle Text -->
+          <section use:attachEntrance data-lifestyle-text={i+1} class="sticky top-0 text-[#fff] overflow-hidden" style="visibility:{index > (i==0 ? 2 : 8) ? "hidden":"visible"};">
+            <div class="w-full" style="overflow: hidden; height: {index > (i==0 ? 1 : 7) ? 100-(offset*100) : 100}%;">
+              <div class="w-screen md:w-[50vw] h-screen flex items-center justify-center">
+                <h1 class="font-serif uppercase text-[24px]">{product.line1}</h1>
+              </div>
+            </div>
+          </section>
 
-      <!-- Lifestyle Text -->
-      <section class="sticky top-0 text-[#fff] overflow-hidden" style="visibility: {index+1 > 9 ? "hidden": "auto"}">
-        <div class="w-full" style="border: 2px solid green; overflow: hidden; height: {index+1 > 8 ? 100-(offset*100) : 100}%;">
-          <div class="w-screen h-screen md:w-[50vw] flex items-center justify-center">
-            <h1 class="font-serif uppercase text-[24px]">I want to</h1>
-          </div>
-        </div>
-      </section>
+          <section class="relative"></section>
 
-      <section class="relative"></section>
+          <!-- Product Background Placeholder, used to trigger a background image fixed to the window -->
+          <section class="relative" data-bg-trigger={i+1} use:attachEntrance>
+          </section>
 
-      <!-- Product Background -->
-      <section class="relative product-bg-2-trigger" use:attachEntrance>
-      </section>
+          <!-- Product Text -->
+          <section class="sticky top-0 flex items-center justify-center text-[#fff]">
+            <h1 data-product-text={i+1} class="font-serif uppercase text-[24px]">{product.line2}</h1>
+          </section>
 
-      <!-- Product Text -->
-      <section class="sticky top-0 flex items-center justify-center text-[#fff]">
-        <h1 class="product-text-2 font-serif uppercase text-[24px]">Break From Boredom</h1>
-      </section>
-
-      <!-- Product Image -->
-        <section class="product-image-2 sticky top-0" use:attachEntrance style="visibility: {index+1 > 12 ? "hidden": "auto"}">
-          <img src="/images/tl-scroll-fg-2.png" alt="" class="h-full w-full object-contain">
-        </section>
-        
-    </div>
-  </Scroller>
-  <div class="w-full h-[200vh] bg-[#0f0] relative z-40">Placeholder Footer</div>
+          <!-- Product Image -->
+            <section data-product-image={i+1} class="sticky top-0" use:attachEntrance>
+              <img src="/images/product-{i+1}.png" alt="" class="h-full w-full object-contain">
+            </section>
+        {/each}
+      </div>
+    </Scroller>
+    
+    <div class="w-full h-[200vh] bg-[#0f0] relative z-40">Placeholder Footer</div>
   {:else}
       <div class="border border-black h-dvh w-full flex flex-col items-center justify-center fixed inset-0 bg-[#fff] z-[60]">
         <div>Preloading...</div>
@@ -237,60 +229,52 @@
     }
   }
 
-  :global(.lifestyle-bg .image-mask) {
+  :global([data-lifestyle-bg] .image-mask) {
     transform: scale(1.4);
     transform-origin: top center;
     transition: transform 0.6s ease-in-out;
+    transition-delay: 0.2s;
   }
-  :global(.lifestyle-bg.entered .image-mask) {
+  :global([data-lifestyle-bg].entered .image-mask) {
     transform: scale(1);
   }
 
-  :global(.product-text-1) {
+  :global([data-product-text]) {
     opacity: 1;
     transition: opacity 0.8s ease-in-out;
   }
-  :global(.product-text-1.exited) {
+  :global([data-product-text].exited) {
     opacity: 0;
   }
-  :global(.product-image-1) {
-    opacity: 0;
-    transition: opacity 0.4s ease-in-out;
-  }
-  :global(.product-image-1.entered) {
-    opacity: 1;
-  }
-  :global(.product-text-2) {
-    opacity: 1;
-    transition: opacity 0.8s ease-in-out;
-  }
-  :global(.product-text-2.exited) {
-    opacity: 0;
-  }
-  :global(.product-image-2) {
+  :global([data-product-image]) {
     opacity: 0;
     transition: opacity 0.4s ease-in-out;
   }
-  :global(.product-image-2.entered) {
+  :global([data-product-image].entered) {
     opacity: 1;
   }
 
-  :global(.product-bg-1, .product-bg-2) {
+  :global([data-product-bg]) {
     transform: scale(1.4);
     transform-origin: top center;
     transition: transform 0.8s ease-in-out;
+    visibility: hidden;
   }
-  :global(.product-bg-1.entered, .product-bg-2.entered) {
+  :global([data-product-bg].pre-entered) {
+    visibility: visible;
+  }
+  :global([data-product-bg].entered) {
     transform: scale(1);
   }
 
-  :global(.hero) {
+  :global(.hero *) {
     transform: translateY(40px);
     opacity: 0;
     transition: all 0.6s ease-in-out
   }
-  :global(.hero.entered) {
+  :global(.hero.entered *) {
     transform: translateY(0px);
     opacity: 1;
+    transition-delay: 0.2s;
   }
 </style>
