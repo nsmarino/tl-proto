@@ -3,7 +3,9 @@
   import Scroller from "@sveltejs/svelte-scroller";
 
   // Toggle splash during development:
-  let showSplash = false;
+  let showSplash = true;
+
+  let animThreshold = 0.1
 
   const products = [
     {
@@ -85,9 +87,11 @@
         }
       });
     }, {
-      threshold: [0.2]
+      threshold: animThreshold
     });
   })
+
+  // SCROLL PHASE
 
   function handleEntrance(entry){
     entry.target.classList.add("entered");
@@ -104,7 +108,6 @@
       document.querySelector(`[data-product-bg="${entry.target.dataset.bgTrigger-1}"]`)?.classList.remove("entered")
     }
   }
-
   function handleExit(entry){
     entry.target.classList.remove("entered");
     // Side effects of entrances are handled via data attributes:
@@ -117,10 +120,16 @@
       document.querySelector(`[data-product-text="${entry.target.dataset.productImage}"]`).classList.remove("exited")
     }
   }
-
-  // SCROLL PHASE
   function attachEntrance(node){
     entranceManager.observe(node);
+  }
+  function calculateLifestyleBgScale(productIndex){
+    // special case for the first lifestyle background bc it is the only one where a negative offset is possible:
+    if (productIndex == 0) return offset < 0 ? 1-(offset/2) : 1
+    return (index==productIndex*6-1) ? 1.5-(offset/2) : 1
+  }
+  function calculateProductBgScale(productIndex){
+    return (index==productIndex*6+2) ? 1.5-(offset/2) : 1
   }
 
 </script>
@@ -143,15 +152,15 @@
 {/if}
 
 <div class="experience-container">
-  <div class="hero w-full h-[100vh] bg-[#fff] relative z-20 md:w-[50vw] md:fixed md:top-0">
-      <video class="w-full h-1/2 object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
+  <div class="hero w-full h-[100vh] md:h-[50vh] bg-[#fff] relative z-20">
+      <video class="w-full h-1/2 md:h-full md:w-1/2 md:ml-[50%] object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
           <source src="/videos/placeholder.mp4" type="video/mp4" />
       </video>
-      <div class="w-full h-[50vh] p-8">
+      <div class="w-full h-[50vh] p-8 md:w-[50vw] md:h-screen md:fixed md:top-0 bg-[#fff] md:flex md:flex-col  md:justify-center md:gap-2">
         <div>New</div>
         <h1>Meet Body Mist.</h1>
         <p>Mood-boosting formulas for soothed skin and uplifted senses.</p>
-        <button>Join the waitlist</button>
+        <button class="w-40 py-2 bg-black text-white uppercase text-xs">Join the waitlist</button>
         <button aria-label="Begin Scroll" class="absolute bottom-8 right-8 md:hidden" onclick={()=>{scrollContainer.scrollIntoView({behavior:"smooth",block:"start"})}}>
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_406_643)">
@@ -169,28 +178,28 @@
   </div>
 
   {#if preloadReady}
-    <p class="fixed bottom-2 left-0 right-0 w-full text-center z-[999] bg-[#fff] text-[10px]">Index: {index}, Section Progress: {Math.round(offset*100)}%, Scene Progress: {Math.round(progress*100)}%</p>
+    <!-- <p class="fixed bottom-2 left-0 right-0 w-full text-center z-[999] bg-[#fff] text-[10px]">Index: {index}, Section Progress: {Math.round(offset*100)}%, Scene Progress: {Math.round(progress*100)}%</p> -->
 
     <!-- Product Backgrounds - fixed to viewport and managed via triggers inside Scroller -->
     {#each products as product, i}
-      <img data-product-bg={i+1} src="/images/product-bg-{i+1}.png" class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+      <img style="transform: scale({calculateProductBgScale(i)})" data-product-bg={i+1} src="/images/product-bg-{i+1}.png" class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
     {/each}
 
-    <Scroller top={0.2} bottom={0.2} threshold={0.2} bind:index bind:offset bind:progress>
+    <Scroller top={animThreshold} bottom={animThreshold} threshold={animThreshold} bind:index bind:offset bind:progress>
       <div slot="background">
       </div>
       <div class="foreground-slot" slot="foreground" bind:this={scrollContainer}>
         {#each products as product, i}
           <!-- Lifestyle Background -->
-          <section use:attachEntrance data-lifestyle-bg={i+1} class="sticky top-0 overflow-hidden" style="visibility:{index > product.visOffset ? "hidden":"visible"};">
-            <div class="image-mask w-full overflow-hidden" style="height: {index > product.visOffset-1 ? 100-(offset*100) : 100}%;">
-              <img src="/images/lifestyle-bg-{i+1}.png" class="w-screen h-screen object-cover object-top" alt="">
+          <section use:attachEntrance data-lifestyle-bg={i+1} class="sticky top-0 overflow-hidden" style="visibility:{index > ((i*6)+2) ? "hidden":"visible"};">
+            <div class="image-mask w-full overflow-hidden" style="height: {index > ((i*6)+1) ? 100-(offset*100) : 100}%;)">
+              <img src="/images/lifestyle-bg-{i+1}.png" class="w-screen h-screen object-cover object-top" style="transform: scale({calculateLifestyleBgScale(i)})" alt="">
             </div>
           </section>
 
           <!-- Lifestyle Text -->
-          <section use:attachEntrance data-lifestyle-text={i+1} class="sticky top-0 text-[#fff] overflow-hidden" style="visibility:{index > product.visOffset ? "hidden":"visible"};">
-            <div class="w-full" style="overflow: hidden; height: {index > product.visOffset-1 ? 100-(offset*100) : 100}%;">
+          <section use:attachEntrance data-lifestyle-text={i+1} class="sticky top-0 text-[#fff] overflow-hidden" style="visibility:{index > ((i*6)+2) ? "hidden":"visible"};">
+            <div class="w-full" style="overflow: hidden; height: {index > ((i*6)+1) ? 100-(offset*100) : 100}%;">
               <div class="w-screen md:w-[50vw] h-screen flex items-center justify-center">
                 <h1 class="font-serif uppercase text-[24px]">{product.line1}</h1>
               </div>
@@ -242,13 +251,13 @@
   }
 
   :global([data-lifestyle-bg] .image-mask) {
-    transform: scale(1.4);
+    /* transform: scale(1.4); */
     transform-origin: top center;
-    transition: transform 0.6s ease-in-out;
-    transition-delay: 0.2s;
+    /* transition: transform 0.6s ease-in-out;
+    transition-delay: 0.2s; */
   }
   :global([data-lifestyle-bg].entered .image-mask) {
-    transform: scale(1);
+    /* transform: scale(1); */
   }
 
   :global([data-product-text]) {
@@ -260,31 +269,31 @@
   }
   :global([data-product-image]) {
     opacity: 0;
-    transition: opacity 0.4s ease-in-out;
+    transition: opacity 0.6s ease-in-out;
   }
   :global([data-product-image].entered) {
     opacity: 1;
   }
 
   :global([data-product-bg]) {
-    transform: scale(1.4);
+    /* transform: scale(1.4); */
     transform-origin: top center;
-    transition: transform 0.8s ease-in-out;
+    /* transition: transform 0.8s ease-in-out; */
     visibility: hidden;
   }
   :global([data-product-bg].pre-entered) {
     visibility: visible;
   }
   :global([data-product-bg].entered) {
-    transform: scale(1);
+    /* transform: scale(1); */
   }
 
-  :global(.hero *) {
+  :global(.hero > *) {
     transform: translateY(40px);
     opacity: 0;
     transition: all 0.6s ease-in-out
   }
-  :global(.hero.entered *) {
+  :global(.hero.entered > *) {
     transform: translateY(0px);
     opacity: 1;
     transition-delay: 0.2s;
