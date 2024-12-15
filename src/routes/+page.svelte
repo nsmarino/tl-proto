@@ -69,17 +69,7 @@
 
   function handleEntrance(entry){
     entry.target.classList.add("entered");
-    // Side effects of entrances are handled via data attributes:
-    // if (entry.target.dataset.lifestyleText) {
-    //   Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
-    //     setTimeout(() => {
-    //       char.classList.add("entered")
-    //     }, i*textEnterSpeed)
-    //   })
-      
-    //   document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleText}"]`).classList.add("pre-entered")
-    //   document.querySelector(`[data-product-image="${entry.target.dataset.lifestyleText-1}"]`)?.classList.remove("entered")
-    // }
+    
     if (entry.target.dataset.bgTrigger) {
       document.querySelector(`[data-product-bg="${entry.target.dataset.bgTrigger}"]`).classList.add("entered")
       document.querySelector(`[data-product-bg="${entry.target.dataset.bgTrigger-1}"]`)?.classList.remove("entered")
@@ -198,25 +188,6 @@
             </div>
           </section>
 
-          <!-- Lifestyle Text -->
-          <!-- <section use:attachEntrance data-lifestyle-text={i+1} class="sticky top-0 text-[#fff] overflow-hidden" style="visibility:{index > ((i*6)+2) ? "hidden":"visible"};">
-            <div class="w-full" style="overflow: hidden; height: {index > ((i*6)+1) ? 100-(offset*100) : 100}%;">
-              <div class="w-screen md:w-[50vw] h-screen flex items-center justify-center">
-                <h1 class="font-serif uppercase text-[24px]">
-                  {#each product.line1 as char}
-                    <span class="typewriter-char">{char}</span>
-                  {/each}
-                </h1>
-              </div>
-            </div>
-          </section> -->
-
-          <!-- <section class="relative"></section> -->
-
-          <!-- Product Background Placeholder, used to trigger a background image fixed to the window -->
-          <!-- <section class="relative">
-          </section> -->
-
           <!-- Product Text -->
           <section class="sticky top-0 flex items-center justify-center text-[#fff]" data-bg-trigger={i+1} use:attachEntrance>
             <h1 data-product-text={i+1} class="font-serif uppercase text-[24px]">
@@ -262,8 +233,6 @@
   :global([data-lifestyle-bg] .image-mask) {
     transform-origin: top center;
   }
-  :global([data-lifestyle-bg].entered .image-mask) {
-  }
 
   :global([data-product-text]) {
     opacity: 1;
@@ -289,8 +258,7 @@
   :global([data-product-bg].pre-entered) {
     visibility: visible;
   }
-  :global([data-product-bg].entered) {
-  }
+
   :global(.typewriter-char) {
     opacity: 0;
   }
