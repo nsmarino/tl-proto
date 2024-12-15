@@ -1,52 +1,20 @@
 <script>
   import { onMount } from 'svelte';
   import Scroller from "@sveltejs/svelte-scroller";
+  import {products} from "$lib";
 
-  // Toggle splash during development:
-  let showSplash = true;
-
-  let animThreshold = 0.1
-
-  const products = [
-    {
-      line1: "I want to",
-      line2: "Feel Transported",
-      visOffset: 2,
-    },
-    {
-      line1: "I want ~2~",
-      line2: "Break from Boredom",
-      visOffset: 8,
-    },
-    {
-      line1: "I want THREE",
-      line2: "Live My Heart Out",
-      visOffset: 14,
-    },
-    {
-      line1: "This is Four",
-      line2: "Read text some more",
-      visOffset: 20,
-    },
-  ]
-
-  // Scroller variables:
-  let index, offset, progress;
-
-  let entranceManager;
-
+  
+  let showSplash = false; // Toggle splash during development
   let preloadReady = false;
+  let loadTracker = 0, imageLoadInfo, videoLoadInfo;
+  let splashVideo, heroVideo;
+  let videosReady = false
 
   $: preloadImageUrls = [
     ...[...Array(products.length).keys()].map(key => `/images/lifestyle-bg-${key+1}.png`),
     ...[...Array(products.length).keys()].map(key => `/images/product-bg-${key+1}.png`),
     ...[...Array(products.length).keys()].map(key => `/images/product-${key+1}.png`),
   ]
-  let loadTracker = 0, imageLoadInfo, videoLoadInfo;
-
-  let scrollContainer;
-  let splashVideo, heroVideo;
-  let videosReady = false
 
   // PRELOAD PHASE
   let videoLoadChecker = setInterval(()=>{
@@ -64,12 +32,10 @@
       }
     }
   }, 200)
-
   function updateImageLoadProgress(){
     loadTracker ++
     imageLoadInfo.innerHTML = `Loading ${loadTracker} of ${preloadImageUrls.length} images...`
   }
-
   // Remove preload screen:
   $: if (loadTracker === (preloadImageUrls.length) && videosReady) {
       preloadReady = true;
@@ -77,32 +43,43 @@
       if (!showSplash) document.querySelector(".hero").classList.add("entered")
   }
 
+  let entranceManager;
+
   onMount(() => {
     entranceManager = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          handleEntrance(entry)
+          if(entry.intersectionRatio>=0.9) {
+            handleOnScreen(entry)
+          } else {
+            handleEntrance(entry)    
+          } 
         } else {
           handleExit(entry)
         }
       });
     }, {
-      threshold: animThreshold
+      threshold: [animThreshold, 0.9]
     });
   })
 
   // SCROLL PHASE
+  // Scroller variables:
+  let scrollContainer, index, offset, progress, animThreshold = 0.1, sectionsPerProduct=3, textEnterSpeed=60;
 
   function handleEntrance(entry){
     entry.target.classList.add("entered");
     // Side effects of entrances are handled via data attributes:
-    if (entry.target.dataset.lifestyleText) {
-      document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleText}"]`).classList.add("pre-entered")
-      document.querySelector(`[data-product-image="${entry.target.dataset.lifestyleText-1}"]`)?.classList.remove("entered")
-    }
-    if (entry.target.dataset.productImage) {
-      document.querySelector(`[data-product-text="${entry.target.dataset.productImage}"]`).classList.add("exited")
-    }
+    // if (entry.target.dataset.lifestyleText) {
+    //   Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
+    //     setTimeout(() => {
+    //       char.classList.add("entered")
+    //     }, i*textEnterSpeed)
+    //   })
+      
+    //   document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleText}"]`).classList.add("pre-entered")
+    //   document.querySelector(`[data-product-image="${entry.target.dataset.lifestyleText-1}"]`)?.classList.remove("entered")
+    // }
     if (entry.target.dataset.bgTrigger) {
       document.querySelector(`[data-product-bg="${entry.target.dataset.bgTrigger}"]`).classList.add("entered")
       document.querySelector(`[data-product-bg="${entry.target.dataset.bgTrigger-1}"]`)?.classList.remove("entered")
@@ -114,10 +91,28 @@
     if (entry.target.dataset.lifestyleText) {
       document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleText}"]`).classList.remove("pre-entered")
       document.querySelector(`[data-product-image="${entry.target.dataset.lifestyleText-1}"]`)?.classList.add("entered")
-
     }
     if (entry.target.dataset.productImage) {
       document.querySelector(`[data-product-text="${entry.target.dataset.productImage}"]`).classList.remove("exited")
+    }
+  }
+  function handleOnScreen(entry) {
+    if(entry.target.dataset.lifestyleBg) {
+      Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
+        setTimeout(() => {
+          char.classList.add("entered")
+        }, i*textEnterSpeed)
+      })
+      document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg}"]`).classList.add("pre-entered")
+      document.querySelector(`[data-product-image="${entry.target.dataset.lifestyleBg-1}"]`)?.classList.remove("entered")
+    } else if (entry.target.dataset.bgTrigger) {
+      Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
+        setTimeout(() => {
+          char.classList.add("entered")
+        }, i*textEnterSpeed)
+      })
+    } else if (entry.target.dataset.productImage) {
+      document.querySelector(`[data-product-text="${entry.target.dataset.productImage}"]`).classList.add("exited")
     }
   }
   function attachEntrance(node){
@@ -126,12 +121,11 @@
   function calculateLifestyleBgScale(productIndex){
     // special case for the first lifestyle background bc it is the only one where a negative offset is possible:
     if (productIndex == 0) return offset < 0 ? 1-(offset/2) : 1
-    return (index==productIndex*6-1) ? 1.5-(offset/2) : 1
+    return (index==productIndex*sectionsPerProduct-1) ? 1.5-(offset/2) : 1
   }
   function calculateProductBgScale(productIndex){
-    return (index==productIndex*6+2) ? 1.5-(offset/2) : 1
+    return (index==productIndex*sectionsPerProduct) ? 1.5-(offset/2) : 1
   }
-
 </script>
 
 <svelte:head>
@@ -191,30 +185,45 @@
       <div class="foreground-slot" slot="foreground" bind:this={scrollContainer}>
         {#each products as product, i}
           <!-- Lifestyle Background -->
-          <section use:attachEntrance data-lifestyle-bg={i+1} class="sticky top-0 overflow-hidden" style="visibility:{index > ((i*6)+2) ? "hidden":"visible"};">
-            <div class="image-mask w-full overflow-hidden" style="height: {index > ((i*6)+1) ? 100-(offset*100) : 100}%;)">
+          <section use:attachEntrance data-lifestyle-bg={i+1} class="sticky top-0 overflow-hidden" style="visibility:{index > ((i*sectionsPerProduct)) ? "hidden":"visible"};">
+            <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? 100-(offset*100) : 100}%;)">
+              <div class="absolute top-0 left-0 w-screen h-screen md:w-[50vw] z-20 flex items-center justify-center">
+                <h1 class="font-serif uppercase text-[24px] text-[#FFF]">
+                  {#each product.line1 as char}
+                    <span class="typewriter-char">{char}</span>
+                  {/each}
+                </h1>
+              </div>
               <img src="/images/lifestyle-bg-{i+1}.png" class="w-screen h-screen object-cover object-top" style="transform: scale({calculateLifestyleBgScale(i)})" alt="">
             </div>
           </section>
 
           <!-- Lifestyle Text -->
-          <section use:attachEntrance data-lifestyle-text={i+1} class="sticky top-0 text-[#fff] overflow-hidden" style="visibility:{index > ((i*6)+2) ? "hidden":"visible"};">
+          <!-- <section use:attachEntrance data-lifestyle-text={i+1} class="sticky top-0 text-[#fff] overflow-hidden" style="visibility:{index > ((i*6)+2) ? "hidden":"visible"};">
             <div class="w-full" style="overflow: hidden; height: {index > ((i*6)+1) ? 100-(offset*100) : 100}%;">
               <div class="w-screen md:w-[50vw] h-screen flex items-center justify-center">
-                <h1 class="font-serif uppercase text-[24px]">{product.line1}</h1>
+                <h1 class="font-serif uppercase text-[24px]">
+                  {#each product.line1 as char}
+                    <span class="typewriter-char">{char}</span>
+                  {/each}
+                </h1>
               </div>
             </div>
-          </section>
+          </section> -->
 
-          <section class="relative"></section>
+          <!-- <section class="relative"></section> -->
 
           <!-- Product Background Placeholder, used to trigger a background image fixed to the window -->
-          <section class="relative" data-bg-trigger={i+1} use:attachEntrance>
-          </section>
+          <!-- <section class="relative">
+          </section> -->
 
           <!-- Product Text -->
-          <section class="sticky top-0 flex items-center justify-center text-[#fff]">
-            <h1 data-product-text={i+1} class="font-serif uppercase text-[24px]">{product.line2}</h1>
+          <section class="sticky top-0 flex items-center justify-center text-[#fff]" data-bg-trigger={i+1} use:attachEntrance>
+            <h1 data-product-text={i+1} class="font-serif uppercase text-[24px]">
+              {#each product.line2 as char}
+                <span class="typewriter-char">{char}</span>
+              {/each}
+            </h1>
           </section>
 
           <!-- Product Image -->
@@ -251,13 +260,9 @@
   }
 
   :global([data-lifestyle-bg] .image-mask) {
-    /* transform: scale(1.4); */
     transform-origin: top center;
-    /* transition: transform 0.6s ease-in-out;
-    transition-delay: 0.2s; */
   }
   :global([data-lifestyle-bg].entered .image-mask) {
-    /* transform: scale(1); */
   }
 
   :global([data-product-text]) {
@@ -269,23 +274,28 @@
   }
   :global([data-product-image]) {
     opacity: 0;
-    transition: opacity 0.6s ease-in-out;
+    transform: scale(0.8);
+    transition: all 0.6s ease-in-out;
   }
   :global([data-product-image].entered) {
     opacity: 1;
+    transform: scale(1);
   }
 
   :global([data-product-bg]) {
-    /* transform: scale(1.4); */
     transform-origin: top center;
-    /* transition: transform 0.8s ease-in-out; */
     visibility: hidden;
   }
   :global([data-product-bg].pre-entered) {
     visibility: visible;
   }
   :global([data-product-bg].entered) {
-    /* transform: scale(1); */
+  }
+  :global(.typewriter-char) {
+    opacity: 0;
+  }
+  :global(.typewriter-char.entered) {
+    opacity: 1;
   }
 
   :global(.hero > *) {
