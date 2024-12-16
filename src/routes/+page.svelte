@@ -196,8 +196,8 @@
 {/if}
 
 <div class="experience-container">
-  <div class="hero w-full h-[100vh] md:h-[50vh] bg-[#fff] relative z-20">
-    <div class="w-full h-1/2 md:h-full md:w-1/2 md:ml-[50%] object-cover relative">
+  <div class="hero w-full h-[100vh] md:h-[50vw] bg-[#fff] relative z-20">
+    <div class="w-full h-1/2 md:h-auto md:aspect-square md:w-1/2 md:ml-[50%] object-cover relative">
       <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
           <source src="/videos/placeholder.mp4" type="video/mp4" />
       </video>
