@@ -92,7 +92,7 @@
     onScreenThreshold=0.9, 
     sectionsPerProduct=3,
     bgZoom = 1.5, 
-    textEnterSpeed=20;
+    textEnterSpeed=30;
 
   function handleEntrance(entry){
     entry.target.classList.add("entered");
@@ -180,7 +180,7 @@
       </defs>
     </svg>
   </div>
-  <div class="util flex gap-8">
+  <div class="util flex gap-4 md:gap-8">
     {#if preloadReady}<div>{$time.find(t=>t.type==="day").value}:{$time.find(t=>t.type==="hour").value}:{$time.find(t=>t.type==="minute").value}:{$time.find(t=>t.type==="second").value}</div>{/if}
     <a href="/" class="underline underline-offset-2">Join the Waitlist</a>
   </div>
@@ -280,7 +280,7 @@
   {:else}
       <div class="h-dvh w-full flex items-end fixed justify-between inset-0 bg-[#fff] z-[60] p-8">
         <p bind:this={loadPercentage} style="font-family: 'NH Display Medium';">4%</p>
-        <p>Preparing the senses</p>
+        <p class="block !w-fit whitespace-nowrap">Preparing the senses</p>
       </div>
   {/if}
 </div>
