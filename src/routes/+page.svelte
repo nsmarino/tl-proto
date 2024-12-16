@@ -4,16 +4,23 @@
   import {products} from "$lib";
   import {timer, time} from "$lib/stores/timer"
   
-  let showSplash = true; // Toggle splash during development
+  let showSplash = false; // Toggle splash during development
   let preloadReady = false;
   let loadTracker = 0, loadPercentage;
   let splashVideo, heroVideo;
   let videosReady = false
 
+  let flipbookLength = 31
+  let flipbook = []
+
   $: preloadImageUrls = [
     ...[...Array(products.length).keys()].map(key => `/images/lifestyle-bg-${key+1}.png`),
     ...[...Array(products.length).keys()].map(key => `/images/product-bg-${key+1}.png`),
     ...[...Array(products.length).keys()].map(key => `/images/product-${key+1}.png`),
+    ...[...Array(flipbookLength).keys()].map(key => {
+
+      return `/images/flipbook/Lush_Anim_RenderTest_01-1_00${key< 10 ? "0"+key : key}.png`
+    }),
   ]
 
   // PRELOAD PHASE
@@ -22,7 +29,6 @@
       if (splashVideo?.readyState > 3 && heroVideo?.readyState > 3) {
           videosReady = true;
           clearInterval(videoLoadChecker);
-          // videoLoadInfo.innerHTML = "Videos Ready!"
       }    
     } else {
       if (heroVideo?.readyState > 3) {
@@ -61,6 +67,12 @@
 
   onMount(() => {
     timer.start()
+
+    for (let i = 0; i < flipbookLength; i++) {
+      flipbook.push(new Image(1920,1920))
+      flipbook[i].src = `/images/flipbook/Lush_Anim_RenderTest_01-1_00${i< 10 ? "0"+i : i}.png`
+    }
+
     entranceManager = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -94,9 +106,44 @@
     bgZoom = 1.5, 
     textEnterSpeed=30;
 
+    function drawImageScaled(img, ctx) {
+    var canvas = ctx.canvas;
+    var canvasWidth = canvas.width;
+    var canvasHeight = canvas.height;
+
+    // Calculate the scaling ratio based on the height of the canvas
+    var scaleRatio = canvasHeight / img.height;
+
+    // Calculate the new width while maintaining the aspect ratio
+    var newWidth = img.width * scaleRatio;
+
+    // Calculate the offset to center the image horizontally
+    var centerShiftX = (canvasWidth - newWidth) / 2;
+
+    // Clear the canvas before drawing
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    // Draw the image with the adjusted width and height
+    ctx.drawImage(
+        img,
+        0, 0, img.width, img.height,  // Source dimensions
+        centerShiftX, 0, newWidth, canvasHeight  // Destination dimensions
+    );
+}
+
   function handleEntrance(entry){
     entry.target.classList.add("entered");
+    if (entry.target.dataset.canvasFrame) {
+      const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.canvasTarget}"]`)
+      const canvas_context = productCanvas.getContext('2d');
+      const canvas_width = productCanvas.clientWidth;
+      const canvas_height = productCanvas.clientHeight;
+      canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+      drawImageScaled(flipbook[entry.target.dataset.frameProgress], canvas_context)
+    }
   }
+  
+
   function handleExit(entry){
     entry.target.classList.remove("entered");
     // Side effects of entrances are handled via data attributes:
@@ -111,6 +158,8 @@
     } else if (entry.target.dataset.lifestyleBg) {
       document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg}"]`).classList.add("entered")
       document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"]`)?.classList.remove("entered")
+      document.querySelector(`[data-bg-trigger="${entry.target.dataset.lifestyleBg-1}"]`)?.classList.remove("entered")
+      document.querySelector(`[data-bg-trigger="${entry.target.dataset.lifestyleBg-1}"]`)?.classList.remove("pre-entered")
 
 
     }
@@ -142,6 +191,10 @@
   }
   function attachEntrance(node){
     entranceManager.observe(node);
+  }
+  function sizeCanvasToParent(canvas) {
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
   }
   function calculateLifestyleBgScale(productIndex){
     // special case for the first lifestyle background bc it is the only one where a negative offset is possible:
@@ -260,17 +313,22 @@
           </section>
 
           <!-- Product Text And Product Background Trigger -->
-          <section class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" data-bg-trigger={i+1} use:attachEntrance>
+          <section class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" data-bg-trigger={i+1} use:attachEntrance style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
             <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
               {#each product.line2 as char}
                 <span class="typewriter-char">{char}</span>
               {/each}
             </h2>
+            <canvas use:sizeCanvasToParent data-product-canvas={i+1} class="absolute inset-0"></canvas>
+
           </section>
 
           <!-- Product Image -->
             <section data-product-image={i+1} class="sticky top-0" use:attachEntrance style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
-              <img src="/images/product-{i+1}.png" alt="" class="h-full w-full object-contain">
+              <!-- <img src="/images/product-{i+1}.png" alt="" class="h-full w-full object-contain"> -->
+              {#each flipbook as frame, j}
+                <div class="w-full" use:attachEntrance data-canvas-frame={frame} data-canvas-target={i+1} data-frame-progress={j} style="height: {50/flipbook.length}vh"></div>
+              {/each}
             </section>
         {/each}
       </div>
@@ -310,15 +368,6 @@
   }
   :global([data-product-text].exited) {
     opacity: 0;
-  }
-  :global([data-product-image]) {
-    opacity: 0;
-    transform: scale(0.8);
-    transition: all 0.6s ease-in-out;
-  }
-  :global([data-product-image].entered) {
-    opacity: 1;
-    transform: scale(1);
   }
 
   :global([data-product-bg]) {
