@@ -252,7 +252,7 @@
           <section use:attachEntrance data-lifestyle-bg={i+1} class="sticky top-0 overflow-hidden" style="visibility:{index > ((i*sectionsPerProduct)) ? "hidden":"visible"};">
             <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? (offset>0.2 ? (100*(1-((offset*100)-20)/80)) : 100) : 100}%;)"> 
               <div class="absolute top-0 left-0 w-screen h-screen md:w-[50vw] z-20 flex items-center justify-center">
-                <h2 class="font-serif uppercase text-[24px] text-[#FFF]">
+                <h2 class="font-serif uppercase text-[#FFF]">
                   {#each product.line1 as char}
                     <span class="typewriter-char">{char}</span>
                   {/each}
@@ -398,6 +398,8 @@
   p {
     font-family: "NH Display Regular";
     width: 66%;
+    font-size: 20px;
+    line-height: 120%;
   }
   .cta-btn {
     border-radius: 10px;
@@ -417,5 +419,13 @@
   .cta-btn:hover {
     background: white;
     color: black;
+  }
+  @media (min-width: 768px) {
+    h1 {
+      font-size: 40px;
+    }
+    h2 {
+      font-size: 32px;
+    }
   }
 </style>
