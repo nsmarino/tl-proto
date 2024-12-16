@@ -4,7 +4,7 @@
   import {products} from "$lib";
   import {timer, time} from "$lib/stores/timer"
   
-  let showSplash = false; // Toggle splash during development
+  let showSplash = true; // Toggle splash during development
   let preloadReady = false;
   let loadTracker = 0, loadPercentage;
   let splashVideo, heroVideo;
@@ -46,7 +46,6 @@
   }
   function updateImageLoadProgress(){
     loadTracker ++
-    // console.log(Math.floor(100*(loadTracker/preloadImageUrls.length))-1)
     loadPercentage.innerHTML = `${Math.floor(100*(loadTracker/preloadImageUrls.length))-1}%`
   }
   // Remove preload screen:
@@ -95,7 +94,6 @@
     bgZoom = 1.5, 
     textEnterSpeed=20;
 
-    // $: console.log(100*(1-((offset*100)-20)/80))
   function handleEntrance(entry){
     entry.target.classList.add("entered");
   }
@@ -120,8 +118,6 @@
   function handleOnScreen(entry) {
 
     if (entry.target.dataset.testTrigger) {
-      console.log("ENTERED TEST TRIGGER")
-
       document.querySelector(`[data-product-bg="${entry.target.dataset.testTrigger}"]`).classList.add("pre-entered")
       document.querySelector(`[data-product-bg="${entry.target.dataset.testTrigger-1}"]`)?.classList.remove("pre-entered")
       document.querySelector(`[data-product-image="${entry.target.dataset.testTrigger-1}"]`)?.classList.remove("entered")

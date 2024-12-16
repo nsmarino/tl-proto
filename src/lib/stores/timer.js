@@ -10,7 +10,6 @@ const timeDifference = targetDate - now;
 
 // Convert milliseconds to seconds
 const secondsUntilTarget = timeDifference;
-console.log(secondsUntilTarget);
 
 const COUNTDOWN_FROM = secondsUntilTarget;
 
