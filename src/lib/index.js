@@ -2,24 +2,43 @@
 
 export const products = [
     {
-      line1: "I want to",
-      line2: "Feel Transported",
-
-      // draft:
-    //   id: "power-mist",
-    //   lifestyleText: "I want to",
-    //   productText: "Feel Transported",
+      id: "cashmere-woods",
+      lifestyleText: "I want to",
+      productText: "Cashmere Woods",
     },
     {
-      line1: "I want ~2~",
-      line2: "Break from Boredom",
+      id: "golden-amber",
+      lifestyleText: "I want to",
+      productText: "Golden Amber",
     },
     {
-      line1: "I want THREE",
-      line2: "Live My Heart Out",
+      id: "lush-tropicale",
+      lifestyleText: "I want to",
+      productText: "Lush Tropicale",
     },
     {
-      line1: "This is Four",
-      line2: "Read text some more",
+      id: "mango-mojo",
+      lifestyleText: "I want to",
+      productText: "Mango Mojo",
+    },
+    {
+      id: "peachy-lychee",
+      lifestyleText: "I want to",
+      productText: "Peachy Lychee",
+    },
+    {
+      id: "rich-pistachio",
+      lifestyleText: "I want to",
+      productText: "Rich Pistachio",
+    },
+    {
+      id: "sparkling-bergamot",
+      lifestyleText: "I want to",
+      productText: "Sparkling Bergamot",
+    },
+    {
+      id: "vanilla-velvet",
+      lifestyleText: "I want to",
+      productText: "Vanilla Velvet",
     },
   ]
