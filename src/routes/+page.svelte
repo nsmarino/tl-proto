@@ -12,7 +12,7 @@
 // 5. Set up typography the tailwind way
 // 6. To optimize mobile experience, use smaller images on mobile (can use media query in head) and reduce amount of intersectionObservers / observed elements
 
-  let showSplash = false; // Toggle splash during development
+  let showSplash = true; // Toggle splash during development
   let preloadReady = false;
   let loadTracker = 0, loadPercentage;
   let splashVideo, heroVideo, heroVideoPaused=false;
@@ -121,7 +121,8 @@
     onScreenThreshold=0.9, 
     sectionsPerProduct=3,
     bgZoom = 1.5, 
-    textEnterSpeed=30;
+    textEnterSpeed=30,
+    productImageEnterSpeed=15;
 
   // utils
     function drawImageScaled(img, ctx) {
@@ -154,12 +155,29 @@
       entry.target.classList.add("entered");
       // Update flipbook canvas
       if (entry.target.dataset.canvasFrame) {
-        const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.canvasTarget}"]`)
+        // const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.canvasTarget}"]`)
+        // const canvas_context = productCanvas.getContext('2d');
+        // const canvas_width = productCanvas.clientWidth;
+        // const canvas_height = productCanvas.clientHeight;
+        // canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+        // drawImageScaled(flipbook[entry.target.dataset.frameProgress], canvas_context)
+      }
+      if (entry.target.dataset.flipbookEntrance) {
+        const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEntrance}"]`)
         const canvas_context = productCanvas.getContext('2d');
         const canvas_width = productCanvas.clientWidth;
         const canvas_height = productCanvas.clientHeight;
-        canvas_context.clearRect(0, 0, canvas_width, canvas_height);
-        drawImageScaled(flipbook[entry.target.dataset.frameProgress], canvas_context)
+        // Use setInterval to draw image to the flipbook canvas until flipbookLength has been reached:
+        let i = 0;
+        const flipbookInterval = setInterval(()=>{
+          if (i < flipbookLength) {
+            canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+            drawImageScaled(flipbook[i], canvas_context)
+            i++
+          } else {
+            clearInterval(flipbookInterval)
+          }
+        }, productImageEnterSpeed)
       }
     }
     function handleOnScreen(entry) {
@@ -170,10 +188,12 @@
             char.classList.add("entered")
           }, i*textEnterSpeed)
         })
+        const previousProductCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.lifestyleBg-1}"]`)
+        if (previousProductCanvas) {
+          const ctx = previousProductCanvas.getContext('2d');
+          ctx.clearRect(0, 0, previousProductCanvas.width, previousProductCanvas.height);
+        }
       } else if (entry.target.dataset.productBgTrigger) {
-        // Right before the lifestyle background exits, make the next product background visible
-        document.querySelector(`[data-product-bg="${entry.target.dataset.productBgTrigger}"]`).classList.add("pre-entered")
-        document.querySelector(`[data-product-bg="${entry.target.dataset.productBgTrigger-1}"]`)?.classList.remove("pre-entered")
         document.querySelector(`[data-flipbook-trigger="${entry.target.dataset.productBgTrigger-1}"]`)?.classList.remove("entered")
       } else if (entry.target.dataset.productText) {
         // Once the container for the product text is fully on screen, animate in the text
@@ -197,12 +217,6 @@
       } else if (entry.target.dataset.flipbookTrigger) {
         // Once flipbook has been completed, reset product text
         document.querySelector(`[data-product-text="${entry.target.dataset.flipbookTrigger}"]`).classList.remove("exited")
-      } else if (entry.target.dataset.lifestyleBg) {
-        // When the lifestyle background exits, make the next product background visible and remove the product text
-        // document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg}"]`).classList.add("entered")
-        // document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"]`)?.classList.remove("entered")
-        // document.querySelector(`[data-product-text="${entry.target.dataset.lifestyleBg-1}"]`)?.classList.remove("entered")
-        // document.querySelector(`[data-product-text="${entry.target.dataset.lifestyleBg-1}"]`)?.classList.remove("pre-entered")
       }
     }
 
@@ -289,8 +303,11 @@
     </div>
       
       <div class="w-full h-[50vh] p-8 md:w-[50vw] md:h-screen md:fixed md:top-0 bg-[#fff] flex flex-col  md:justify-center gap-[12px]">
-        <div class="new-label">New</div>
-        <h1>Meet Body Mist.</h1>
+        
+        <div class="relative">
+          <div class="new-label">New</div>
+          <h1>Meet Body Mist.</h1>
+        </div>
         <p>Mood-boosting formulas for soothed skin and uplifted senses.</p>
         <button class="cta-btn">Join the waitlist</button>
         <button aria-label="Begin Scroll" class="absolute bottom-8 right-8 md:hidden" onclick={()=>{scrollContainer.scrollIntoView({behavior:"smooth",block:"start"})}}>
@@ -312,7 +329,7 @@
   </div>
 
   {#if preloadReady}
-    <p class="fixed bottom-2 left-0 right-0 w-full text-center z-[999] bg-[#fff] text-[10px]">Index: {index}, Section Progress: {Math.round(offset*100)}%, Scene Progress: {Math.round(progress*100)}%</p>
+    <!-- <p class="fixed bottom-2 left-0 right-0 w-full text-center z-[999] bg-[#fff] text-[10px]">Index: {index}, Section Progress: {Math.round(offset*100)}%, Scene Progress: {Math.round(progress*100)}%</p> -->
 
     <!-- Product Backgrounds - fixed to viewport and managed via triggers inside Scroller -->
     {#each products as product, i}
@@ -331,7 +348,7 @@
       <div class="foreground-slot" slot="foreground" bind:this={scrollContainer}>
         {#each products as product, i}
           <!-- Lifestyle Background -->
-          <section use:attachEntrance data-lifestyle-bg={i+1} class="sticky top-0 overflow-hidden" style="visibility:{index > ((i*sectionsPerProduct)) ? "hidden":"visible"};">
+          <section use:attachEntrance data-lifestyle-bg={i+1} class="sticky top-0 z-20 overflow-hidden" style="visibility:{index > ((i*sectionsPerProduct)) ? "hidden":"visible"};">
             <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? (offset>0.2 ? (100*(1-((offset*100)-20)/80)) : 100) : 100}%;)"> 
               <div class="absolute top-0 left-0 w-screen h-screen md:w-[50vw] z-20 flex items-center justify-center">
                 <h2 class="font-serif uppercase text-[#FFF]">
@@ -359,9 +376,10 @@
           <!-- Product Image -->
             <section data-flipbook-trigger={i+1} class="sticky top-0" use:attachEntrance style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
               <!-- <img src="/images/product-{i+1}.png" alt="" class="h-full w-full object-contain"> -->
-              {#each flipbook as frame, j}
+              <div class="absolute top-1/3 -transform-y-1/2 w-full h-[50px]" use:attachEntrance data-flipbook-entrance={i+1}></div>
+              <!-- {#each flipbook as frame, j}
                 <div class="w-full" use:attachEntrance data-canvas-frame={frame} data-canvas-target={i+1} data-frame-progress={j} style="height: {60/flipbook.length}vh"></div>
-              {/each}
+              {/each} -->
             </section>
         {/each}
       </div>
@@ -394,22 +412,6 @@
   :global([data-lifestyle-bg] .image-mask) {
     transform-origin: top center;
   }
-
-  /* :global([data-product-text]) {
-    opacity: 1;
-    transition: opacity 0.8s ease-in-out;
-  }
-  :global([data-product-text].exited) {
-    opacity: 0;
-  } */
-
-  /* :global([data-product-bg]) {
-    transform-origin: top center;
-    visibility: hidden;
-  }
-  :global([data-product-bg].pre-entered) {
-    visibility: visible;
-  } */
 
   :global(.typewriter-char) {
     opacity: 0;
@@ -472,12 +474,26 @@
     width: fit-content;
     font-size: 12px;
     padding: 3px 6px;
+    margin-bottom: 12px;
   }
+
   p {
     font-family: "NH Display Regular";
-    width: 66%;
     font-size: 20px;
     line-height: 120%;
+  }
+  .hero p {
+    width: 90%;
+  }
+  @media (min-width: 768px) {
+    .hero p {
+      width: 50%;
+    }
+    .new-label {
+      position: absolute;
+      top: -12px;
+      transform: translateY(-100%);
+    }
   }
   .cta-btn {
     border-radius: 10px;
