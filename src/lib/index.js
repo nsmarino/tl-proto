@@ -4,6 +4,11 @@ export const products = [
     {
       line1: "I want to",
       line2: "Feel Transported",
+
+      // draft:
+    //   id: "power-mist",
+    //   lifestyleText: "I want to",
+    //   productText: "Feel Transported",
     },
     {
       line1: "I want ~2~",

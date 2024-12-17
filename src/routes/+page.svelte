@@ -21,6 +21,8 @@
   let flipbookLength = 31
   let flipbook = []
 
+  let entranceManager;
+
   let headerIsBlack = false
 
   $: preloadImageUrls = [
@@ -73,10 +75,9 @@
       }
   }
 
-  let entranceManager;
-
   onMount(() => {
-    timer.start()
+    
+    timer.start() // Countdown clock in header
 
     // To use the Image class, this needs to be done in onMount
     // However, these images have already been preloaded in the preload phase
@@ -122,109 +123,118 @@
     bgZoom = 1.5, 
     textEnterSpeed=30;
 
+  // utils
     function drawImageScaled(img, ctx) {
-    var canvas = ctx.canvas;
-    var canvasWidth = canvas.width;
-    var canvasHeight = canvas.height;
+      var canvas = ctx.canvas;
+      var canvasWidth = canvas.width;
+      var canvasHeight = canvas.height;
 
-    // Calculate the scaling ratio based on the height of the canvas
-    var scaleRatio = canvasHeight / img.height;
+      // Calculate the scaling ratio based on the height of the canvas
+      var scaleRatio = canvasHeight / img.height;
 
-    // Calculate the new width while maintaining the aspect ratio
-    var newWidth = img.width * scaleRatio;
+      // Calculate the new width while maintaining the aspect ratio
+      var newWidth = img.width * scaleRatio;
 
-    // Calculate the offset to center the image horizontally
-    var centerShiftX = (canvasWidth - newWidth) / 2;
+      // Calculate the offset to center the image horizontally
+      var centerShiftX = (canvasWidth - newWidth) / 2;
 
-    // Clear the canvas before drawing
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      // Clear the canvas before drawing
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    // Draw the image with the adjusted width and height
-    ctx.drawImage(
-        img,
-        0, 0, img.width, img.height,  // Source dimensions
-        centerShiftX, 0, newWidth, canvasHeight  // Destination dimensions
-    );
-}
-
-  function handleEntrance(entry){
-    entry.target.classList.add("entered");
-    if (entry.target.dataset.canvasFrame) {
-      const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.canvasTarget}"]`)
-      const canvas_context = productCanvas.getContext('2d');
-      const canvas_width = productCanvas.clientWidth;
-      const canvas_height = productCanvas.clientHeight;
-      canvas_context.clearRect(0, 0, canvas_width, canvas_height);
-      drawImageScaled(flipbook[entry.target.dataset.frameProgress], canvas_context)
+      // Draw the image with the adjusted width and height
+      ctx.drawImage(
+          img,
+          0, 0, img.width, img.height,  // Source dimensions
+          centerShiftX, 0, newWidth, canvasHeight  // Destination dimensions
+      );
     }
-  }
-  
 
-  function handleExit(entry){
-    entry.target.classList.remove("entered");
-    // Side effects of entrances are handled via data attributes:
-    if (entry.target.hasAttribute("data-header-white")) {
-      headerIsBlack = false
+  // Intersection callbacks -- side effects are organized by data attributes
+    function handleEntrance(entry){
+      entry.target.classList.add("entered");
+      // Update flipbook canvas
+      if (entry.target.dataset.canvasFrame) {
+        const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.canvasTarget}"]`)
+        const canvas_context = productCanvas.getContext('2d');
+        const canvas_width = productCanvas.clientWidth;
+        const canvas_height = productCanvas.clientHeight;
+        canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+        drawImageScaled(flipbook[entry.target.dataset.frameProgress], canvas_context)
+      }
     }
-    if (entry.target.hasAttribute("data-header-black")) {
-      headerIsBlack = true
+    function handleOnScreen(entry) {
+      if (entry.target.dataset.lifestyleBg) {
+        // When the lifestyle background is on screen, animate in the lifestyle text
+        Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
+          setTimeout(() => {
+            char.classList.add("entered")
+          }, i*textEnterSpeed)
+        })
+      } else if (entry.target.dataset.productBgTrigger) {
+        // Right before the lifestyle background exits, make the next product background visible
+        document.querySelector(`[data-product-bg="${entry.target.dataset.productBgTrigger}"]`).classList.add("pre-entered")
+        document.querySelector(`[data-product-bg="${entry.target.dataset.productBgTrigger-1}"]`)?.classList.remove("pre-entered")
+        document.querySelector(`[data-flipbook-trigger="${entry.target.dataset.productBgTrigger-1}"]`)?.classList.remove("entered")
+      } else if (entry.target.dataset.productText) {
+        // Once the container for the product text is fully on screen, animate in the text
+        Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
+          setTimeout(() => {
+            char.classList.add("entered")
+          }, i*textEnterSpeed)
+        })
+      } else if (entry.target.dataset.flipbookTrigger) {
+        // When the flipbook trigger is fully on screen, fade out the product text
+        document.querySelector(`[data-product-text="${entry.target.dataset.flipbookTrigger}"]`).classList.add("exited")
+      }
     }
-    if (entry.target.dataset.productImage) {
-      document.querySelector(`[data-product-text="${entry.target.dataset.productImage}"]`).classList.remove("exited")
-    } else if (entry.target.dataset.lifestyleBg) {
-      document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg}"]`).classList.add("entered")
-      document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"]`)?.classList.remove("entered")
-      document.querySelector(`[data-bg-trigger="${entry.target.dataset.lifestyleBg-1}"]`)?.classList.remove("entered")
-      document.querySelector(`[data-bg-trigger="${entry.target.dataset.lifestyleBg-1}"]`)?.classList.remove("pre-entered")
+    function handleExit(entry){
+      entry.target.classList.remove("entered");
+      // Manage header text color on mobile
+      if (entry.target.hasAttribute("data-header-white")) {
+        headerIsBlack = false
+      } else if (entry.target.hasAttribute("data-header-black")) {
+        headerIsBlack = true
+      } else if (entry.target.dataset.flipbookTrigger) {
+        // Once flipbook has been completed, reset product text
+        document.querySelector(`[data-product-text="${entry.target.dataset.flipbookTrigger}"]`).classList.remove("exited")
+      } else if (entry.target.dataset.lifestyleBg) {
+        // When the lifestyle background exits, make the next product background visible and remove the product text
+        // document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg}"]`).classList.add("entered")
+        // document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"]`)?.classList.remove("entered")
+        // document.querySelector(`[data-product-text="${entry.target.dataset.lifestyleBg-1}"]`)?.classList.remove("entered")
+        // document.querySelector(`[data-product-text="${entry.target.dataset.lifestyleBg-1}"]`)?.classList.remove("pre-entered")
+      }
+    }
 
-
+  // callbacks for when els are added to the DOM:
+    function attachEntrance(node){
+      entranceManager.observe(node);
     }
-  }
-  function handleOnScreen(entry) {
+    function prepareCanvasForFlipbook(canvas) {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
 
-    if (entry.target.dataset.testTrigger) {
-      document.querySelector(`[data-product-bg="${entry.target.dataset.testTrigger}"]`).classList.add("pre-entered")
-      document.querySelector(`[data-product-bg="${entry.target.dataset.testTrigger-1}"]`)?.classList.remove("pre-entered")
-      document.querySelector(`[data-product-image="${entry.target.dataset.testTrigger-1}"]`)?.classList.remove("entered")
+      // Try out removing anti-aliasing?
+      // const ctx = canvas.getContext('2d');
+      // ctx.webkitImageSmoothingEnabled = false;
+      // ctx.mozImageSmoothingEnabled = false;
+      // ctx.imageSmoothingEnabled = false;
+    }
 
+  // update background scales based on scroll position
+    function calculateLifestyleBgScale(productIndex){
+      // special case for the first lifestyle background bc it is the only one where a negative offset is possible:
+      if (productIndex == 0) return offset < 0 ? 1-(offset/2) : 1
+      return (index==productIndex*sectionsPerProduct-1) ? 1.33-(offset/3) : 1
     }
-    if(entry.target.dataset.lifestyleBg) {
-      Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
-        setTimeout(() => {
-          char.classList.add("entered")
-        }, i*textEnterSpeed)
-      })
-      // document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg}"]`).classList.add("pre-entered")
-    } else if (entry.target.dataset.bgTrigger) {
-      Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
-        setTimeout(() => {
-          char.classList.add("entered")
-        }, i*textEnterSpeed)
-      })
-    } else if (entry.target.dataset.productImage) {
-      document.querySelector(`[data-product-text="${entry.target.dataset.productImage}"]`).classList.add("exited")
+    function calculateProductBgScale(productIndex){
+      return (index==productIndex*sectionsPerProduct) ? 1.33-(offset/3) : 1
     }
-  }
-  function attachEntrance(node){
-    entranceManager.observe(node);
-  }
-  function sizeCanvasToParent(canvas) {
-    canvas.width = canvas.parentElement.clientWidth;
-    canvas.height = canvas.parentElement.clientHeight;
-  }
-  function calculateLifestyleBgScale(productIndex){
-    // special case for the first lifestyle background bc it is the only one where a negative offset is possible:
-    if (productIndex == 0) return offset < 0 ? 1-(offset/2) : 1
-    return (index==productIndex*sectionsPerProduct-1) ? 1.33-(offset/3) : 1
-  }
-  function calculateProductBgScale(productIndex){
-    return (index==productIndex*sectionsPerProduct) ? 1.33-(offset/3) : 1
-  }
 </script>
 
 <svelte:head>
   {#each preloadImageUrls as image, i}
-    <!-- Add media queries to use smaller images -->
+    <!-- Add media queries to use smaller images? -->
     <link rel="preload" as="image" href={image} onload={updateImageLoadProgress} />
   {/each}
 </svelte:head>
@@ -302,11 +312,17 @@
   </div>
 
   {#if preloadReady}
-    <!-- <p class="fixed bottom-2 left-0 right-0 w-full text-center z-[999] bg-[#fff] text-[10px]">Index: {index}, Section Progress: {Math.round(offset*100)}%, Scene Progress: {Math.round(progress*100)}%</p> -->
+    <p class="fixed bottom-2 left-0 right-0 w-full text-center z-[999] bg-[#fff] text-[10px]">Index: {index}, Section Progress: {Math.round(offset*100)}%, Scene Progress: {Math.round(progress*100)}%</p>
 
     <!-- Product Backgrounds - fixed to viewport and managed via triggers inside Scroller -->
     {#each products as product, i}
-      <img style="transform: scale({calculateProductBgScale(i)})" data-product-bg={i+1} src="/images/product-bg-{i+1}.png" class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+
+    <!-- This is kind of janky but the first section IS an edge case so it's ultimately easier to treat it as such -->
+      {#if i==0}
+        <img style="transform: scale({calculateProductBgScale(i)}); visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct-1)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} src="/images/product-bg-{i+1}.png" class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+      {:else}
+        <img style="transform: scale({calculateProductBgScale(i)}); visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} src="/images/product-bg-{i+1}.png" class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+      {/if}
     {/each}
 
     <Scroller top={animThreshold} bottom={animThreshold} threshold={animThreshold} bind:index bind:offset bind:progress>
@@ -326,25 +342,25 @@
               </div>
               <img src="/images/lifestyle-bg-{i+1}.png" class="w-screen h-screen object-cover object-top" style="transform: scale({calculateLifestyleBgScale(i)})" alt="">
             </div>
-            <div data-test-trigger={i+1} use:attachEntrance class="w-full bg-transparent absolute bottom-0 h-[10%]"></div>
+            <div data-product-bg-trigger={i+1} use:attachEntrance class="w-full bg-transparent absolute bottom-0 h-[10%]"></div>
           </section>
 
           <!-- Product Text And Product Background Trigger -->
-          <section class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" data-bg-trigger={i+1} use:attachEntrance style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
+          <section class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" data-product-text={i+1} use:attachEntrance style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
             <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
               {#each product.line2 as char}
                 <span class="typewriter-char">{char}</span>
               {/each}
             </h2>
-            <canvas use:sizeCanvasToParent data-product-canvas={i+1} class="absolute inset-0"></canvas>
+            <canvas use:prepareCanvasForFlipbook data-product-canvas={i+1} class="absolute inset-0"></canvas>
 
           </section>
 
           <!-- Product Image -->
-            <section data-product-image={i+1} class="sticky top-0" use:attachEntrance style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
+            <section data-flipbook-trigger={i+1} class="sticky top-0" use:attachEntrance style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
               <!-- <img src="/images/product-{i+1}.png" alt="" class="h-full w-full object-contain"> -->
               {#each flipbook as frame, j}
-                <div class="w-full" use:attachEntrance data-canvas-frame={frame} data-canvas-target={i+1} data-frame-progress={j} style="height: {80/flipbook.length}vh"></div>
+                <div class="w-full" use:attachEntrance data-canvas-frame={frame} data-canvas-target={i+1} data-frame-progress={j} style="height: {60/flipbook.length}vh"></div>
               {/each}
             </section>
         {/each}
@@ -379,21 +395,21 @@
     transform-origin: top center;
   }
 
-  :global([data-product-text]) {
+  /* :global([data-product-text]) {
     opacity: 1;
     transition: opacity 0.8s ease-in-out;
   }
   :global([data-product-text].exited) {
     opacity: 0;
-  }
+  } */
 
-  :global([data-product-bg]) {
+  /* :global([data-product-bg]) {
     transform-origin: top center;
     visibility: hidden;
   }
   :global([data-product-bg].pre-entered) {
     visibility: visible;
-  }
+  } */
 
   :global(.typewriter-char) {
     opacity: 0;
