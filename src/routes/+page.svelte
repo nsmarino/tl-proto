@@ -4,14 +4,24 @@
   import {products} from "$lib";
   import {timer, time} from "$lib/stores/timer"
   
+// Cleanup Tasks
+// 1. Organize asset folders by product
+// 2. Move all scroll sequence logic into intersection observers if possible
+// 3. Remove vague math and hardcoded values
+// 4. Move component logic into $lib directory
+// 5. Set up typography the tailwind way
+// 6. To optimize mobile experience, use smaller images on mobile (can use media query in head) and reduce amount of intersectionObservers / observed elements
+
   let showSplash = false; // Toggle splash during development
   let preloadReady = false;
   let loadTracker = 0, loadPercentage;
-  let splashVideo, heroVideo;
+  let splashVideo, heroVideo, heroVideoPaused=false;
   let videosReady = false
 
   let flipbookLength = 31
   let flipbook = []
+
+  let headerIsBlack = false
 
   $: preloadImageUrls = [
     ...[...Array(products.length).keys()].map(key => `/images/lifestyle-bg-${key+1}.png`),
@@ -39,8 +49,6 @@
     }
   }, 200)
 
-  let heroVideoPaused = false
-  let headerIsBlack = false
   function handleVideoPause(){
     if (heroVideoPaused) {
       heroVideo?.play()
@@ -50,10 +58,12 @@
       heroVideoPaused=true
     }
   }
+
   function updateImageLoadProgress(){
     loadTracker ++
     loadPercentage.innerHTML = `${Math.floor(100*(loadTracker/preloadImageUrls.length))-1}%`
   }
+
   // Remove preload screen:
   $: if (loadTracker === (preloadImageUrls.length) && videosReady) {
       preloadReady = true;
@@ -68,6 +78,8 @@
   onMount(() => {
     timer.start()
 
+    // To use the Image class, this needs to be done in onMount
+    // However, these images have already been preloaded in the preload phase
     for (let i = 0; i < flipbookLength; i++) {
       flipbook.push(new Image(1920,1920))
       flipbook[i].src = `/images/flipbook/Lush_Anim_RenderTest_01-1_00${i< 10 ? "0"+i : i}.png`
@@ -88,7 +100,11 @@
     }, {
       threshold: [animThreshold, onScreenThreshold]
     });
+
+    // Turn header text black when over non-video part of hero
     entranceManager.observe(document.querySelector("[data-header-black]"))
+
+    // Turn it white again when it's over the scroll scene
     entranceManager.observe(document.querySelector("[data-header-white]"))
   })
 
@@ -208,6 +224,7 @@
 
 <svelte:head>
   {#each preloadImageUrls as image, i}
+    <!-- Add media queries to use smaller images -->
     <link rel="preload" as="image" href={image} onload={updateImageLoadProgress} />
   {/each}
 </svelte:head>
@@ -327,7 +344,7 @@
             <section data-product-image={i+1} class="sticky top-0" use:attachEntrance style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
               <!-- <img src="/images/product-{i+1}.png" alt="" class="h-full w-full object-contain"> -->
               {#each flipbook as frame, j}
-                <div class="w-full" use:attachEntrance data-canvas-frame={frame} data-canvas-target={i+1} data-frame-progress={j} style="height: {50/flipbook.length}vh"></div>
+                <div class="w-full" use:attachEntrance data-canvas-frame={frame} data-canvas-target={i+1} data-frame-progress={j} style="height: {80/flipbook.length}vh"></div>
               {/each}
             </section>
         {/each}
