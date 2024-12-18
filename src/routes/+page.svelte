@@ -32,23 +32,6 @@
       `/products/${product.id}/product-bg.mp4`
     ];
   }).flat()
-  // console.log(preloadVideoUrls)
-
-  // PRELOAD PHASE
-  // let videoLoadChecker = setInterval(()=>{
-  //   if (showSplash) {
-  //     if (splashVideo?.readyState > 3 && heroVideo?.readyState > 3) {
-  //         videosReady = true;
-  //         clearInterval(videoLoadChecker);
-  //     }    
-  //   } else {
-  //     if (heroVideo?.readyState > 3) {
-  //         videosReady = true;
-  //         clearInterval(videoLoadChecker);
-  //         document.documentElement.style.overflow="unset"
-  //     }
-  //   }
-  // }, 200)
 
   function handleVideoPause(){
     if (heroVideoPaused) {
@@ -79,6 +62,8 @@
                 videoLoadTracker++;
                 videoLoadPercentage = Math.floor(50*(videoLoadTracker/totalVideos))
 
+                // Let's see if this surfaces a console error:
+                video.pause()
                 // If all videos are ready, stop the interval
                 if (videoLoadTracker === totalVideos) {
                     clearInterval(interval);
@@ -141,7 +126,19 @@
     showSplash ? splashVideo?.play() : heroVideo?.play()
     if (!showSplash) {
       document.querySelector(".hero").classList.add("entered")
+      document.querySelector("svelte-scroller-outer").classList.add("entered")
       document.documentElement.style.overflow="unset"
+    }
+    heroVideo.scrollIntoView()
+  }
+
+  function handleSplashEnd(){
+    heroVideo.play(); 
+    splashVideo.parentElement.remove();
+    document.documentElement.style.overflow="unset";
+    if (showSplash) {
+      document.querySelector(".hero").classList.add("entered");
+      document.querySelector("svelte-scroller-outer").classList.add("entered");
     }
   }
 
@@ -149,8 +146,9 @@
   $: {
     if (imageLoadTracker === (preloadImageUrls.length) && videoLoadTracker === (preloadVideoUrls.length+2)) {
       onPreloadComplete()
+    }
   }
-}
+
   let 
     scrollContainer, 
     index, 
@@ -190,7 +188,6 @@
       );
     }
     function handleEntrance(entry){
-      
       if (entry.target.dataset.flipbookId) {
         const flipbook = productFlipbookSets[entry.target.dataset.flipbookId]
         if (entry.target.classList.contains("entered")) return
@@ -212,8 +209,8 @@
         }, productImageEnterSpeed)
       }
       entry.target.classList.add("entered");  
-
     }
+
     function handleOnScreen(entry) {
       if (entry.target.dataset.lifestyleBg) {
         // When the lifestyle background is on screen, animate in the lifestyle text
@@ -222,26 +219,18 @@
             char.classList.add("entered")
           }, i*textEnterSpeed)
         })
-        // const previousProductCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.lifestyleBg-1}"]`)
-        // if (previousProductCanvas) {
-        //   const ctx = previousProductCanvas.getContext('2d');
-        //   ctx.clearRect(0, 0, previousProductCanvas.width, previousProductCanvas.height);
-        // }
-      } 
-      else if (entry.target.dataset.productBgTrigger) {
-        document.querySelector(`[data-flipbook-trigger="${entry.target.dataset.productBgTrigger-1}"]`)?.classList.remove("entered")
-      } else if (entry.target.dataset.productText) {
+      }
+      // 12/18 i dont think we need this anymore
+      // else if (entry.target.dataset.productBgTrigger) {
+        // document.querySelector(`[data-flipbook-trigger="${entry.target.dataset.productBgTrigger-1}"]`)?.classList.remove("entered")
+      else if (entry.target.dataset.productText) {
         // Once the container for the product text is fully on screen, animate in the text
         Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
           setTimeout(() => {
             char.classList.add("entered")
           }, i*textEnterSpeed)
         })
-      } 
-      // else if (entry.target.dataset.flipbookTrigger) {
-      //   // When the flipbook trigger is fully on screen, fade out the product text
-      //   document.querySelector(`[data-product-text="${entry.target.dataset.flipbookTrigger}"]`).classList.add("exited")
-      // }
+      }
     }
     function handleExit(entry){
       return
@@ -320,7 +309,7 @@
 <!-- Splash video; removed after it plays -->
 {#if showSplash}
   <div class="fixed inset-0 bg-[#0f0] z-40">
-    <video class="w-full h-full object-cover" bind:this={splashVideo} muted autoplay playsinline preload="auto" onended={()=>{heroVideo.play(); splashVideo.parentElement.remove();document.documentElement.style.overflow="unset";if (showSplash) document.querySelector(".hero").classList.add("entered")}}>
+    <video class="w-full h-full object-cover" bind:this={splashVideo} muted autoplay playsinline preload="auto" onended={handleSplashEnd}>
         <source src="/videos/splash.mp4" type="video/mp4" />
     </video>
   </div>
@@ -389,6 +378,7 @@
   </div>
   <div class="foreground-slot" slot="foreground" bind:this={scrollContainer}>
     {#each products as product, i}
+
       <!-- Lifestyle Background -->
       <section data-scroll-node data-lifestyle-bg={i+1} class="sticky top-0 z-20 overflow-hidden" style="visibility:{index > ((i*sectionsPerProduct)) ? "hidden":"visible"};">
         <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? (offset>0.2 ? (100*(1-((offset*100)-20)/80)) : 100) : 100}%;)"> 
@@ -404,29 +394,24 @@
               <source src="/products/{product.id}/lifestyle-bg.mp4" type="video/mp4" />
             </video>
           </div>
-          <!-- <img src="/images/lifestyle-bg-{i+1}.png" class="w-screen h-screen object-cover object-top" style="transform: scale({calculateLifestyleBgScale(i)})" alt=""> -->
         </div>
+        <!-- What does this do -->
         <div data-product-bg-trigger={i+1} data-scroll-node class="w-full bg-transparent absolute bottom-0 h-[10%]"></div>
       </section>
 
       <!-- Product Text And Product Background Trigger -->
-      <section class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" data-product-text={i+1} data-scroll-node style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
+      <section data-scroll-node data-product-text={i+1} class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
         <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
           {#each product.productText as char}
             <span class="typewriter-char">{char}</span>
           {/each}
         </h2>
         <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0"></canvas>
-
       </section>
 
       <!-- Product Image -->
-        <section data-flipbook-trigger={i+1} class="sticky top-0" data-scroll-node style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
-          <!-- <img src="/images/product-{i+1}.png" alt="" class="h-full w-full object-contain"> -->
+        <section data-scroll-node data-flipbook-trigger={i+1} class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
           <div class="absolute top-1/3 -transform-y-1/2 w-full h-[50px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i}></div>
-          <!-- {#each flipbook as frame, j}
-            <div class="w-full" data-scroll-node data-canvas-frame={frame} data-canvas-target={i+1} data-frame-progress={j} style="height: {60/flipbook.length}vh"></div>
-          {/each} -->
         </section>
     {/each}
   </div>
@@ -468,6 +453,16 @@
     transition: all 0.6s ease-in-out
   }
   :global(.hero.entered > *) {
+    transform: translateY(0px);
+    opacity: 1;
+    transition-delay: 0.2s;
+  }
+  :global(svelte-scroller-outer) {
+    transform: translateY(40px);
+    opacity: 0;
+    transition: all 0.6s ease-in-out
+  }
+  :global(svelte-scroller-outer.entered) {
     transform: translateY(0px);
     opacity: 1;
     transition-delay: 0.2s;
@@ -564,4 +559,5 @@
       font-size: 32px;
     }
   }
+  
 </style>
