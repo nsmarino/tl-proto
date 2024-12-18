@@ -62,7 +62,6 @@
                 videoLoadTracker++;
                 videoLoadPercentage = Math.floor(50*(videoLoadTracker/totalVideos))
 
-                // Let's see if this surfaces a console error:
                 video.pause()
                 // If all videos are ready, stop the interval
                 if (videoLoadTracker === totalVideos) {
@@ -130,6 +129,8 @@
       document.documentElement.style.overflow="unset"
     }
     heroVideo.scrollIntoView()
+    // Ensure first video in scroll sequence plays on load
+    document.querySelector("[data-lifestyle-bg] video").play()
   }
 
   function handleSplashEnd(){
@@ -144,7 +145,7 @@
 
   // Remove preload screen:
   $: {
-    if (imageLoadTracker === (preloadImageUrls.length) && videoLoadTracker === (preloadVideoUrls.length+2)) {
+    if (imageLoadTracker === (preloadImageUrls.length) && videoLoadTracker === (preloadVideoUrls.length+(showSplash ? 2 : 1))) {
       onPreloadComplete()
     }
   }
@@ -162,7 +163,6 @@
     textEnterSpeed=30,
     productImageEnterSpeed=30;
 
-// utils
     function drawImageScaled(img, ctx) {
       var canvas = ctx.canvas;
       var canvasWidth = canvas.width;
@@ -207,6 +207,11 @@
             clearInterval(flipbookInterval)
           }
         }, productImageEnterSpeed)
+      } else if (entry.target.dataset.lifestyleBg) {
+        entry.target.querySelector("video").play()
+      } else if (entry.target.dataset.productText) {
+        // Play fixed video background which is outside scroller
+        document.querySelector(`[data-product-bg="${entry.target.dataset.productText}"] video`).play()
       }
       entry.target.classList.add("entered");  
     }
@@ -219,11 +224,10 @@
             char.classList.add("entered")
           }, i*textEnterSpeed)
         })
-      }
-      // 12/18 i dont think we need this anymore
-      // else if (entry.target.dataset.productBgTrigger) {
-        // document.querySelector(`[data-flipbook-trigger="${entry.target.dataset.productBgTrigger-1}"]`)?.classList.remove("entered")
-      else if (entry.target.dataset.productText) {
+        document.querySelector(`[data-product-bg="${entry.target.dataset.productText-1}"]`)?.pause()
+      } else if (entry.target.dataset.productText) {
+        // Ensure lifestyle video is paused:
+        document.querySelector(`[data-lifestyle-bg="${entry.target.dataset.productText}"]`).querySelector("video").pause()
         // Once the container for the product text is fully on screen, animate in the text
         Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
           setTimeout(() => {
@@ -233,17 +237,17 @@
       }
     }
     function handleExit(entry){
-      return
-      entry.target.classList.remove("entered");
-      // Manage header text color on mobile
-      if (entry.target.hasAttribute("data-header-white")) {
-        headerIsBlack = false
-      } else if (entry.target.hasAttribute("data-header-black")) {
-        headerIsBlack = true
-      } else if (entry.target.dataset.flipbookTrigger) {
-        // Once flipbook has been completed, reset product text
-        document.querySelector(`[data-product-text="${entry.target.dataset.flipbookTrigger}"]`).classList.remove("exited")
-      }
+// NOT USING RN:
+      // entry.target.classList.remove("entered");
+      // // Manage header text color on mobile
+      // if (entry.target.hasAttribute("data-header-white")) {
+      //   headerIsBlack = false
+      // } else if (entry.target.hasAttribute("data-header-black")) {
+      //   headerIsBlack = true
+      // } else if (entry.target.dataset.flipbookTrigger) {
+      //   // Once flipbook has been completed, reset product text
+      //   document.querySelector(`[data-product-text="${entry.target.dataset.flipbookTrigger}"]`).classList.remove("exited")
+      // }
     }
 
     function prepareCanvasForFlipbook(canvas) {
@@ -302,7 +306,7 @@
   </div>
   <div class="util flex gap-4 md:gap-8">
     {#if preloadReady}<div>{$time.find(t=>t.type==="day").value}:{$time.find(t=>t.type==="hour").value}:{$time.find(t=>t.type==="minute").value}:{$time.find(t=>t.type==="second").value}</div>{/if}
-    <a href="/" class="underline underline-offset-2">Join the Waitlist</a>
+    <a href="/" class="anim-underline-always">Join the Waitlist</a>
   </div>
 </header>
 
@@ -559,5 +563,36 @@
       font-size: 32px;
     }
   }
+  .anim-underline-always {
+		position: relative;
+		width: fit-content;
+		display: inline-block;
+	}
+	.anim-underline-always::after {
+		content: '';
+		position: absolute;
+		bottom: 0px;
+		left: 0;
+		width: 100%;
+		height: 1px;
+		background-color: white;
+		opacity: 1;
+		transform: scale(1);
+		transform-origin: center;
+		transition: transform 200ms;
+	}
+	.anim-underline-always:hover::after,
+	.anim-underline-always:focus::after {
+	  animation: anim-underline 0.3s forwards;
+  }
+
+	@keyframes anim-underline {
+		0% {
+			transform: scaleX(0);
+		}
+		100% {
+			transform: scaleX(1);
+		}
+	}
   
 </style>
