@@ -18,15 +18,6 @@
 
   let headerIsBlack = false
 
-  // $: preloadImageUrls = [
-  //   ...[...Array(products.length).keys()].map(key => `/images/lifestyle-bg-${key+1}.png`),
-  //   ...[...Array(products.length).keys()].map(key => `/images/product-bg-${key+1}.png`),
-  //   ...[...Array(products.length).keys()].map(key => `/images/product-${key+1}.png`),
-  //   ...[...Array(flipbookLength).keys()].map(key => {
-
-  //     return `/images/flipbook/Lush_Anim_RenderTest_01-1_00${key< 10 ? "0"+key : key}.png`
-  //   }),
-  // ]
   const preloadImageUrls = products.map(product => {
     const productFlipbookImages = []
     for (let i=0;i<flipbookLength;i++) {
@@ -34,10 +25,12 @@
     }
     return productFlipbookImages;
   }).flat()
-  // console.log(preloadImageUrls)
 
   const preloadVideoUrls = products.map(product => {
-    return [`/products/${product.id}/lifestyle-bg.mp4`, `/products/${product.id}/product-bg.mp4`];
+    return [
+      `/products/${product.id}/lifestyle-bg.mp4`, 
+      `/products/${product.id}/product-bg.mp4`
+    ];
   }).flat()
   // console.log(preloadVideoUrls)
 
@@ -111,185 +104,177 @@
       }
     })
 
+    entranceManager = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          if(entry.intersectionRatio>=0.9) {
+            handleOnScreen(entry)
+          } else {
+            handleEntrance(entry)    
+          } 
+        } else {
+          handleExit(entry)
+        }
+      });
+    }, {
+      threshold: [animThreshold, onScreenThreshold]
+    });
+
+    // Turn header text black when over non-video part of hero
+    entranceManager.observe(document.querySelector("[data-header-black]"))
+
+    // Turn it white again when it's over the scroll scene
+    entranceManager.observe(document.querySelector("[data-header-white]"))
+
+    // Handle scroll events in scroll sequence:
+    document.querySelectorAll("[data-scroll-node]").forEach((node) => {
+      entranceManager.observe(node)
+    })
+
+    //entranceManager.observe(document.querySelector("[data-scroll-sequence]"))
+
     updateVideoLoadProgress(document.querySelectorAll("video"))
   })
 
-  // // Remove preload screen:
-  $: if (imageLoadTracker === (preloadImageUrls.length) && videoLoadTracker === (preloadVideoUrls.length+2)) {
-      preloadReady = true;
-      showSplash ? splashVideo?.play() : heroVideo?.play()
-      if (!showSplash) {
-        document.querySelector(".hero").classList.add("entered")
-      }
+  function onPreloadComplete(){
+    preloadReady = true;
+    showSplash ? splashVideo?.play() : heroVideo?.play()
+    if (!showSplash) {
+      document.querySelector(".hero").classList.add("entered")
+      document.documentElement.style.overflow="unset"
+    }
   }
 
-  // onMount(() => {
-    
-  //   // To use the Image class, this needs to be done in onMount
-  //   // However, these images have already been preloaded in the preload phase
-  //   for (let i = 0; i < flipbookLength; i++) {
-  //     flipbook.push(new Image(1920,1920))
-  //     flipbook[i].src = `/images/flipbook/Lush_Anim_RenderTest_01-1_00${i< 10 ? "0"+i : i}.png`
-  //   }
+  // Remove preload screen:
+  $: {
+    if (imageLoadTracker === (preloadImageUrls.length) && videoLoadTracker === (preloadVideoUrls.length+2)) {
+      onPreloadComplete()
+  }
+}
+  let 
+    scrollContainer, 
+    index, 
+    offset, 
+    progress,
 
-  //   entranceManager = new IntersectionObserver((entries) => {
-  //     entries.forEach((entry) => {
-  //       if (entry.isIntersecting) {
-  //         if(entry.intersectionRatio>=0.9) {
-  //           handleOnScreen(entry)
-  //         } else {
-  //           handleEntrance(entry)    
-  //         } 
-  //       } else {
-  //         handleExit(entry)
-  //       }
-  //     });
-  //   }, {
-  //     threshold: [animThreshold, onScreenThreshold]
-  //   });
+    animThreshold = 0.1, 
+    onScreenThreshold=0.9, 
+    sectionsPerProduct=3,
+    bgZoom = 1.5, 
+    textEnterSpeed=30,
+    productImageEnterSpeed=30;
 
-  //   // Turn header text black when over non-video part of hero
-  //   entranceManager.observe(document.querySelector("[data-header-black]"))
+// utils
+    function drawImageScaled(img, ctx) {
+      var canvas = ctx.canvas;
+      var canvasWidth = canvas.width;
+      var canvasHeight = canvas.height;
 
-  //   // Turn it white again when it's over the scroll scene
-  //   entranceManager.observe(document.querySelector("[data-header-white]"))
-  // })
+      // Calculate the scaling ratio based on the height of the canvas
+      var scaleRatio = canvasHeight / img.height;
 
-  // // SCROLL PHASE
-  // // Scroller variables:
-  // let 
-  //   scrollContainer, 
-  //   index, 
-  //   offset, 
-  //   progress,
+      // Calculate the new width while maintaining the aspect ratio
+      var newWidth = img.width * scaleRatio;
 
-  //   animThreshold = 0.1, 
-  //   onScreenThreshold=0.9, 
-  //   sectionsPerProduct=3,
-  //   bgZoom = 1.5, 
-  //   textEnterSpeed=30,
-  //   productImageEnterSpeed=30;
+      // Calculate the offset to center the image horizontally
+      var centerShiftX = (canvasWidth - newWidth) / 2;
 
-  // // utils
-  //   function drawImageScaled(img, ctx) {
-  //     var canvas = ctx.canvas;
-  //     var canvasWidth = canvas.width;
-  //     var canvasHeight = canvas.height;
+      // Clear the canvas before drawing
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-  //     // Calculate the scaling ratio based on the height of the canvas
-  //     var scaleRatio = canvasHeight / img.height;
+      // Draw the image with the adjusted width and height
+      ctx.drawImage(
+          img,
+          0, 0, img.width, img.height,  // Source dimensions
+          centerShiftX, 0, newWidth, canvasHeight  // Destination dimensions
+      );
+    }
+    function handleEntrance(entry){
+      entry.target.classList.add("entered");  
+      
+      if (entry.target.dataset.flipbookId) {
+        const flipbook = productFlipbookSets[entry.target.dataset.flipbookId]
+        console.log(flipbook)
 
-  //     // Calculate the new width while maintaining the aspect ratio
-  //     var newWidth = img.width * scaleRatio;
+        const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookId}"]`)
+        const canvas_context = productCanvas.getContext('2d');
+        const canvas_width = productCanvas.clientWidth;
+        const canvas_height = productCanvas.clientHeight;
+        // Use setInterval to draw image to the flipbook canvas until flipbookLength has been reached:
+        let i = 0;
+        const flipbookInterval = setInterval(()=>{
+          if (i < flipbookLength) {
+            canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+            drawImageScaled(flipbook[i], canvas_context)
+            i++
+          } else {
+            clearInterval(flipbookInterval)
+          }
+        }, productImageEnterSpeed)
+      }
+    }
+    function handleOnScreen(entry) {
+      return
+      if (entry.target.dataset.lifestyleBg) {
+        // When the lifestyle background is on screen, animate in the lifestyle text
+        Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
+          setTimeout(() => {
+            char.classList.add("entered")
+          }, i*textEnterSpeed)
+        })
+        const previousProductCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.lifestyleBg-1}"]`)
+        if (previousProductCanvas) {
+          const ctx = previousProductCanvas.getContext('2d');
+          ctx.clearRect(0, 0, previousProductCanvas.width, previousProductCanvas.height);
+        }
+      } else if (entry.target.dataset.productBgTrigger) {
+        document.querySelector(`[data-flipbook-trigger="${entry.target.dataset.productBgTrigger-1}"]`)?.classList.remove("entered")
+      } else if (entry.target.dataset.productText) {
+        // Once the container for the product text is fully on screen, animate in the text
+        Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
+          setTimeout(() => {
+            char.classList.add("entered")
+          }, i*textEnterSpeed)
+        })
+      } else if (entry.target.dataset.flipbookTrigger) {
+        // When the flipbook trigger is fully on screen, fade out the product text
+        document.querySelector(`[data-product-text="${entry.target.dataset.flipbookTrigger}"]`).classList.add("exited")
+      }
+    }
+    function handleExit(entry){
+      return
+      entry.target.classList.remove("entered");
+      // Manage header text color on mobile
+      if (entry.target.hasAttribute("data-header-white")) {
+        headerIsBlack = false
+      } else if (entry.target.hasAttribute("data-header-black")) {
+        headerIsBlack = true
+      } else if (entry.target.dataset.flipbookTrigger) {
+        // Once flipbook has been completed, reset product text
+        document.querySelector(`[data-product-text="${entry.target.dataset.flipbookTrigger}"]`).classList.remove("exited")
+      }
+    }
 
-  //     // Calculate the offset to center the image horizontally
-  //     var centerShiftX = (canvasWidth - newWidth) / 2;
+    function prepareCanvasForFlipbook(canvas) {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
 
-  //     // Clear the canvas before drawing
-  //     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      // Try out removing anti-aliasing?
+      // const ctx = canvas.getContext('2d');
+      // ctx.webkitImageSmoothingEnabled = false;
+      // ctx.mozImageSmoothingEnabled = false;
+      // ctx.imageSmoothingEnabled = false;
+    }
 
-  //     // Draw the image with the adjusted width and height
-  //     ctx.drawImage(
-  //         img,
-  //         0, 0, img.width, img.height,  // Source dimensions
-  //         centerShiftX, 0, newWidth, canvasHeight  // Destination dimensions
-  //     );
-  //   }
-
-  // // Intersection callbacks -- side effects are organized by data attributes
-  //   function handleEntrance(entry){
-  //     entry.target.classList.add("entered");
-  //     // Update flipbook canvas
-  //     if (entry.target.dataset.canvasFrame) {
-  //       // const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.canvasTarget}"]`)
-  //       // const canvas_context = productCanvas.getContext('2d');
-  //       // const canvas_width = productCanvas.clientWidth;
-  //       // const canvas_height = productCanvas.clientHeight;
-  //       // canvas_context.clearRect(0, 0, canvas_width, canvas_height);
-  //       // drawImageScaled(flipbook[entry.target.dataset.frameProgress], canvas_context)
-  //     }
-  //     if (entry.target.dataset.flipbookEntrance) {
-  //       const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEntrance}"]`)
-  //       const canvas_context = productCanvas.getContext('2d');
-  //       const canvas_width = productCanvas.clientWidth;
-  //       const canvas_height = productCanvas.clientHeight;
-  //       // Use setInterval to draw image to the flipbook canvas until flipbookLength has been reached:
-  //       let i = 0;
-  //       const flipbookInterval = setInterval(()=>{
-  //         if (i < flipbookLength) {
-  //           canvas_context.clearRect(0, 0, canvas_width, canvas_height);
-  //           drawImageScaled(flipbook[i], canvas_context)
-  //           i++
-  //         } else {
-  //           clearInterval(flipbookInterval)
-  //         }
-  //       }, productImageEnterSpeed)
-  //     }
-  //   }
-  //   function handleOnScreen(entry) {
-  //     if (entry.target.dataset.lifestyleBg) {
-  //       // When the lifestyle background is on screen, animate in the lifestyle text
-  //       Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
-  //         setTimeout(() => {
-  //           char.classList.add("entered")
-  //         }, i*textEnterSpeed)
-  //       })
-  //       const previousProductCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.lifestyleBg-1}"]`)
-  //       if (previousProductCanvas) {
-  //         const ctx = previousProductCanvas.getContext('2d');
-  //         ctx.clearRect(0, 0, previousProductCanvas.width, previousProductCanvas.height);
-  //       }
-  //     } else if (entry.target.dataset.productBgTrigger) {
-  //       document.querySelector(`[data-flipbook-trigger="${entry.target.dataset.productBgTrigger-1}"]`)?.classList.remove("entered")
-  //     } else if (entry.target.dataset.productText) {
-  //       // Once the container for the product text is fully on screen, animate in the text
-  //       Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
-  //         setTimeout(() => {
-  //           char.classList.add("entered")
-  //         }, i*textEnterSpeed)
-  //       })
-  //     } else if (entry.target.dataset.flipbookTrigger) {
-  //       // When the flipbook trigger is fully on screen, fade out the product text
-  //       document.querySelector(`[data-product-text="${entry.target.dataset.flipbookTrigger}"]`).classList.add("exited")
-  //     }
-  //   }
-  //   function handleExit(entry){
-  //     entry.target.classList.remove("entered");
-  //     // Manage header text color on mobile
-  //     if (entry.target.hasAttribute("data-header-white")) {
-  //       headerIsBlack = false
-  //     } else if (entry.target.hasAttribute("data-header-black")) {
-  //       headerIsBlack = true
-  //     } else if (entry.target.dataset.flipbookTrigger) {
-  //       // Once flipbook has been completed, reset product text
-  //       document.querySelector(`[data-product-text="${entry.target.dataset.flipbookTrigger}"]`).classList.remove("exited")
-  //     }
-  //   }
-
-  // // callbacks for when els are added to the DOM:
-  //   function attachEntrance(node){
-  //     entranceManager.observe(node);
-  //   }
-  //   function prepareCanvasForFlipbook(canvas) {
-  //     canvas.width = canvas.parentElement.clientWidth;
-  //     canvas.height = canvas.parentElement.clientHeight;
-
-  //     // Try out removing anti-aliasing?
-  //     // const ctx = canvas.getContext('2d');
-  //     // ctx.webkitImageSmoothingEnabled = false;
-  //     // ctx.mozImageSmoothingEnabled = false;
-  //     // ctx.imageSmoothingEnabled = false;
-  //   }
-
-  // // update background scales based on scroll position
-  //   function calculateLifestyleBgScale(productIndex){
-  //     // special case for the first lifestyle background bc it is the only one where a negative offset is possible:
-  //     if (productIndex == 0) return offset < 0 ? 1-(offset/2) : 1
-  //     return (index==productIndex*sectionsPerProduct-1) ? 1.33-(offset/3) : 1
-  //   }
-  //   function calculateProductBgScale(productIndex){
-  //     return (index==productIndex*sectionsPerProduct) ? 1.33-(offset/3) : 1
-  //   }
+// update background scales based on scroll position
+    function calculateLifestyleBgScale(productIndex){
+      // special case for the first lifestyle background bc it is the only one where a negative offset is possible:
+      if (productIndex == 0) return offset < 0 ? 1-(offset/2) : 1
+      return (index==productIndex*sectionsPerProduct-1) ? 1.33-(offset/3) : 1
+    }
+    function calculateProductBgScale(productIndex){
+      return (index==productIndex*sectionsPerProduct) ? 1.33-(offset/3) : 1
+    }
 </script>
 
 <svelte:head>
@@ -299,8 +284,8 @@
 </svelte:head>
 
 <div class="h-dvh w-full flex items-end fixed justify-between inset-0 bg-[#fff] z-[60] p-8" class:hide-preload={preloadReady}>
-  <p style="font-family: 'NH Display Medium';">{(videoLoadPercentage+imageLoadPercentage-1)}%</p>
-  <p class="block !w-fit whitespace-nowrap">Preparing the senses</p>
+  <p style="font-family: 'NH Display Medium';" class="">{(videoLoadPercentage+imageLoadPercentage-1)}%</p>
+  <p class="block !w-fit whitespace-nowrap animate-pulse">Preparing the senses</p>
 </div>
 
 <header class="fixed top-0 w-full z-30 flex justify-between items-center p-2 md:px-8 md:py-4" class:is-black={headerIsBlack}>
@@ -340,7 +325,7 @@
 {/if}
 
 <div class="experience-container">
-  <div class="hero w-full h-[100dvh] md:h-[50vw] bg-[#fff] relative z-20">
+  <div class="hero w-full h-[100vmin] md:h-[50vw] bg-[#fff] relative z-20">
     <div class="w-full h-1/2 md:h-auto md:aspect-square md:w-1/2 md:ml-[50%] object-cover relative">
       <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
           <source src="/videos/placeholder.mp4" type="video/mp4" />
@@ -352,7 +337,7 @@
         {/if}</button>
     </div>
       
-      <div class="w-full h-[50dvh] p-8 md:w-[50vw] md:h-screen md:fixed md:top-0 bg-[#fff] flex flex-col  md:justify-center gap-[12px]">
+      <div class="w-full h-[50vmin] p-8 md:w-[50vw] md:h-screen md:fixed md:top-0 bg-[#fff] flex flex-col  md:justify-center gap-[12px]">
         
         <div class="relative">
           <div class="new-label">New</div>
@@ -379,15 +364,71 @@
   </div>
 </div>
 
-{#each preloadVideoUrls as videoUrl}
-  <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
-    <source src={videoUrl} type="video/mp4" />
-  </video>
-{/each}
-
 <!-- Product Background Videos -->
-
+{#each products as product, i}
+    <!-- This is kind of janky but the first section IS an edge case so it's ultimately easier to treat it as such -->
+      {#if i==0}
+        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct-1)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+          <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
+            <source src="/products/{product.id}/product-bg.mp4" type="video/mp4" />
+          </video>
+        </div>
+      {:else}
+        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+          <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
+            <source src="/products/{product.id}/product-bg.mp4" type="video/mp4" />
+          </video>
+        </div>
+      {/if}
+    {/each}
 <!-- Scroller -->
+<Scroller top={animThreshold} bottom={animThreshold} threshold={animThreshold} bind:index bind:offset bind:progress>
+  <div slot="background">
+  </div>
+  <div class="foreground-slot" slot="foreground" bind:this={scrollContainer}>
+    {#each products as product, i}
+      <!-- Lifestyle Background -->
+      <section data-scroll-node data-lifestyle-bg={i+1} class="sticky top-0 z-20 overflow-hidden" style="visibility:{index > ((i*sectionsPerProduct)) ? "hidden":"visible"};">
+        <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? (offset>0.2 ? (100*(1-((offset*100)-20)/80)) : 100) : 100}%;)"> 
+          <div class="absolute top-0 left-0 w-screen h-screen md:w-[50vw] z-20 flex items-center justify-center">
+            <h2 class="font-serif uppercase text-[#FFF]">
+              {#each product.line1 as char}
+                <span class="typewriter-char">{char}</span>
+              {/each}
+            </h2>
+          </div>
+          <div class="w-screen h-screen md:w-[50vw]">
+            <video class="w-full h-full object-cover object-top" loop muted autoplay playsinline preload="auto">
+              <source src="/products/{product.id}/lifestyle-bg.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <!-- <img src="/images/lifestyle-bg-{i+1}.png" class="w-screen h-screen object-cover object-top" style="transform: scale({calculateLifestyleBgScale(i)})" alt=""> -->
+        </div>
+        <div data-product-bg-trigger={i+1} data-scroll-node class="w-full bg-transparent absolute bottom-0 h-[10%]"></div>
+      </section>
+
+      <!-- Product Text And Product Background Trigger -->
+      <section class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" data-product-text={i+1} data-scroll-node style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
+        <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
+          {#each product.line2 as char}
+            <span class="typewriter-char">{char}</span>
+          {/each}
+        </h2>
+        <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0"></canvas>
+
+      </section>
+
+      <!-- Product Image -->
+        <section data-flipbook-trigger={i+1} class="sticky top-0" data-scroll-node style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
+          <!-- <img src="/images/product-{i+1}.png" alt="" class="h-full w-full object-contain"> -->
+          <div class="absolute top-1/3 -transform-y-1/2 w-full h-[50px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i}></div>
+          <!-- {#each flipbook as frame, j}
+            <div class="w-full" data-scroll-node data-canvas-frame={frame} data-canvas-target={i+1} data-frame-progress={j} style="height: {60/flipbook.length}vh"></div>
+          {/each} -->
+        </section>
+    {/each}
+  </div>
+</Scroller>
 
 <style>
   .hide-preload {
