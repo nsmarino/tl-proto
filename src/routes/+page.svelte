@@ -190,11 +190,10 @@
       );
     }
     function handleEntrance(entry){
-      entry.target.classList.add("entered");  
       
       if (entry.target.dataset.flipbookId) {
         const flipbook = productFlipbookSets[entry.target.dataset.flipbookId]
-        console.log(flipbook)
+        if (entry.target.classList.contains("entered")) return
 
         const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookId}"]`)
         const canvas_context = productCanvas.getContext('2d');
@@ -212,9 +211,10 @@
           }
         }, productImageEnterSpeed)
       }
+      entry.target.classList.add("entered");  
+
     }
     function handleOnScreen(entry) {
-      return
       if (entry.target.dataset.lifestyleBg) {
         // When the lifestyle background is on screen, animate in the lifestyle text
         Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
@@ -222,12 +222,13 @@
             char.classList.add("entered")
           }, i*textEnterSpeed)
         })
-        const previousProductCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.lifestyleBg-1}"]`)
-        if (previousProductCanvas) {
-          const ctx = previousProductCanvas.getContext('2d');
-          ctx.clearRect(0, 0, previousProductCanvas.width, previousProductCanvas.height);
-        }
-      } else if (entry.target.dataset.productBgTrigger) {
+        // const previousProductCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.lifestyleBg-1}"]`)
+        // if (previousProductCanvas) {
+        //   const ctx = previousProductCanvas.getContext('2d');
+        //   ctx.clearRect(0, 0, previousProductCanvas.width, previousProductCanvas.height);
+        // }
+      } 
+      else if (entry.target.dataset.productBgTrigger) {
         document.querySelector(`[data-flipbook-trigger="${entry.target.dataset.productBgTrigger-1}"]`)?.classList.remove("entered")
       } else if (entry.target.dataset.productText) {
         // Once the container for the product text is fully on screen, animate in the text
@@ -236,10 +237,11 @@
             char.classList.add("entered")
           }, i*textEnterSpeed)
         })
-      } else if (entry.target.dataset.flipbookTrigger) {
-        // When the flipbook trigger is fully on screen, fade out the product text
-        document.querySelector(`[data-product-text="${entry.target.dataset.flipbookTrigger}"]`).classList.add("exited")
-      }
+      } 
+      // else if (entry.target.dataset.flipbookTrigger) {
+      //   // When the flipbook trigger is fully on screen, fade out the product text
+      //   document.querySelector(`[data-product-text="${entry.target.dataset.flipbookTrigger}"]`).classList.add("exited")
+      // }
     }
     function handleExit(entry){
       return
@@ -392,7 +394,7 @@
         <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? (offset>0.2 ? (100*(1-((offset*100)-20)/80)) : 100) : 100}%;)"> 
           <div class="absolute top-0 left-0 w-screen h-screen md:w-[50vw] z-20 flex items-center justify-center">
             <h2 class="font-serif uppercase text-[#FFF]">
-              {#each product.line1 as char}
+              {#each product.lifestyleText as char}
                 <span class="typewriter-char">{char}</span>
               {/each}
             </h2>
@@ -410,7 +412,7 @@
       <!-- Product Text And Product Background Trigger -->
       <section class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" data-product-text={i+1} data-scroll-node style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
         <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
-          {#each product.line2 as char}
+          {#each product.productText as char}
             <span class="typewriter-char">{char}</span>
           {/each}
         </h2>
