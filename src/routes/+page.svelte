@@ -320,7 +320,7 @@
 {/if}
 
 <div class="experience-container">
-  <div class="hero w-full h-[100vmin] md:h-[50vw] bg-[#fff] relative z-20">
+  <div class="hero w-full h-screen md:h-[50vw] bg-[#fff] relative z-20">
     <div class="w-full h-1/2 md:h-auto md:aspect-square md:w-1/2 md:ml-[50%] object-cover relative">
       <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
           <source src="/videos/placeholder.mp4" type="video/mp4" />
@@ -332,7 +332,7 @@
         {/if}</button>
     </div>
       
-      <div class="w-full h-[50vmin] p-8 md:w-[50vw] md:h-screen md:fixed md:top-0 bg-[#fff] flex flex-col  md:justify-center gap-[12px]">
+      <div class="w-full h-[50vh] p-8 md:w-[50vw] md:h-screen md:fixed md:top-0 bg-[#fff] flex flex-col  md:justify-center gap-[12px]">
         
         <div class="relative">
           <div class="new-label">New</div>
