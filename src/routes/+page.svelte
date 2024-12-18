@@ -369,7 +369,7 @@
           </video>
         </div>
       {:else}
-        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+        <div style="transform: scale({calculateProductBgScale(i)}); visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
           <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
             <source src="/products/{product.id}/product-bg.mp4" type="video/mp4" />
           </video>
