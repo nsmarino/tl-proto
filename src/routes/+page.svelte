@@ -241,6 +241,7 @@
       } else if (entry.target.dataset.productText) {
         // Play fixed video background which is outside scroller
         document.querySelector(`[data-product-bg="${entry.target.dataset.productText}"] video`).play()
+        document.querySelector(`[data-product-bg="${entry.target.dataset.productText}"]`).classList.add("entered")
       }
       entry.target.classList.add("entered");  
     }
@@ -295,6 +296,21 @@
         prepareCanvasForFlipbook(canvas)
       })
     }
+    // Wrap handleResize in a debounce function to prevent it from firing too often:
+    function debounce(func, wait=200, immediate) {
+      let timeout;
+      return function() {
+        const context = this, args = arguments;
+        const later = function() {
+          timeout = null;
+          if (!immediate) func.apply(context, args);
+        };
+        const callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+      };
+    };
 </script>
 
 <svelte:head>
@@ -389,18 +405,18 @@
   </div>
 </div>
 
-<svelte:window on:resize={handleResize} bind:innerWidth={windowWidth} />
+<svelte:window on:resize={debounce(handleResize, 200)} bind:innerWidth={windowWidth} />
 <!-- Product Background Videos -->
 {#each products as product, i}
     <!-- This is kind of janky but the first section IS an edge case so it's ultimately easier to treat it as such -->
       {#if i==0}
-        <div style="transform: scale({calculateProductBgScale(i)}); visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct-1)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct-1)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
           <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
             <source src="/products/{product.id}/product-bg.mp4" type="video/mp4" />
           </video>
         </div>
       {:else}
-        <div style="transform: scale({calculateProductBgScale(i)}); visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
           <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
             <source src="/products/{product.id}/product-bg.mp4" type="video/mp4" />
           </video>
@@ -426,14 +442,10 @@
           </div>
           <div class="w-screen h-screen md:w-[50vw]">
             {#if windowWidth > 768}
-            <img src="/products/{product.id}/lifestyle-bg.jpg" class="w-full h-full object-cover object-center object-top" style="transform: scale({calculateLifestyleBgScale(i)})" alt="">
+            <img src="/products/{product.id}/lifestyle-bg.jpg" class="w-full h-full object-cover object-center object-top" alt="">
             {:else}
-              <img src="/products/{product.id}/lifestyle-bg-mobile.jpg" class="w-full h-full object-cover object-center object-top" style="transform: scale({calculateLifestyleBgScale(i)})" alt="">
+              <img src="/products/{product.id}/lifestyle-bg-mobile.jpg" class="w-full h-full object-cover object-center object-top" alt="">
             {/if}
-
-            <!-- <video style="transform: scale({calculateLifestyleBgScale(i)})" class="w-full h-full object-cover object-top" loop muted autoplay playsinline preload="auto">
-              <source src="/products/{product.id}/lifestyle-bg.mp4" type="video/mp4" />
-            </video> -->
           </div>
         </div>
         <!-- What does this do -->
@@ -479,6 +491,21 @@
 
   :global([data-lifestyle-bg] .image-mask) {
     transform-origin: top center;
+  }
+  :global([data-lifestyle-bg] img) {
+    transform: scale(1.8) translateY(10%);
+    transition: transform ease 4s;
+  }
+  :global([data-lifestyle-bg].entered img) {
+    transform: scale(1) translateY(0%);
+  }
+
+  :global([data-product-bg] video) {
+    transform: scale(1.8) translateY(10%);
+    transition: transform ease 4s;
+  }
+  :global([data-product-bg].entered video) {
+    transform: scale(1) translateY(0%);
   }
 
   :global(.typewriter-char) {
