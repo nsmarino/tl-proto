@@ -10,6 +10,7 @@
   let splashVideo, heroVideo, heroVideoPaused=false;
   let videosReady = false
 
+  let windowWidth = 0
   let flipbookLength = 31
   let flipbook = []
   let productFlipbookSets = {}
@@ -19,16 +20,38 @@
   let headerIsBlack = false
 
   const preloadImageUrls = products.map(product => {
-    const productFlipbookImages = []
+    const productImages = []
     for (let i=0;i<flipbookLength;i++) {
-      productFlipbookImages.push(`/products/${product.id}/flipbook/Lush_Anim_RenderTest_01-1_00${i< 10 ? "0"+i : i}.png`)
+      productImages.push(
+        {
+          src: `/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`,
+          mobile: false,
+        }
+      )
+      productImages.push(
+        {
+          src: `/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`,
+          mobile: true,
+        }
+      )
     }
-    return productFlipbookImages;
+    productImages.push(
+      {
+        src: `/products/${product.id}/lifestyle-bg.jpg`,
+        mobile: false,
+      }
+    )
+    productImages.push(
+      {
+        src: `/products/${product.id}/lifestyle-bg-mobile.jpg`,
+        mobile: true,
+      }
+    )
+    return productImages;
   }).flat()
 
   const preloadVideoUrls = products.map(product => {
     return [
-      `/products/${product.id}/lifestyle-bg.mp4`, 
       `/products/${product.id}/product-bg.mp4`
     ];
   }).flat()
@@ -81,10 +104,17 @@
     // To use the Image class, this needs to be done in onMount
     // However, these images have already been preloaded in the preload phase
     products.forEach(product => {
+      // Do the window query here
       productFlipbookSets[product.id] = []
       for (let i = 0; i < flipbookLength; i++) {
-        productFlipbookSets[product.id].push(new Image(1920,1920))
-        productFlipbookSets[product.id][i].src = `/products/${product.id}/flipbook/Lush_Anim_RenderTest_01-1_00${i< 10 ? "0"+i : i}.png`
+        if (window.innerWidth < 768) {
+          productFlipbookSets[product.id].push(new Image(800,800))
+          productFlipbookSets[product.id][i].src = `/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
+        } else {
+          productFlipbookSets[product.id].push(new Image(1920,1920))
+          productFlipbookSets[product.id][i].src = `/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
+
+        }
       }
     })
 
@@ -129,8 +159,6 @@
       document.documentElement.style.overflow="unset"
     }
     heroVideo.scrollIntoView()
-    // Ensure first video in scroll sequence plays on load
-    document.querySelector("[data-lifestyle-bg] video").play()
   }
 
   function handleSplashEnd(){
@@ -145,7 +173,8 @@
 
   // Remove preload screen:
   $: {
-    if (imageLoadTracker === (preloadImageUrls.length) && videoLoadTracker === (preloadVideoUrls.length+(showSplash ? 2 : 1))) {
+    // only half of the flipbook images (either desktop or mobile) are loaded, so multiply by 2
+    if (imageLoadTracker*2 === (preloadImageUrls.length) && videoLoadTracker === (preloadVideoUrls.length+(showSplash ? 2 : 1))) {
       onPreloadComplete()
     }
   }
@@ -208,7 +237,7 @@
           }
         }, productImageEnterSpeed)
       } else if (entry.target.dataset.lifestyleBg) {
-        entry.target.querySelector("video").play()
+        // entry.target.querySelector("video").play()
       } else if (entry.target.dataset.productText) {
         // Play fixed video background which is outside scroller
         document.querySelector(`[data-product-bg="${entry.target.dataset.productText}"] video`).play()
@@ -227,7 +256,7 @@
         document.querySelector(`[data-product-bg="${entry.target.dataset.productText-1}"]`)?.pause()
       } else if (entry.target.dataset.productText) {
         // Ensure lifestyle video is paused:
-        document.querySelector(`[data-lifestyle-bg="${entry.target.dataset.productText}"]`).querySelector("video").pause()
+        // document.querySelector(`[data-lifestyle-bg="${entry.target.dataset.productText}"]`).querySelector("video").pause()
         // Once the container for the product text is fully on screen, animate in the text
         Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
           setTimeout(() => {
@@ -237,17 +266,6 @@
       }
     }
     function handleExit(entry){
-// NOT USING RN:
-      // entry.target.classList.remove("entered");
-      // // Manage header text color on mobile
-      // if (entry.target.hasAttribute("data-header-white")) {
-      //   headerIsBlack = false
-      // } else if (entry.target.hasAttribute("data-header-black")) {
-      //   headerIsBlack = true
-      // } else if (entry.target.dataset.flipbookTrigger) {
-      //   // Once flipbook has been completed, reset product text
-      //   document.querySelector(`[data-product-text="${entry.target.dataset.flipbookTrigger}"]`).classList.remove("exited")
-      // }
     }
 
     function prepareCanvasForFlipbook(canvas) {
@@ -270,11 +288,23 @@
     function calculateProductBgScale(productIndex){
       return (index==productIndex*sectionsPerProduct) ? 1.33-(offset/3) : 1
     }
+
+    function handleResize(){
+      console.log("Resize canvases")
+      document.querySelectorAll("[data-product-canvas]").forEach((canvas) => {
+        prepareCanvasForFlipbook(canvas)
+      })
+    }
 </script>
 
 <svelte:head>
+
   {#each preloadImageUrls as image, i}
-    <link rel="preload" as="image" href={image} onload={updateImageLoadProgress} />
+    {#if image.mobile}
+      <link rel="preload" as="image" media="(max-width: 768px)" href={image.src} onload={updateImageLoadProgress} />
+    {:else}
+      <link rel="preload" as="image" media="(min-width: 768px)" href={image.src} onload={updateImageLoadProgress} />
+    {/if}
   {/each}
 </svelte:head>
 
@@ -323,7 +353,7 @@
   <div class="hero w-full h-screen md:h-[50vw] bg-[#fff] relative z-20">
     <div class="w-full h-1/2 md:h-auto md:aspect-square md:w-1/2 md:ml-[50%] object-cover relative">
       <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
-          <source src="/videos/placeholder.mp4" type="video/mp4" />
+          <source src="/videos/hero.mp4" type="video/mp4" />
       </video>
       <button class="absolute bottom-4 right-4 flex items-center justify-center w-8 h-8" onclick={handleVideoPause}>{#if heroVideoPaused}<span class="text-white">▶</span>{:else}<svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="1" height="14" fill="white"/>
@@ -359,6 +389,7 @@
   </div>
 </div>
 
+<svelte:window on:resize={handleResize} bind:innerWidth={windowWidth} />
 <!-- Product Background Videos -->
 {#each products as product, i}
     <!-- This is kind of janky but the first section IS an edge case so it's ultimately easier to treat it as such -->
@@ -394,9 +425,15 @@
             </h2>
           </div>
           <div class="w-screen h-screen md:w-[50vw]">
-            <video style="transform: scale({calculateLifestyleBgScale(i)})" class="w-full h-full object-cover object-top" loop muted autoplay playsinline preload="auto">
+            {#if windowWidth > 768}
+            <img src="/products/{product.id}/lifestyle-bg.jpg" class="w-full h-full object-cover object-center object-top" style="transform: scale({calculateLifestyleBgScale(i)})" alt="">
+            {:else}
+              <img src="/products/{product.id}/lifestyle-bg-mobile.jpg" class="w-full h-full object-cover object-center object-top" style="transform: scale({calculateLifestyleBgScale(i)})" alt="">
+            {/if}
+
+            <!-- <video style="transform: scale({calculateLifestyleBgScale(i)})" class="w-full h-full object-cover object-top" loop muted autoplay playsinline preload="auto">
               <source src="/products/{product.id}/lifestyle-bg.mp4" type="video/mp4" />
-            </video>
+            </video> -->
           </div>
         </div>
         <!-- What does this do -->
@@ -415,7 +452,7 @@
 
       <!-- Product Image -->
         <section data-scroll-node data-flipbook-trigger={i+1} class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
-          <div class="absolute top-1/3 -transform-y-1/2 w-full h-[50px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i}></div>
+          <div class="absolute top-1/4 -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i}></div>
         </section>
     {/each}
   </div>
