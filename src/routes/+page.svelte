@@ -382,9 +382,9 @@
         
         <div class="relative">
           <div class="new-label">New</div>
-          <h1>Meet Body Mist.</h1>
+          <h1>Meet Power Essence.</h1>
         </div>
-        <p>Mood-boosting formulas for soothed skin and uplifted senses.</p>
+        <p>Skincare-infused body & hair fragrance mist designed to move your mood.</p>
         <button class="cta-btn">Join the waitlist</button>
         <button aria-label="Begin Scroll" class="absolute bottom-8 right-8 md:hidden" onclick={()=>{scrollContainer.scrollIntoView({behavior:"smooth",block:"start"})}}>
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -494,7 +494,7 @@
   }
   :global([data-lifestyle-bg] img) {
     transform: scale(1.8) translateY(10%);
-    transition: transform ease 4s;
+    transition: transform ease 2s;
   }
   :global([data-lifestyle-bg].entered img) {
     transform: scale(1) translateY(0%);
@@ -502,7 +502,7 @@
 
   :global([data-product-bg] video) {
     transform: scale(1.8) translateY(10%);
-    transition: transform ease 4s;
+    transition: transform ease 2s;
   }
   :global([data-product-bg].entered video) {
     transform: scale(1) translateY(0%);

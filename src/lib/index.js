@@ -3,57 +3,52 @@
 export const products = [
     {
       id: "cashmere-woods",
-      lifestyleText: "I want to",
-      productText: "Cashmere Woods",
+      lifestyleText: "I want to feel",
+      productText: "Serene",
       filePrefix: "CashWood_WebAnim_CC_01-1_000"
     },
     {
-      id: "golden-amber",
-      lifestyleText: "I want to",
-      productText: "Golden Amber",
-      filePrefix: "GoldAmber_WebAnim_CC_01-1_000"
-
+      id: "sparkling-bergamot",
+      lifestyleText: "I want to feel",
+      productText: "Energized",
+      filePrefix: "SparkBerg_WebAnim_CC_01-1_000"
+    },
+    {
+      id: "rich-pistachio",
+      lifestyleText: "I want to feel",
+      productText: "Cozy",
+      filePrefix: "RichPistach_WebAnim_CC_01-1_000"
     },
     {
       id: "lush-tropicale",
-      lifestyleText: "I want to",
-      productText: "Lush Tropicale",
+      lifestyleText: "I want to feel",
+      productText: "Vibrant",
       filePrefix: "LushTrop_WebAnim_CC_01-1_000"
-
+    },
+    {
+      id: "golden-amber",
+      lifestyleText: "I want to feel",
+      productText: "Grounded",
+      filePrefix: "GoldAmber_WebAnim_CC_01-1_000"
     },
     {
       id: "mango-mojo",
-      lifestyleText: "I want to",
-      productText: "Mango Mojo",
+      lifestyleText: "I want to feel",
+      productText: "Sunny",
       filePrefix: "MangoMojo_WebAnim_CC_01-1_000"
 
     },
     {
       id: "peachy-lychee",
-      lifestyleText: "I want to",
-      productText: "Peachy Lychee",
+      lifestyleText: "I want to feel",
+      productText: "Bubbly",
       filePrefix: "PeachyLychee_WebAnim_CC_01-1_000"
 
     },
     {
-      id: "rich-pistachio",
-      lifestyleText: "I want to",
-      productText: "Rich Pistachio",
-      filePrefix: "RichPistach_WebAnim_CC_01-1_000"
-
-    },
-    {
-      id: "sparkling-bergamot",
-      lifestyleText: "I want to",
-      productText: "Sparkling Bergamot",
-      filePrefix: "SparkBerg_WebAnim_CC_01-1_000"
-
-    },
-    {
       id: "vanilla-velvet",
-      lifestyleText: "I want to",
-      productText: "Vanilla Velvet",
+      lifestyleText: "I want to feel",
+      productText: "Smooth",
       filePrefix: "VanVelv_WebAnim_CC_01-1_000"
-
     },
   ]
