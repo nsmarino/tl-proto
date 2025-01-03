@@ -4,6 +4,12 @@
   import {products} from "$lib";
   import {timer, time} from "$lib/stores/timer"
   
+  function openWaitlistCapture() {
+    console.log("Klaviyo popup open")
+    window._klOnsite = window._klOnsite || [];
+    window._klOnsite.push(['openForm', 'U8x9KF']);
+  }
+
   let showSplash = true; // Toggle splash during development
   let preloadReady = false;
   let imageLoadTracker = 0, videoLoadTracker=0, imageLoadPercentage=2, videoLoadPercentage=2;
@@ -145,8 +151,6 @@
       entranceManager.observe(node)
     })
 
-    //entranceManager.observe(document.querySelector("[data-scroll-sequence]"))
-
     updateVideoLoadProgress(document.querySelectorAll("video"))
   })
 
@@ -217,6 +221,7 @@
       );
     }
     function handleEntrance(entry){
+      console.log("Entry", entry.target.dataset)
       if (entry.target.dataset.flipbookId) {
         const flipbook = productFlipbookSets[entry.target.dataset.flipbookId]
         if (entry.target.classList.contains("entered")) return
@@ -242,6 +247,10 @@
         // Play fixed video background which is outside scroller
         document.querySelector(`[data-product-bg="${entry.target.dataset.productText}"] video`).play()
         document.querySelector(`[data-product-bg="${entry.target.dataset.productText}"]`).classList.add("entered")
+      } else if (entry.target.dataset.headerBlack) {
+        headerIsBlack = true
+      } else if (entry.target.dataset.headerWhite) {
+        headerIsBlack = false
       }
       entry.target.classList.add("entered");  
     }
@@ -291,7 +300,6 @@
     }
 
     function handleResize(){
-      console.log("Resize canvases")
       document.querySelectorAll("[data-product-canvas]").forEach((canvas) => {
         prepareCanvasForFlipbook(canvas)
       })
@@ -352,7 +360,7 @@
   </div>
   <div class="util flex gap-4 md:gap-8">
     {#if preloadReady}<div>{$time.find(t=>t.type==="day").value}:{$time.find(t=>t.type==="hour").value}:{$time.find(t=>t.type==="minute").value}:{$time.find(t=>t.type==="second").value}</div>{/if}
-    <a href="/" class="anim-underline-always">Join the Waitlist</a>
+    <a href="/" class="anim-underline-always" onclick={openWaitlistCapture}>Join the Waitlist</a>
   </div>
 </header>
 
@@ -368,10 +376,16 @@
 <div class="experience-container">
   <div class="hero w-full h-screen md:h-[50vw] bg-[#fff] relative z-20">
     <div class="w-full h-1/2 md:h-auto md:aspect-square md:w-1/2 md:ml-[50%] object-cover relative">
+      {#if windowWidth > 768}
       <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
-          <source src="/videos/hero.mp4" type="video/mp4" />
+          <source src="/videos/hero-desktop.mp4" type="video/mp4" />
       </video>
-      <button class="absolute bottom-4 right-4 flex items-center justify-center w-8 h-8" onclick={handleVideoPause}>{#if heroVideoPaused}<span class="text-white">▶</span>{:else}<svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {:else}
+      <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
+          <source src="/videos/hero-mobile.mp4" type="video/mp4" />
+      </video>
+      {/if}
+      <button class="absolute bottom-4 right-4 flex items-center justify-center w-8 h-8 bg-[rgba(0,0,0,0.2)] rounded-full" onclick={handleVideoPause}>{#if heroVideoPaused}<span class="text-white">▶</span>{:else}<svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="1" height="14" fill="white"/>
         <rect x="7" width="1" height="14" fill="white"/>
         </svg>
@@ -385,7 +399,7 @@
           <h1>Meet Power Essence.</h1>
         </div>
         <p>Skincare-infused body & hair fragrance mist designed to move your mood.</p>
-        <button class="cta-btn">Join the waitlist</button>
+        <button class="cta-btn" onclick={openWaitlistCapture}>Join the waitlist</button>
         <button aria-label="Begin Scroll" class="absolute bottom-8 right-8 md:hidden" onclick={()=>{scrollContainer.scrollIntoView({behavior:"smooth",block:"start"})}}>
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_406_643)">
@@ -400,8 +414,8 @@
             </svg>          
         </button>
       </div>
-      <div class="w-full h-[20px] bg-transparent absolute bottom-[50vh]" data-header-black></div>
-      <div class="w-full h-[20px] bg-transparent" data-header-white></div>
+      <div class="w-full h-[20px] bg-transparent absolute bottom-[50vh]" data-header-black="black"></div>
+      <div class="w-full h-[20px] bg-transparent" data-header-white="white"></div>
   </div>
 </div>
 
