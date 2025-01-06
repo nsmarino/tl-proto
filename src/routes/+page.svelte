@@ -425,7 +425,6 @@
     </div>
       
       <div class="w-full h-[50vh] p-8 md:w-[50vw] md:h-screen md:fixed md:top-0 bg-[#fff] flex flex-col  md:justify-center gap-[12px]">
-        
         <div class="relative">
           <div class="new-label">New</div>
           <h1>Meet Power Essence.</h1>
@@ -523,6 +522,28 @@
             <source src="/videos/hero-mobile.mp4" type="video/mp4" />
         </video>
         {/if}
+      </div>
+
+      <div class="md:hidden w-full h-[50vh] p-8 bg-[#fff] flex flex-col justify-center gap-[12px]">
+        <div class="relative">
+          <div class="new-label">New</div>
+          <h1>Meet Power Essence.</h1>
+        </div>
+        <p>Skincare-infused body & hair fragrance mist designed to move your mood.</p>
+        <button class="cta-btn" onclick={openWaitlistCapture}>Join the waitlist</button>
+        <button aria-label="Begin Scroll" class="absolute bottom-8 right-8 md:hidden">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_406_643)">
+            <rect x="36" width="36" height="36" rx="18" transform="rotate(90 36 0)" fill="black"/>
+            <path d="M18.5714 23.8043L18.5714 10L17.4286 10L17.4286 23.8043L10.8089 17.1846L10 18L18 26L26 18L25.1911 17.1846L18.5714 23.8043Z" fill="white"/>
+            </g>
+            <defs>
+            <clipPath id="clip0_406_643">
+            <rect x="36" width="36" height="36" rx="18" transform="rotate(90 36 0)" fill="white"/>
+            </clipPath>
+            </defs>
+            </svg>          
+        </button>
       </div>
 
       <div class="relative"> 
