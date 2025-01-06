@@ -524,7 +524,7 @@
         {/if}
       </div>
 
-      <div class="md:hidden w-full h-[50vh] p-8 bg-[#fff] flex flex-col justify-center gap-[12px]">
+      <div class="md:hidden w-full h-[50vh] p-8 bg-[#fff] flex flex-col justify-center gap-[12px] relative z-20">
         <div class="relative">
           <div class="new-label">New</div>
           <h1>Meet Power Essence.</h1>
