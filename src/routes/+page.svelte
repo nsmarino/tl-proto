@@ -445,8 +445,8 @@
             </svg>          
         </button>
       </div>
-      <div class="w-full h-[80px] bg-transparent absolute bottom-[50vh]" data-header-black="black"></div>
-      <div class="w-full h-[80px] bg-transparent" data-header-white="white"></div>
+      <div class="w-full h-[80px] bg-transparent absolute bottom-[50vh] pointer-events-none" data-header-black="black"></div>
+      <div class="w-full h-[80px] bg-transparent pointer-events-none" data-header-white="white"></div>
   </div>
 </div>
 
