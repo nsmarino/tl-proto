@@ -334,6 +334,15 @@
     function resetScene() {
       // Instant scroll to top:
       window.scrollTo(0, 0)
+
+      // Remove all entrances AND reset flipbook canvases
+      document.querySelector(".foreground-slot").querySelectorAll(".entered").forEach((el) => {
+        el.classList.remove("entered")
+      })
+      document.querySelectorAll("[data-product-canvas]").forEach((canvas) => {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      })
     }
 </script>
 
@@ -515,7 +524,7 @@
         </video>
         {/if}
       </div>
-      
+
       <div class="relative"> 
         <div class="w-screen h-screen md:w-[50vw]">
           {#if windowWidth > 768}
