@@ -202,7 +202,7 @@
 
     animThreshold = 0.1, 
     onScreenThreshold=0.9, 
-    sectionsPerProduct=3,
+    sectionsPerProduct=5,
     bgZoom = 1.5, 
     textEnterSpeed=30,
     productImageEnterSpeed=30;
@@ -253,10 +253,10 @@
         }, productImageEnterSpeed)
       } else if (entry.target.dataset.lifestyleBg) {
         // entry.target.querySelector("video").play()
-      } else if (entry.target.dataset.productText) {
+      } else if (entry.target.dataset.productVideo) {
         // Play fixed video background which is outside scroller
-        if (!videosPaused) document.querySelector(`[data-product-bg="${entry.target.dataset.productText}"] video`).play()
-        document.querySelector(`[data-product-bg="${entry.target.dataset.productText}"]`).classList.add("entered")
+        if (!videosPaused) document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"] video`).play()
+        document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"]`).classList.add("entered")
       } else if (entry.target.dataset.headerBlack) {
         headerIsBlack = true
       } else if (entry.target.dataset.headerWhite) {
@@ -273,7 +273,7 @@
             char.classList.add("entered")
           }, i*textEnterSpeed)
         })
-        document.querySelector(`[data-product-bg="${entry.target.dataset.productText-1}"]`)?.pause()
+        // document.querySelector(`[data-product-bg="${entry.target.dataset.productText-1}"]`)?.pause()
       } else if (entry.target.dataset.productText) {
         // Ensure lifestyle video is paused:
         // document.querySelector(`[data-lifestyle-bg="${entry.target.dataset.productText}"]`).querySelector("video").pause()
@@ -485,7 +485,7 @@
               {/each}
             </h2>
           </div>
-          <div class="w-screen h-screen md:w-[50vw]">
+          <div class="img-wrapper relative w-screen h-screen md:w-[50vw]">
             {#if windowWidth > 768}
             <img src="/products/{product.id}/lifestyle-bg.jpg" class="w-full h-full object-cover object-center object-top" alt="">
             {:else}
@@ -497,8 +497,11 @@
         <div data-product-bg-trigger={i+1} data-scroll-node class="w-full bg-transparent absolute bottom-0 h-[10%]"></div>
       </section>
 
-      <!-- Product Text And Product Background Trigger -->
-      <section data-scroll-node data-product-text={i+1} class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
+      <!-- Product Background Trigger -->
+      <section data-scroll-node data-product-video={i+1}></section>
+
+      <!-- Product Text -->
+      <section data-scroll-node class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" style="visibility:{index > ((i*sectionsPerProduct+4)) ? "hidden":"visible"};">
         <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
           {product.productText}
         </h2>
@@ -506,9 +509,13 @@
       </section>
 
       <!-- Product Image -->
-        <section data-scroll-node data-flipbook-trigger={i+1} class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+2)) ? "hidden":"visible"};">
+        <section data-scroll-node data-flipbook-trigger={i+1} class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+4)) ? "hidden":"visible"};">
           <div class="absolute top-1/4 -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i}></div>
         </section>
+
+      <!-- SPACER to ensure product image has its time in the sun <3 -->
+      <section data-scroll-node></section>
+
     {/each}
 
     <section data-scroll-reset class="relative z-20 h-screen overflow-hidden">
@@ -570,6 +577,24 @@
 
   .foreground-slot section {
     height: 100vh;
+  }
+  [data-scroll-node] .img-wrapper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.05);
+  }
+  [data-product-bg]::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.1);
   }
   @media (min-width: 768px) {
     .foreground-slot section {
