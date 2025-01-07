@@ -424,7 +424,7 @@
       {/if}
     </div>
       
-      <div class="w-full h-[50vh] p-8 md:w-[50vw] md:h-screen md:fixed md:top-0 bg-[#fff] flex flex-col  md:justify-center gap-[12px]">
+      <div class="w-full min-h-[50vh] p-8 md:w-[50vw] md:h-screen md:fixed md:top-0 bg-[#fff] flex flex-col  md:justify-center gap-[12px]">
         <div class="relative">
           <div class="new-label">New</div>
           <h1>Meet Power Essence.</h1>
