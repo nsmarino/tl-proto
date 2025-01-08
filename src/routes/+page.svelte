@@ -3,12 +3,37 @@
   import Scroller from "@sveltejs/svelte-scroller";
   import {products} from "$lib";
   import {timer, time} from "$lib/stores/timer"
-  
+  import { beforeNavigate } from "$app/navigation";
+
   function openWaitlistCapture() {
     console.log("Klaviyo popup open")
     window._klOnsite = window._klOnsite || [];
     window._klOnsite.push(['openForm', 'U8x9KF']);
   }
+  let scrollY = 0;
+	let windowScrollY = 0;
+	let isScrollingDown = false;
+
+	let header_position = 0;
+	let header_height = 0;
+
+	let window_width = 0;
+
+	beforeNavigate(() => {
+		windowScrollY = 0;
+	});
+
+	function handleScroll() {
+		const currentScrollY = windowScrollY;
+		isScrollingDown = currentScrollY > scrollY;
+		scrollY = currentScrollY;
+
+		if (isScrollingDown && windowScrollY > 100) {
+			header_position = -100;
+		} else {
+			header_position = 0;
+		}
+	}
 
   let showSplash = true; // Toggle splash during development
   let preloadReady = false;
@@ -361,8 +386,15 @@
   <p style="font-family: 'NH Display Medium';" class="">{(videoLoadPercentage+imageLoadPercentage-1)}%</p>
   <p class="block !w-fit whitespace-nowrap animate-pulse">Preparing the senses</p>
 </div>
-
-<header class="fixed top-0 w-full z-30 flex justify-between items-center p-2 md:px-8 md:py-4" class:is-black={headerIsBlack}>
+<aside class="fixed top-[-1px] w-full h-[40px] z-30 flex justify-center items-center translate-y-[var(--pos)] will-change-transform transition-transform duration-300" style="background-image: url(touchland-gradient.png); background-size: cover; --pos: {header_position}%;">
+  <a href="/" class="flex items-center gap-2">
+    <span class="underline text-[12px]">Sweepstake Announcement Lorem Ipsum</span>
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12.0787 6.5L-6.55671e-07 6.5L-5.68248e-07 7.5L12.0788 7.5L6.2865 13.2922L7 14L14 7L7 -6.11959e-07L6.2865 0.707749L12.0787 6.5Z" fill="black"/>
+    </svg>
+  </a>
+</aside>
+<header class="fixed top-[40px] w-full z-30 flex justify-between items-center p-2 md:px-8 md:py-4 translate-y-[var(--pos)] will-change-transform transition-transform duration-300" class:is-black={headerIsBlack} style=" --pos: {header_position}%;">
   <div class="w-fit">
     <a href="https://www.touchland.com" target="_blank">
       <svg width="100" height="16" viewBox="0 0 100 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -388,18 +420,18 @@
   <div class="util flex gap-4 md:gap-8">
     {#if preloadReady}<div>{$time.find(t=>t.type==="day").value}:{$time.find(t=>t.type==="hour").value}:{$time.find(t=>t.type==="minute").value}:{$time.find(t=>t.type==="second").value}</div>{/if}
     <a href="/" class="anim-underline-always" onclick={openWaitlistCapture}>Join the Waitlist</a>
-    <button class="fixed bottom-4 right-4 flex items-center justify-center w-8 h-8 bg-[rgba(0,0,0,0.2)] rounded-full" onclick={handleVideoPause}>
-      {#if videosPaused}
-        <span class="text-white">▶</span>
-      {:else}
-        <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="1" height="14" fill="white"/>
-          <rect x="7" width="1" height="14" fill="white"/>
-        </svg>
-      {/if}
-    </button>
   </div>
 </header>
+<button class="fixed bottom-4 right-4 flex items-center justify-center w-8 h-8 bg-[rgba(0,0,0,0.2)] rounded-full z-[40]" onclick={handleVideoPause}>
+  {#if videosPaused}
+    <span class="text-white">▶</span>
+  {:else}
+    <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1" height="14" fill="white"/>
+      <rect x="7" width="1" height="14" fill="white"/>
+    </svg>
+  {/if}
+</button>
 
 <!-- Splash video; removed after it plays -->
 {#if showSplash}
@@ -450,7 +482,12 @@
   </div>
 </div>
 
-<svelte:window on:resize={debounce(handleResize, 200)} bind:innerWidth={windowWidth} />
+<svelte:window 
+  on:resize={debounce(handleResize, 200)}
+  on:scroll={handleScroll}
+	bind:scrollY={windowScrollY}
+  bind:innerWidth={windowWidth} 
+/>
 <!-- Product Background Videos -->
 {#each products as product, i}
     <!-- This is kind of janky but the first section IS an edge case so it's ultimately easier to treat it as such -->
@@ -652,11 +689,11 @@
   header {
     color: white;
     background: transparent;
-    transition: color 0.2s;
+    transition: all 0.3s;
   }
   header.is-black {
     color: black;
-    transition: color 0.2s;
+    transition: all 0.3s;
   }
   header .util {
     font-size: 12px;
