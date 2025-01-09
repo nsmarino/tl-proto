@@ -286,6 +286,8 @@
         document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"]`).classList.add("entered")
       } else if (entry.target.dataset.headerBlack) {
         headerIsBlack = true
+        document.querySelector("[data-scroll-prompt]").classList.add("hidden")
+
       } else if (entry.target.dataset.headerWhite) {
         headerIsBlack = false
       }
@@ -430,7 +432,7 @@
     <a href="/" class="anim-underline-always" onclick={openWaitlistCapture}>Join the Waitlist</a>
   </div>
 </header>
-<button class="fixed bottom-4 right-4 flex items-center justify-center w-8 h-8 bg-[rgba(0,0,0,0.2)] rounded-full z-[40]" onclick={handleVideoPause}>
+<button class="fixed bottom-4 left-4 flex items-center justify-center w-8 h-8 bg-[rgba(0,0,0,0.2)] rounded-full z-[40]" onclick={handleVideoPause}>
   {#if videosPaused}
     <span class="text-white">▶</span>
   {:else}
@@ -477,22 +479,23 @@
         </div>
         <p>Skincare-infused body & hair fragrance mist designed to move your mood.</p>
         <button class="cta-btn" onclick={openWaitlistCapture}>Join the waitlist</button>
-        <button aria-label="Begin Scroll" class="absolute bottom-8 right-8 md:hidden" onclick={()=>{scrollContainer.scrollIntoView({behavior:"smooth",block:"start"})}}>
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g clip-path="url(#clip0_406_643)">
-            <rect x="36" width="36" height="36" rx="18" transform="rotate(90 36 0)" fill="black"/>
-            <path d="M18.5714 23.8043L18.5714 10L17.4286 10L17.4286 23.8043L10.8089 17.1846L10 18L18 26L26 18L25.1911 17.1846L18.5714 23.8043Z" fill="white"/>
-            </g>
-            <defs>
-            <clipPath id="clip0_406_643">
-            <rect x="36" width="36" height="36" rx="18" transform="rotate(90 36 0)" fill="white"/>
-            </clipPath>
-            </defs>
-            </svg>          
-        </button>
+
       </div>
       <div class="w-full h-[80px] bg-transparent absolute bottom-[50vh] pointer-events-none" data-header-black="black"></div>
       <div class="w-full h-[80px] bg-transparent pointer-events-none" data-header-white="white"></div>
+      <button data-scroll-prompt aria-label="Begin Scroll" class="fixed bottom-4 right-4" onclick={()=>{scrollContainer.scrollIntoView({behavior:"smooth",block:"start"})}}>
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#clip0_406_643)">
+          <rect x="36" width="36" height="36" rx="18" transform="rotate(90 36 0)" fill="black"/>
+          <path d="M18.5714 23.8043L18.5714 10L17.4286 10L17.4286 23.8043L10.8089 17.1846L10 18L18 26L26 18L25.1911 17.1846L18.5714 23.8043Z" fill="white"/>
+          </g>
+          <defs>
+          <clipPath id="clip0_406_643">
+          <rect x="36" width="36" height="36" rx="18" transform="rotate(90 36 0)" fill="white"/>
+          </clipPath>
+          </defs>
+          </svg>          
+      </button>
   </div>
 </div>
 
