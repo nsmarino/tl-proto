@@ -141,7 +141,7 @@
       for (let i = 0; i < flipbookLength; i++) {
         if (window.innerWidth < 768) {
           productFlipbookSets[product.id].push(new Image(800,800))
-          productFlipbookSets[product.id][i].src = `/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
+          productFlipbookSets[product.id][i].src = `/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
         } else {
           productFlipbookSets[product.id].push(new Image(1920,1920))
           productFlipbookSets[product.id][i].src = `/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
