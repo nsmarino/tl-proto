@@ -40,6 +40,7 @@
   let imageLoadTracker = 0, videoLoadTracker=0, imageLoadPercentage=2, videoLoadPercentage=2;
   let splashVideo, heroVideo, videosPaused=false;
   let videosReady = false
+  let r;
 
   let windowWidth = 0
   let flipbookLength = 31
@@ -205,6 +206,7 @@
     heroVideo.play(); 
     splashVideo.parentElement.remove();
     document.documentElement.style.overflow="unset";
+    window.scrollTo(0, 0)
     if (showSplash) {
       document.querySelector(".hero").classList.add("entered");
       document.querySelector("svelte-scroller-outer").classList.add("entered");
@@ -236,7 +238,7 @@
       var canvas = ctx.canvas;
       var canvasWidth = canvas.width;
       var canvasHeight = canvas.height;
-
+      console.log("IN DRAW FN", canvasWidth, canvasHeight)
       // Calculate the scaling ratio based on the height of the canvas
       var scaleRatio = canvasHeight / img.height;
 
@@ -314,8 +316,14 @@
     }
 
     function prepareCanvasForFlipbook(canvas) {
-      canvas.width = canvas.parentElement.clientWidth;
-      canvas.height = canvas.parentElement.clientHeight;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = Math.round (r * rect.right) - Math.round (r * rect.left);
+      canvas.height = Math.round (r * rect.bottom) - Math.round (r * rect.top);
+      canvas.style.transform = "scale3d(0.5,0.5,1)";
+      canvas.style.transformOrigin = "top left";
+
+      // canvas.width = canvas.parentElement.clientWidth;
+      // canvas.height = canvas.parentElement.clientHeight;
 
       // Try out removing anti-aliasing?
       // const ctx = canvas.getContext('2d');
@@ -396,8 +404,8 @@
 </aside>
 <header class="fixed top-[40px] w-full z-30 flex justify-between items-center p-2 md:px-8 md:py-4 translate-y-[var(--pos)] will-change-transform transition-transform duration-300" class:is-black={headerIsBlack} style=" --pos: {header_position}%;">
   <div class="w-fit">
-    <a href="https://www.touchland.com" target="_blank">
-      <svg width="100" height="16" viewBox="0 0 100 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <a href="https://www.touchland.com" target="_blank" class="w-[120px] md:w-[110px] block">
+      <svg class="w-full" viewBox="0 0 100 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clip-path="url(#clip0_406_812)">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M46.6484 7.79002V15.58H49.4374V12.5712C49.4374 10.7887 49.4509 9.44183 49.471 9.26423C49.5449 8.6109 49.7499 8.16191 50.1599 7.7565C50.6068 7.30751 51.1007 7.10313 51.7392 7.10313C52.7304 7.10313 53.3924 7.62248 53.6377 8.59413C53.7553 9.05646 53.7721 9.51886 53.7721 12.588V15.58H56.598L56.588 12.0351C56.5745 8.50697 56.5745 8.49364 56.4972 8.07482C56.3258 7.13998 55.9999 6.41627 55.5059 5.87349C55.1632 5.49822 54.6155 5.15647 54.0644 4.97889C53.4663 4.78456 52.5759 4.71085 51.9744 4.80132C51.0604 4.94539 50.2103 5.34745 49.7129 5.88018L49.5047 6.10132L49.4979 3.05904L49.4878 0.0167527L48.0698 0.00670352L46.6484 0V7.79002Z" fill="currentColor"/>
         <path fill-rule="evenodd" clip-rule="evenodd" d="M96.1885 0.0234562C96.1281 0.0402088 96.1243 0.120619 96.1411 3.05234L96.1579 6.06447L95.9363 5.85338C94.9117 4.87168 93.4094 4.50312 91.8743 4.86162C90.842 5.09951 89.851 5.6892 89.2298 6.43302C88.3557 7.47839 87.9362 8.74827 87.9362 10.3431C87.9362 12.0452 88.4634 13.3954 89.5454 14.4743C90.3049 15.2315 91.1209 15.6738 92.1227 15.8681C92.5093 15.9452 93.2788 15.9452 93.7021 15.8715C94.6159 15.7073 95.4626 15.2483 95.9363 14.6619C96.0341 14.5413 96.1182 14.4475 96.1243 14.4542C96.138 14.4676 96.2358 15.4225 96.2358 15.5365C96.2358 15.5699 96.5109 15.58 97.4958 15.58H98.7558V10.829C98.7558 8.2189 98.7459 4.7142 98.7322 3.03893L98.7123 0L97.4821 0.00334971C96.8066 0.00670024 96.2221 0.0167551 96.1885 0.0234562ZM93.7861 7.15339C94.3676 7.2405 94.784 7.43818 95.1875 7.82012C95.7751 8.37295 96.0746 9.10674 96.1212 10.1019C96.1747 11.1707 95.8561 12.1356 95.2578 12.732C94.875 13.1106 94.4845 13.315 93.9237 13.4222C92.3916 13.7171 91.0308 12.7756 90.6174 11.1338C90.5532 10.8859 90.5433 10.7518 90.5433 10.2862C90.5471 9.80031 90.557 9.69311 90.6342 9.39825C90.9498 8.20884 91.8102 7.34772 92.8723 7.15674C93.2077 7.09307 93.3964 7.09307 93.7861 7.15339Z" fill="currentColor"/>
@@ -434,17 +442,23 @@
 </button>
 
 <!-- Splash video; removed after it plays -->
-{#if showSplash}
+{#if showSplash && windowWidth > 768}
   <div class="fixed inset-0 bg-[#0f0] z-40">
     <video class="w-full h-full object-cover" bind:this={splashVideo} muted autoplay playsinline preload="auto" onended={handleSplashEnd} aria-label="Text scrolls across the screen reading 'I want to feel transported' in all caps, followed by a quick succession of product images, showing the body mist capsules in front of vivid backgrounds of ingredients used in each fragrance.">
-        <source src="/videos/splash.mp4" type="video/mp4" />
+        <source src="/videos/splash-desktop-text-only.mp4" type="video/mp4" />
+    </video>
+  </div>
+{:else if showSplash}
+  <div class="fixed inset-0 bg-[#0f0] z-40">
+    <video class="w-full h-full object-cover" bind:this={splashVideo} muted autoplay playsinline preload="auto" onended={handleSplashEnd} aria-label="Text scrolls across the screen reading 'I want to feel transported' in all caps, followed by a quick succession of product images, showing the body mist capsules in front of vivid backgrounds of ingredients used in each fragrance.">
+        <source src="/videos/splash-mobile-text-only.mp4" type="video/mp4" />
     </video>
   </div>
 {/if}
 
 <div class="experience-container">
   <div class="hero w-full h-screen md:h-[50vw] bg-[#fff] relative z-20">
-    <div class="w-full h-1/2 md:h-auto md:aspect-square md:w-1/2 md:ml-[50%] object-cover relative">
+    <div class="w-full h-1/2 md:h-auto md:aspect-square md:w-1/2 md:ml-[50%] object-cover relative mt-[39px]">
       {#if windowWidth > 768}
       <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
           <source src="/videos/hero-desktop.mp4" type="video/mp4" />
@@ -486,7 +500,8 @@
   on:resize={debounce(handleResize, 200)}
   on:scroll={handleScroll}
 	bind:scrollY={windowScrollY}
-  bind:innerWidth={windowWidth} 
+  bind:innerWidth={windowWidth}
+  bind:devicePixelRatio={r}
 />
 <!-- Product Background Videos -->
 {#each products as product, i}
