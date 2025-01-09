@@ -287,15 +287,31 @@
       );
     }
     function handleEntrance(entry){
+      let reverse = false
+
       if (entry.target.dataset.flipbookId) {
         const flipbook = productFlipbookSets[entry.target.dataset.flipbookId]
-        if (entry.target.classList.contains("entered")) return
+
+        if (entry.target.classList.contains("entered")) reverse = true
 
         const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookId}"]`)
         const canvas_context = productCanvas.getContext('2d');
         const canvas_width = productCanvas.clientWidth;
         const canvas_height = productCanvas.clientHeight;
         // Use setInterval to draw image to the flipbook canvas until flipbookLength has been reached:
+        if (reverse) {
+          let i = flipbookLength-1;
+          const flipbookInterval = setInterval(()=>{
+            if (i >= 0) {
+              canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+              drawImageScaled(flipbook[i], canvas_context)
+              i--
+            } else {
+              clearInterval(flipbookInterval)
+            }
+          }, productImageEnterSpeed)
+          return
+        } else {
         let i = 0;
         const flipbookInterval = setInterval(()=>{
           if (i < flipbookLength) {
@@ -306,6 +322,7 @@
             clearInterval(flipbookInterval)
           }
         }, productImageEnterSpeed)
+      }
       } else if (entry.target.dataset.lifestyleBg) {
         // entry.target.querySelector("video").play()
       } else if (entry.target.dataset.productVideo) {
@@ -319,7 +336,7 @@
       } else if (entry.target.dataset.headerWhite) {
         headerIsBlack = false
       }
-      entry.target.classList.add("entered");  
+      if (reverse==false)entry.target.classList.add("entered");  
     }
 
     function handleOnScreen(entry) {
@@ -330,6 +347,7 @@
             char.classList.add("entered")
           }, i*textEnterSpeed)
         })
+
         // document.querySelector(`[data-product-bg="${entry.target.dataset.productText-1}"]`)?.pause()
       } else if (entry.target.dataset.productText) {
         // Ensure lifestyle video is paused:
@@ -592,13 +610,12 @@
         <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0"></canvas>
       </section>
 
-      <!-- Product Image -->
-        <section data-scroll-node data-flipbook-trigger={i+1} class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+4)) ? "hidden":"visible"};">
-          <div class="absolute top-[10%] -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i}></div>
+        <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+4)) ? "hidden":"visible"};">
+          <div class="absolute top-[10%] -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i+1}></div>
         </section>
     {/each}
 
-    <section data-scroll-reset class="relative z-20 h-calc(100vh-20px) overflow-hidden">
+    <section data-scroll-reset class="relative z-20 h-screen overflow-hidden">
       <div class="w-full h-1/2 md:h-auto md:aspect-square object-cover relative z-20">
         {#if windowWidth > 768}
         <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
