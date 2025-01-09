@@ -189,17 +189,46 @@
     })
 
     updateVideoLoadProgress(document.querySelectorAll("video"))
+
+    const loadFallback = setTimeout(()=>{
+      onPreloadComplete()
+      clearTimeout(loadFallback)
+    },5000)
   })
 
   function onPreloadComplete(){
-    preloadReady = true;
-    showSplash ? splashVideo?.play() : heroVideo?.play()
-    if (!showSplash) {
-      document.querySelector(".hero").classList.add("entered")
-      document.querySelector("svelte-scroller-outer").classList.add("entered")
-      document.documentElement.style.overflow="unset"
+
+    // Ensure it doesnt fire twice if the preload completes after the loadFallback has already fired
+    if (preloadReady) return;
+    // Use requestAnimationFrame to animate the load percentage the rest of the way to 100%:
+    if (document.querySelector("[data-load-percentage]")) {
+      let loadPercentage = parseInt(document.querySelector("[data-load-percentage]").textContent)
+      function animateLoadPercentage() {
+        if (loadPercentage < 100) {
+          loadPercentage++
+          document.querySelector("[data-load-percentage]").textContent = loadPercentage
+          requestAnimationFrame(animateLoadPercentage)
+        } else {
+        preloadReady = true;
+        showSplash ? splashVideo?.play() : heroVideo?.play()
+        if (!showSplash) {
+          document.querySelector(".hero").classList.add("entered")
+          document.querySelector("svelte-scroller-outer").classList.add("entered")
+          document.documentElement.style.overflow="unset"
+        }
+        heroVideo.scrollIntoView()        
+      }
+      }
+      requestAnimationFrame(animateLoadPercentage)
     }
-    heroVideo.scrollIntoView()
+    // preloadReady = true;
+    // showSplash ? splashVideo?.play() : heroVideo?.play()
+    // if (!showSplash) {
+    //   document.querySelector(".hero").classList.add("entered")
+    //   document.querySelector("svelte-scroller-outer").classList.add("entered")
+    //   document.documentElement.style.overflow="unset"
+    // }
+    // heroVideo.scrollIntoView()
   }
 
   function handleSplashEnd(){
@@ -229,7 +258,7 @@
 
     animThreshold = 0.1, 
     onScreenThreshold=0.9, 
-    sectionsPerProduct=5,
+    sectionsPerProduct=4,
     bgZoom = 1.5, 
     textEnterSpeed=30,
     productImageEnterSpeed=30;
@@ -238,7 +267,6 @@
       var canvas = ctx.canvas;
       var canvasWidth = canvas.width;
       var canvasHeight = canvas.height;
-      console.log("IN DRAW FN", canvasWidth, canvasHeight)
       // Calculate the scaling ratio based on the height of the canvas
       var scaleRatio = canvasHeight / img.height;
 
@@ -393,7 +421,7 @@
 </svelte:head>
 
 <div class="h-dvh w-full flex items-end fixed justify-between inset-0 bg-[#fff] z-[60] p-8" class:hide-preload={preloadReady}>
-  <p style="font-family: 'NH Display Medium';" class="">{(videoLoadPercentage+imageLoadPercentage-1)}%</p>
+  <p style="font-family: 'NH Display Medium';" class=""><span data-load-percentage>{(videoLoadPercentage+imageLoadPercentage)}</span>%</p>
   <p class="block !w-fit whitespace-nowrap animate-pulse">Preparing the senses</p>
 </div>
 <aside class="fixed top-[-1px] w-full h-[40px] z-30 flex justify-center items-center translate-y-[var(--pos)] will-change-transform transition-transform duration-300" style="background-image: url(touchland-gradient.png); background-size: cover; --pos: {header_position}%;">
@@ -556,7 +584,7 @@
       <section data-scroll-node data-product-video={i+1}></section>
 
       <!-- Product Text -->
-      <section data-scroll-node class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" style="visibility:{index > ((i*sectionsPerProduct+4)) ? "hidden":"visible"};">
+      <section data-scroll-node class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" style="visibility:{index > ((i*sectionsPerProduct+3)) ? "hidden":"visible"};">
         <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
           {product.productText}
         </h2>
@@ -568,8 +596,6 @@
           <div class="absolute top-1/4 -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i}></div>
         </section>
 
-      <!-- SPACER to ensure product image has its time in the sun <3 -->
-      <section data-scroll-node></section>
 
     {/each}
 
