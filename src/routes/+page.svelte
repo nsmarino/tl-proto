@@ -319,7 +319,7 @@
       const rect = canvas.parentElement.getBoundingClientRect();
       canvas.width = Math.round (r * rect.right) - Math.round (r * rect.left);
       canvas.height = Math.round (r * rect.bottom) - Math.round (r * rect.top);
-      canvas.style.transform = "scale3d(0.5,0.5,1)";
+      canvas.style.transform = `scale3d(${1/r},${1/r},1)`;
       canvas.style.transformOrigin = "top left";
 
       // canvas.width = canvas.parentElement.clientWidth;
