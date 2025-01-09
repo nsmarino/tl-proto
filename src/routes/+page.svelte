@@ -287,12 +287,12 @@
       );
     }
     function handleEntrance(entry){
-      let reverse = false
 
       if (entry.target.dataset.flipbookId) {
         const flipbook = productFlipbookSets[entry.target.dataset.flipbookId]
+        let reverse = false
 
-        if (entry.target.classList.contains("entered")) reverse = true
+        if (entry.target.classList.contains("flipbook-entered")) reverse = true
 
         const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookId}"]`)
         const canvas_context = productCanvas.getContext('2d');
@@ -310,7 +310,7 @@
               clearInterval(flipbookInterval)
             }
           }, productImageEnterSpeed)
-          return
+          entry.target.classList.remove("flipbook-entered")
         } else {
         let i = 0;
         const flipbookInterval = setInterval(()=>{
@@ -322,6 +322,7 @@
             clearInterval(flipbookInterval)
           }
         }, productImageEnterSpeed)
+        entry.target.classList.add("flipbook-entered")
       }
       } else if (entry.target.dataset.lifestyleBg) {
         // entry.target.querySelector("video").play()
@@ -336,7 +337,7 @@
       } else if (entry.target.dataset.headerWhite) {
         headerIsBlack = false
       }
-      if (reverse==false)entry.target.classList.add("entered");  
+      entry.target.classList.add("entered");  
     }
 
     function handleOnScreen(entry) {
@@ -420,6 +421,9 @@
       // Remove all entrances AND reset flipbook canvases
       document.querySelector(".foreground-slot").querySelectorAll(".entered").forEach((el) => {
         el.classList.remove("entered")
+      })
+      document.querySelector(".foreground-slot").querySelectorAll(".flipbook-entered").forEach((el) => {
+        el.classList.remove("flipbook-entered")
       })
       document.querySelectorAll("[data-product-canvas]").forEach((canvas) => {
         const ctx = canvas.getContext('2d');
