@@ -396,7 +396,8 @@
 
     function resetScene() {
       // Instant scroll to top:
-      window.scrollTo(0, 0)
+      window.scrollTo(0, 40)
+
 
       // Remove all entrances AND reset flipbook canvases
       document.querySelector(".foreground-slot").querySelectorAll(".entered").forEach((el) => {
@@ -593,13 +594,11 @@
 
       <!-- Product Image -->
         <section data-scroll-node data-flipbook-trigger={i+1} class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+4)) ? "hidden":"visible"};">
-          <div class="absolute top-1/4 -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i}></div>
+          <div class="absolute top-[10%] -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i}></div>
         </section>
-
-
     {/each}
 
-    <section data-scroll-reset class="relative z-20 h-screen overflow-hidden">
+    <section data-scroll-reset class="relative z-20 h-calc(100vh-20px) overflow-hidden">
       <div class="w-full h-1/2 md:h-auto md:aspect-square object-cover relative z-20">
         {#if windowWidth > 768}
         <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
