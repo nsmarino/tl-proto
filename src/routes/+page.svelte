@@ -5,6 +5,11 @@
   import {timer, time} from "$lib/stores/timer"
   import { beforeNavigate } from "$app/navigation";
 
+  let cookiesAccepted = false
+  function handleCookieAccept(){
+    cookiesAccepted=true
+  }
+
   function openWaitlistCapture() {
     console.log("Klaviyo popup open")
     window._klOnsite = window._klOnsite || [];
@@ -449,8 +454,8 @@
   <p class="block !w-fit whitespace-nowrap animate-pulse">Preparing the senses</p>
 </div>
 <aside class="fixed top-[-1px] w-full h-[40px] z-30 flex justify-center items-center translate-y-[var(--pos)] will-change-transform transition-transform duration-300" style="background-image: url(touchland-gradient.png); background-size: cover; --pos: {header_position}%;">
-  <a href="/" class="flex items-center gap-2">
-    <span class="underline text-[12px]">Sweepstake Announcement Lorem Ipsum</span>
+  <a href="https://anewera.touchland.com/" class="flex items-center gap-2">
+    <span class="underline text-[12px]">Enter the Move Your Mood Sweeps</span>
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M12.0787 6.5L-6.55671e-07 6.5L-5.68248e-07 7.5L12.0788 7.5L6.2865 13.2922L7 14L14 7L7 -6.11959e-07L6.2865 0.707749L12.0787 6.5Z" fill="black"/>
     </svg>
@@ -484,6 +489,7 @@
     <a href="/" class="anim-underline-always" onclick={openWaitlistCapture}>Join the Waitlist</a>
   </div>
 </header>
+
 <button class="fixed bottom-4 left-4 flex items-center justify-center w-8 h-8 bg-[rgba(0,0,0,0.2)] rounded-full z-[40]" onclick={handleVideoPause}>
   {#if videosPaused}
     <span class="text-white">▶</span>
@@ -494,6 +500,16 @@
     </svg>
   {/if}
 </button>
+
+<aside class:accepted={cookiesAccepted} class="fixed bottom-4 left-4 z-[50] right-4 md:right-unset md:max-w-[280px] rounded-xl flex flex-col gap-2 bg-white p-4 drop-shadow">
+  <h3 class="font-bold text-[20px]">Cookies Consent</h3>
+  <p class="!text-[10px]">We use cookies to enhance your browsing experience, analyze site traffic, and serve personalized content.</p> 
+  <p class="!text-[10px]">By clicking 'Accept,' you agree to our use of cookies. You can manage your preferences or learn more in our <a href="https://touchland.com/pages/privacy-policy" target="_blank" class="underline">Privacy Policy</a>.</p>
+  <div class="flex gap-4">
+    <a href="https://touchland.com/pages/privacy-policy" class="border border-black rounded-md flex items-center justify-center basis-full py-[8px] uppercase text-[12px]">Decline</a>
+    <button onclick={handleCookieAccept} class="border border-black rounded-md flex items-center justify-center basis-full py-[8px] bg-black text-white uppercase hover:bg-white hover:text-black transition-colors text-[12px]">Accept</button>
+  </div>
+</aside>
 
 <!-- Splash video; removed after it plays -->
 {#if showSplash && windowWidth > 768}
@@ -669,6 +685,13 @@
 </Scroller>
 
 <style>
+
+  .accepted {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: all 0.3s;
+  }
   .hide-preload {
     display: none;
   }
