@@ -167,6 +167,7 @@
     });
     resetManager = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
+        console.log("RESET MANAGER FIRES!!!")
         if (entry.isIntersecting && entry.intersectionRatio >= 0.9) {
           console.log("Resetting scene", entry.intersectionRatio)
           resetScene()
@@ -615,11 +616,11 @@
       </section>
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+4)) ? "hidden":"visible"};">
-          <div class="absolute top-[10%] -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i+1}></div>
+          <div class="absolute top-0 -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i+1}></div>
         </section>
     {/each}
 
-    <section data-scroll-reset class="relative z-20 h-[calc(100%-20px)] overflow-hidden">
+    <section data-scroll-reset class="relative z-20 h-[calc(100vh-20px)] overflow-hidden">
       <div class="w-full h-1/2 md:h-auto md:aspect-square object-cover relative z-20">
         {#if windowWidth > 768}
         <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
