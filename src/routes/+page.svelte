@@ -264,7 +264,7 @@
 
     animThreshold = 0.1, 
     onScreenThreshold=0.9, 
-    sectionsPerProduct=4,
+    sectionsPerProduct=5,
     bgZoom = 1.5, 
     textEnterSpeed=30,
     productImageEnterSpeed=30;
@@ -624,16 +624,19 @@
       <section data-scroll-node data-product-video={i+1}></section>
 
       <!-- Product Text -->
-      <section data-scroll-node class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" style="visibility:{index > ((i*sectionsPerProduct+3)) ? "hidden":"visible"};">
+      <section data-scroll-node class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" style="visibility:{index > ((i*sectionsPerProduct+4)) ? "hidden":"visible"};">
         <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
           {product.productText}
         </h2>
         <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0"></canvas>
       </section>
 
-        <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+4)) ? "hidden":"visible"};">
-          <div class="absolute top-0 -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i+1}></div>
+        <section class="sticky top-0">
+          <div class="absolute top-1/2 -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i+1}></div>
         </section>
+
+<!-- spacer -->
+        <section data-scroll-node></section>
     {/each}
 
     <section data-scroll-reset class="relative z-20 !h-[calc(100vh-20px)] overflow-hidden">
