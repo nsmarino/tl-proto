@@ -620,7 +620,7 @@
         </section>
     {/each}
 
-    <section data-scroll-reset class="relative z-20 h-[calc(100vh-20px)] overflow-hidden">
+    <section data-scroll-reset class="relative z-20 !h-[calc(100vh-20px)] overflow-hidden">
       <div class="w-full h-1/2 md:h-auto md:aspect-square object-cover relative z-20">
         {#if windowWidth > 768}
         <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
