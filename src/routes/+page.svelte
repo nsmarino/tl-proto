@@ -634,12 +634,12 @@
         <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0"></canvas>
       </section>
 
-        <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+4)) ? "hidden":"visible"};">
+        <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
           <div class="absolute top-1/2 -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i+1}></div>
         </section>
 
 <!-- spacer -->
-        <section data-scroll-node class="border"></section>
+        <section data-scroll-node></section>
     {/each}
 
     <section data-scroll-reset class="relative z-20 !h-[calc(100vh-20px)] overflow-hidden">
