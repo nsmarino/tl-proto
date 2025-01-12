@@ -89,7 +89,7 @@
 
   const preloadVideoUrls = products.map(product => {
     return [
-      `/products/${product.id}/product-bg.mp4`
+      `/products/${product.id}/product-bg-compressed.mp4`
     ];
   }).flat()
 
