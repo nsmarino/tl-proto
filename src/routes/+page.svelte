@@ -199,7 +199,7 @@
     const loadFallback = setTimeout(()=>{
       onPreloadComplete()
       clearTimeout(loadFallback)
-    },5000)
+    },7000)
   })
 
   function onPreloadComplete(){
@@ -267,7 +267,7 @@
     sectionsPerProduct=5,
     bgZoom = 1.5, 
     textEnterSpeed=30,
-    productImageEnterSpeed=30;
+    productImageEnterSpeed=15;
 
     function drawImageScaled(img, ctx) {
       var canvas = ctx.canvas;
@@ -295,8 +295,8 @@
     function handleEntrance(entry){
 
       if (entry.target.dataset.flipbookId) {
-        debounce(() => {
-          console.log("Debounced.")
+        if (entry.target.classList.contains("flipbook-animating")) return;
+          entry.target.classList.add("flipbook-animating")
           const flipbook = productFlipbookSets[entry.target.dataset.flipbookId]
           let reverse = false
 
@@ -315,6 +315,7 @@
                   i--
                 } else {
                   clearInterval(flipbookInterval)
+                  entry.target.classList.remove("flipbook-animating")
                 }
               }, productImageEnterSpeed)
               entry.target.classList.remove("flipbook-entered")
@@ -327,12 +328,11 @@
                 i++
               } else {
                 clearInterval(flipbookInterval)
+                entry.target.classList.remove("flipbook-animating")
               }
             }, productImageEnterSpeed)
             entry.target.classList.add("flipbook-entered")
-          }
-        },200)()
-        
+          }        
       } else if (entry.target.dataset.lifestyleBg) {
         // entry.target.querySelector("video").play()
       } else if (entry.target.dataset.productVideo) {
@@ -409,6 +409,7 @@
     function debounce(func, wait=200, immediate) {
       let timeout;
       return function() {
+        console.log("Attempt?")
         const context = this, args = arguments;
         const later = function() {
           timeout = null;
@@ -620,7 +621,7 @@
           </div>
         </div>
         <!-- What does this do -->
-        <div data-product-bg-trigger={i+1} data-scroll-node class="w-full bg-transparent absolute bottom-0 h-[10%]"></div>
+        <!-- <div data-product-bg-trigger={i+1} data-scroll-node class="w-full bg-transparent absolute bottom-0 h-[10%]"></div> -->
       </section>
 
       <!-- Product Background Trigger -->
@@ -639,10 +640,10 @@
         </section>
 
 <!-- spacer -->
-        <section data-scroll-node></section>
+        <section></section>
     {/each}
 
-    <section data-scroll-reset class="relative z-20 !h-[calc(100vh-20px)] overflow-hidden">
+    <section data-scroll-reset class="relative z-20 h-screen overflow-hidden">
       <div class="w-full h-1/2 md:h-auto md:aspect-square object-cover relative z-20">
         {#if windowWidth > 768}
         <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
