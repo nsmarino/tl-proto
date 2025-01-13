@@ -294,44 +294,50 @@
       );
     }
     function handleEntrance(entry){
-      if (entry.target.dataset.flipbookId) {
+      if (entry.target.dataset.flipbookEnter && isScrollingDown) {
         if (entry.target.classList.contains("flipbook-animating")) return;
-          entry.target.classList.add("flipbook-animating")
-          const flipbook = productFlipbookSets[entry.target.dataset.flipbookId]
-          let reverse = false
+        entry.target.classList.add("flipbook-animating")
 
-          if (entry.target.classList.contains("flipbook-entered") && !isScrollingDown) reverse = true
-            const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookId}"]`)
-            const canvas_context = productCanvas.getContext('2d');
-            const canvas_width = productCanvas.clientWidth;
-            const canvas_height = productCanvas.clientHeight;
-            // Use setInterval to draw image to the flipbook canvas until flipbookLength has been reached:
-            if (reverse) {
-              let i = flipbookLength-1;
-              const flipbookInterval = setInterval(()=>{
-                if (i >= 0) {
-                  canvas_context.clearRect(0, 0, canvas_width, canvas_height);
-                  drawImageScaled(flipbook[i], canvas_context)
-                  i--
-                } else {
-                  clearInterval(flipbookInterval)
-                  entry.target.classList.remove("flipbook-animating")
-                }
-              }, productImageEnterSpeed)
-              entry.target.classList.remove("flipbook-entered")
-            } else {
-            let i = 0;
-            const flipbookInterval = setInterval(()=>{
-              if (i < flipbookLength) {
-                drawImageScaled(flipbook[i], canvas_context)
-                i++
-              } else {
-                clearInterval(flipbookInterval)
-                entry.target.classList.remove("flipbook-animating")
-              }
-            }, productImageEnterSpeed)
-            entry.target.classList.add("flipbook-entered")
-          }        
+        const flipbook = productFlipbookSets[entry.target.dataset.flipbookEnter]
+        const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
+        const canvas_context = productCanvas.getContext('2d');
+        const canvas_width = productCanvas.clientWidth;
+        const canvas_height = productCanvas.clientHeight;
+
+        // Use setInterval to draw image to the flipbook canvas until flipbookLength has been reached:
+        let i = 0;
+        const flipbookInterval = setInterval(()=>{
+          if (i < flipbookLength) {
+            drawImageScaled(flipbook[i], canvas_context)
+            i++
+          } else {
+            clearInterval(flipbookInterval)
+            entry.target.classList.remove("flipbook-animating")
+          }
+        }, productImageEnterSpeed)
+        entry.target.classList.add("flipbook-entered")
+      } else if (entry.target.dataset.flipbookExit && !isScrollingDown) {
+        if (entry.target.classList.contains("flipbook-animating")) return;
+        entry.target.classList.add("flipbook-animating")
+
+        const flipbook = productFlipbookSets[entry.target.dataset.flipbookExit]
+        const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookExit}"]`)
+        const canvas_context = productCanvas.getContext('2d');
+        const canvas_width = productCanvas.clientWidth;
+        const canvas_height = productCanvas.clientHeight;
+
+        let i = flipbookLength-1;
+        const flipbookInterval = setInterval(()=>{
+          if (i >= 0) {
+            canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+            drawImageScaled(flipbook[i], canvas_context)
+            i--
+          } else {
+            clearInterval(flipbookInterval)
+            entry.target.classList.remove("flipbook-animating")
+          }
+        }, productImageEnterSpeed)
+        entry.target.classList.remove("flipbook-entered")
       } else if (entry.target.dataset.lifestyleBg) {
         // entry.target.querySelector("video").play()
       } else if (entry.target.dataset.productVideo) {
@@ -636,7 +642,8 @@
       </section>
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
-          <div class="absolute top-1/2 -transform-y-1/2 w-full h-[400px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i+1}></div>
+          <div class="absolute top-1/2 -transform-y-1/2 w-full h-[400px]" data-scroll-node data-flipbook-enter={product.id}></div>
+          <div class="absolute bottom-[100px] -transform-y-1/2 w-full h-[100px] border-2" data-scroll-node data-flipbook-exit={product.id}></div>
         </section>
 
 <!-- spacer -->
