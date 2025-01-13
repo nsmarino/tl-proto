@@ -295,7 +295,7 @@
     }
     function handleEntrance(entry){
       if (entry.target.dataset.flipbookId) {
-        if (entry.target.classList.contains("flipbook-entered")) return;
+        if (entry.target.classList.contains("flipbook-animating")) return;
           entry.target.classList.add("flipbook-animating")
           const flipbook = productFlipbookSets[entry.target.dataset.flipbookId]
           let reverse = false
