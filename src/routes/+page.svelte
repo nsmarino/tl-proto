@@ -263,7 +263,7 @@
     offset, 
     progress,
 
-    animThreshold = 0.1, 
+    animThreshold = 0.15, 
     onScreenThreshold=0.9, 
     sectionsPerProduct=5,
     bgZoom = 1.5, 
@@ -511,7 +511,7 @@
   <p class="!text-[10px]">We use cookies to enhance your browsing experience, analyze site traffic, and serve personalized content.</p> 
   <p class="!text-[10px]">By clicking 'Accept,' you agree to our use of cookies. You can manage your preferences or learn more in our <a href="https://touchland.com/pages/privacy-policy" target="_blank" class="underline">Privacy Policy</a>.</p>
   <div class="flex gap-4">
-    <a href="https://touchland.com/pages/privacy-policy" class="border border-black rounded-md flex items-center justify-center basis-full py-[8px] uppercase text-[12px]">Decline</a>
+    <button onclick={handleCookieAccept} class="border border-black rounded-md flex items-center justify-center basis-full py-[8px] bg-white text-black uppercase hover:bg-white hover:text-black transition-colors text-[12px]">Decline</button>
     <button onclick={handleCookieAccept} class="border border-black rounded-md flex items-center justify-center basis-full py-[8px] bg-black text-white uppercase hover:bg-white hover:text-black transition-colors text-[12px]">Accept</button>
   </div>
 </aside>
