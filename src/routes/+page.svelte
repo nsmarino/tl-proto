@@ -301,7 +301,6 @@
           let reverse = false
 
           if (entry.target.classList.contains("flipbook-entered") && !isScrollingDown) reverse = true
-          // if (entry.target.classList.contains("flipbook-entered")) reverse = true
             const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookId}"]`)
             const canvas_context = productCanvas.getContext('2d');
             const canvas_width = productCanvas.clientWidth;
