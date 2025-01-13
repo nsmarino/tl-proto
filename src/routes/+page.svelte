@@ -311,15 +311,12 @@
             drawImageScaled(flipbook[i], canvas_context)
             i++
           } else {
-            drawImageScaled(flipbook[flipbookLength-1], canvas_context)
-
-            // clearInterval(flipbookInterval)
+            clearInterval(flipbookInterval)
             entry.target.classList.remove("flipbook-animating")
           }
         }, productImageEnterSpeed)
         entry.target.classList.add("flipbook-entered")
       } else if (entry.target.dataset.flipbookExit && !isScrollingDown) {
-        return
         if (entry.target.classList.contains("flipbook-animating")) return;
         entry.target.classList.add("flipbook-animating")
 
