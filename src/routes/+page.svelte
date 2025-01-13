@@ -298,6 +298,7 @@
 
         const flipbook = productFlipbookSets[entry.target.dataset.flipbookEnter]
         const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
+        const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookEnter}"]`)
         if (productCanvas.classList.contains("flipbook-animating")) return;
         productCanvas.classList.add("flipbook-animating")
         
@@ -315,7 +316,7 @@
             i++
           } else {
             clearInterval(flipbookInterval)
-            productCanvas.style.backgroundImage = `url(${flipbook[i-1].currentSrc})`
+            productLanding.style.opacity = 1
             canvas_context.clearRect(0, 0, canvas_width, canvas_height);
             productCanvas.classList.remove("flipbook-animating")
           }
@@ -325,6 +326,8 @@
 
         const flipbook = productFlipbookSets[entry.target.dataset.flipbookExit]
         const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookExit}"]`)
+        const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookExit}"]`)
+
         if (productCanvas.classList.contains("flipbook-animating") || !productCanvas.classList.contains("flipbook-entered") ) return;
         productCanvas.classList.add("flipbook-animating")
 
@@ -335,7 +338,7 @@
         let i = flipbookLength-1;
         const flipbookInterval = setInterval(()=>{
           if (i >= 0) {
-            productCanvas.style.backgroundImage = ""
+            productLanding.style.opacity = "0"
 
             canvas_context.clearRect(0, 0, canvas_width, canvas_height);
             drawImageScaled(flipbook[i], canvas_context)
@@ -646,7 +649,12 @@
         <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
           {product.productText}
         </h2>
-        <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0 will-change-transform" style="background-position: center; background-size: cover;"></canvas>
+        <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0 will-change-transform"></canvas>
+        {#if windowWidth > 768}
+          <img class="absolute inset-0 w-full h-full object-cover opacity-0" data-product-landing={product.id} src="/products/{product.id}/flipbook/desktop/{product.filePrefix}30.png" alt="">
+        {:else}
+          <img class="absolute inset-0 w-full h-full object-cover opacity-0" data-product-landing={product.id} src="/products/{product.id}/flipbook/mobile/{product.filePrefix}30.png" alt="">
+        {/if}
       </section>
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
