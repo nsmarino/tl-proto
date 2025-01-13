@@ -59,7 +59,7 @@
 
   const preloadImageUrls = products.map(product => {
     const productImages = []
-    for (let i=0;i<flipbookLength;i++) {
+    for (let i=0;i<flipbookLength;i++) {      
       productImages.push(
         {
           src: `/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`,
@@ -295,14 +295,17 @@
     }
     function handleEntrance(entry){
       if (entry.target.dataset.flipbookEnter && isScrollingDown) {
-        if (entry.target.classList.contains("flipbook-animating")) return;
-        entry.target.classList.add("flipbook-animating")
 
         const flipbook = productFlipbookSets[entry.target.dataset.flipbookEnter]
         const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
+        if (productCanvas.classList.contains("flipbook-animating")) return;
+        productCanvas.classList.add("flipbook-animating")
+        
         const canvas_context = productCanvas.getContext('2d');
         const canvas_width = productCanvas.clientWidth;
         const canvas_height = productCanvas.clientHeight;
+
+        // PUT TRACKER CLASSES ON THE CANVAS, NOT THE TRIGGERS !!!
 
         // Use setInterval to draw image to the flipbook canvas until flipbookLength has been reached:
         let i = 0;
@@ -312,16 +315,19 @@
             i++
           } else {
             clearInterval(flipbookInterval)
-            entry.target.classList.remove("flipbook-animating")
+            productCanvas.style.backgroundImage = `url(${flipbook[i-1].currentSrc})`
+            canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+            productCanvas.classList.remove("flipbook-animating")
           }
         }, productImageEnterSpeed)
-        entry.target.classList.add("flipbook-entered")
+        productCanvas.classList.add("flipbook-entered")
       } else if (entry.target.dataset.flipbookExit && !isScrollingDown) {
-        if (entry.target.classList.contains("flipbook-animating")) return;
-        entry.target.classList.add("flipbook-animating")
 
         const flipbook = productFlipbookSets[entry.target.dataset.flipbookExit]
         const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookExit}"]`)
+        if (productCanvas.classList.contains("flipbook-animating") || !productCanvas.classList.contains("flipbook-entered") ) return;
+        productCanvas.classList.add("flipbook-animating")
+
         const canvas_context = productCanvas.getContext('2d');
         const canvas_width = productCanvas.clientWidth;
         const canvas_height = productCanvas.clientHeight;
@@ -329,15 +335,17 @@
         let i = flipbookLength-1;
         const flipbookInterval = setInterval(()=>{
           if (i >= 0) {
+            productCanvas.style.backgroundImage = ""
+
             canvas_context.clearRect(0, 0, canvas_width, canvas_height);
             drawImageScaled(flipbook[i], canvas_context)
             i--
           } else {
             clearInterval(flipbookInterval)
-            entry.target.classList.remove("flipbook-animating")
+            productCanvas.classList.remove("flipbook-animating")
           }
         }, productImageEnterSpeed)
-        entry.target.classList.remove("flipbook-entered")
+        productCanvas.classList.remove("flipbook-entered")
       } else if (entry.target.dataset.lifestyleBg) {
         // entry.target.querySelector("video").play()
       } else if (entry.target.dataset.productVideo) {
@@ -638,7 +646,7 @@
         <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
           {product.productText}
         </h2>
-        <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0 will-change-transform"></canvas>
+        <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0 will-change-transform" style="background-position: center; background-size: cover;"></canvas>
       </section>
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
@@ -735,6 +743,7 @@
     bottom: 0;
     background: rgba(0,0,0,0.1);
   }
+
   @media (min-width: 768px) {
     .foreground-slot section {
       width: 50%;
