@@ -596,11 +596,13 @@
         </div>
       {/if}
     {/each}
-<!-- Scroller -->
+<!-- Scroller -->    <div class="fixed top-[300px] left-0 bg-white z-[200]">{index}</div>
+
 <Scroller top={animThreshold} bottom={animThreshold} threshold={animThreshold} bind:index bind:offset bind:progress>
   <div slot="background">
   </div>
   <div class="foreground-slot" slot="foreground" bind:this={scrollContainer}>
+
     {#each products as product, i}
 
       <!-- Lifestyle Background -->
