@@ -300,7 +300,7 @@
           const flipbook = productFlipbookSets[entry.target.dataset.flipbookId]
           let reverse = false
 
-          if (entry.target.classList.contains("flipbook-entered") && !isScrollingDown) reverse = true
+          // if (entry.target.classList.contains("flipbook-entered") && !isScrollingDown) reverse = true
           // if (entry.target.classList.contains("flipbook-entered")) reverse = true
             const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookId}"]`)
             const canvas_context = productCanvas.getContext('2d');
@@ -308,20 +308,21 @@
             const canvas_height = productCanvas.clientHeight;
             // Use setInterval to draw image to the flipbook canvas until flipbookLength has been reached:
             if (reverse) {
-              let i = flipbookLength-1;
-              const flipbookInterval = setInterval(()=>{
-                if (i >= 0) {
-                  canvas_context.clearRect(0, 0, canvas_width, canvas_height);
-                  drawImageScaled(flipbook[i], canvas_context)
-                  i--
-                } else {
-                  clearInterval(flipbookInterval)
-                  entry.target.classList.remove("flipbook-animating")
-                }
-              }, productImageEnterSpeed)
-              entry.target.classList.remove("flipbook-entered")
+              // let i = flipbookLength-1;
+              // const flipbookInterval = setInterval(()=>{
+              //   if (i >= 0) {
+              //     canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+              //     drawImageScaled(flipbook[i], canvas_context)
+              //     i--
+              //   } else {
+              //     clearInterval(flipbookInterval)
+              //     entry.target.classList.remove("flipbook-animating")
+              //   }
+              // }, productImageEnterSpeed)
+              // entry.target.classList.remove("flipbook-entered")
             } else {
             let i = 0;
+            if (!isScrollingDown) return
             const flipbookInterval = setInterval(()=>{
               if (i < flipbookLength) {
                 drawImageScaled(flipbook[i], canvas_context)
