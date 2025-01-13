@@ -263,7 +263,7 @@
     offset, 
     progress,
 
-    animThreshold = 0.15, 
+    animThreshold = 0.05, 
     onScreenThreshold=0.9, 
     sectionsPerProduct=5,
     bgZoom = 1.5, 
@@ -630,7 +630,7 @@
       <section data-scroll-node data-product-video={i+1}></section>
 
       <!-- Product Text -->
-      <section data-scroll-node class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" >
+      <section data-scroll-node class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" style="visibility:{index > ((i*sectionsPerProduct+4)) ? "hidden":"visible"};">
         <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
           {product.productText}
         </h2>
