@@ -634,7 +634,7 @@
         <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
           {product.productText}
         </h2>
-        <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0"></canvas>
+        <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0 border-2 bg-[#0f0]"></canvas>
       </section>
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
@@ -710,7 +710,7 @@
   }
 
   .foreground-slot section {
-    height: 100vmax;
+    height: 100vh;
   }
   [data-scroll-node] .img-wrapper::after {
     content: "";
