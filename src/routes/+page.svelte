@@ -596,7 +596,6 @@
         </div>
       {/if}
     {/each}
-<!-- Scroller -->    <div class="fixed top-[300px] left-0 bg-white z-[200]">{index}</div>
 
 <Scroller top={animThreshold} bottom={animThreshold} threshold={animThreshold} bind:index bind:offset bind:progress>
   <div slot="background">
