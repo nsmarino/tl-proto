@@ -15,6 +15,7 @@
     window._klOnsite = window._klOnsite || [];
     window._klOnsite.push(['openForm', 'U8x9KF']);
   }
+
   let scrollY = 0;
 	let windowScrollY = 0;
 	let isScrollingDown = false;
@@ -293,14 +294,14 @@
       );
     }
     function handleEntrance(entry){
-
       if (entry.target.dataset.flipbookId) {
         if (entry.target.classList.contains("flipbook-animating")) return;
           entry.target.classList.add("flipbook-animating")
           const flipbook = productFlipbookSets[entry.target.dataset.flipbookId]
           let reverse = false
 
-          if (entry.target.classList.contains("flipbook-entered")) reverse = true
+          if (entry.target.classList.contains("flipbook-entered") && !isScrollingDown) reverse = true
+          // if (entry.target.classList.contains("flipbook-entered")) reverse = true
             const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookId}"]`)
             const canvas_context = productCanvas.getContext('2d');
             const canvas_width = productCanvas.clientWidth;
@@ -360,7 +361,7 @@
 
         // document.querySelector(`[data-product-bg="${entry.target.dataset.productText-1}"]`)?.pause()
       } else if (entry.target.dataset.productText) {
-        // Ensure lifestyle video is paused:
+        // Ensure lifestyle video is paused
         // document.querySelector(`[data-lifestyle-bg="${entry.target.dataset.productText}"]`).querySelector("video").pause()
         // Once the container for the product text is fully on screen, animate in the text
         Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
@@ -505,7 +506,7 @@
   {/if}
 </button>
 
-<aside class:accepted={cookiesAccepted} class="fixed bottom-4 left-4 z-[50] right-4 md:right-unset md:max-w-[280px] rounded-xl flex flex-col gap-2 bg-white p-4 drop-shadow">
+<aside class:accepted={cookiesAccepted} class="fixed bottom-4 left-4 z-[40] right-4 md:right-unset md:max-w-[280px] rounded-xl flex flex-col gap-2 bg-white p-4 drop-shadow">
   <h3 class="font-bold text-[20px]">Cookies Consent</h3>
   <p class="!text-[10px]">We use cookies to enhance your browsing experience, analyze site traffic, and serve personalized content.</p> 
   <p class="!text-[10px]">By clicking 'Accept,' you agree to our use of cookies. You can manage your preferences or learn more in our <a href="https://touchland.com/pages/privacy-policy" target="_blank" class="underline">Privacy Policy</a>.</p>
@@ -636,7 +637,7 @@
       </section>
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
-          <div class="absolute top-1/2 -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i+1}></div>
+          <div class="absolute top-1/2 -transform-y-1/2 w-full h-[400px]" data-scroll-node data-flipbook-id={product.id} data-flipbook-entrance={i+1}></div>
         </section>
 
 <!-- spacer -->
