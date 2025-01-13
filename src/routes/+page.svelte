@@ -324,7 +324,7 @@
             let i = 0;
             const flipbookInterval = setInterval(()=>{
               if (i < flipbookLength) {
-                canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+                // canvas_context.clearRect(0, 0, canvas_width, canvas_height);
                 drawImageScaled(flipbook[i], canvas_context)
                 i++
               } else {
