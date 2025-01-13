@@ -308,23 +308,22 @@
             const canvas_height = productCanvas.clientHeight;
             // Use setInterval to draw image to the flipbook canvas until flipbookLength has been reached:
             if (reverse) {
-              // let i = flipbookLength-1;
-              // const flipbookInterval = setInterval(()=>{
-              //   if (i >= 0) {
-              //     canvas_context.clearRect(0, 0, canvas_width, canvas_height);
-              //     drawImageScaled(flipbook[i], canvas_context)
-              //     i--
-              //   } else {
-              //     clearInterval(flipbookInterval)
-              //     entry.target.classList.remove("flipbook-animating")
-              //   }
-              // }, productImageEnterSpeed)
-              // entry.target.classList.remove("flipbook-entered")
+              let i = flipbookLength-1;
+              const flipbookInterval = setInterval(()=>{
+                if (i >= 0) {
+                  canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+                  drawImageScaled(flipbook[i], canvas_context)
+                  i--
+                } else {
+                  clearInterval(flipbookInterval)
+                  entry.target.classList.remove("flipbook-animating")
+                }
+              }, productImageEnterSpeed)
+              entry.target.classList.remove("flipbook-entered")
             } else {
             let i = 0;
             const flipbookInterval = setInterval(()=>{
-              if (i < flipbookLength-1) {
-                // canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+              if (i < flipbookLength) {
                 drawImageScaled(flipbook[i], canvas_context)
                 i++
               } else {
