@@ -311,12 +311,15 @@
             drawImageScaled(flipbook[i], canvas_context)
             i++
           } else {
-            clearInterval(flipbookInterval)
+            drawImageScaled(flipbook[flipbookLength-1], canvas_context)
+
+            // clearInterval(flipbookInterval)
             entry.target.classList.remove("flipbook-animating")
           }
         }, productImageEnterSpeed)
         entry.target.classList.add("flipbook-entered")
       } else if (entry.target.dataset.flipbookExit && !isScrollingDown) {
+        return
         if (entry.target.classList.contains("flipbook-animating")) return;
         entry.target.classList.add("flipbook-animating")
 
@@ -638,12 +641,12 @@
         <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
           {product.productText}
         </h2>
-        <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0"></canvas>
+        <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0 will-change-transform"></canvas>
       </section>
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
           <div class="absolute top-1/2 -transform-y-1/2 w-full h-[400px]" data-scroll-node data-flipbook-enter={product.id}></div>
-          <div class="absolute bottom-[100px] -transform-y-1/2 w-full h-[100px] border-2" data-scroll-node data-flipbook-exit={product.id}></div>
+          <div class="absolute bottom-[100px] -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-exit={product.id}></div>
         </section>
 
 <!-- spacer -->
