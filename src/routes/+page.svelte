@@ -328,8 +328,8 @@
                 drawImageScaled(flipbook[i], canvas_context)
                 i++
               } else {
-                clearInterval(flipbookInterval)
-                entry.target.classList.remove("flipbook-animating")
+                // clearInterval(flipbookInterval)
+                // entry.target.classList.remove("flipbook-animating")
               }
             }, productImageEnterSpeed)
             entry.target.classList.add("flipbook-entered")
@@ -634,7 +634,7 @@
         <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
           {product.productText}
         </h2>
-        <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0 border-2 bg-[#0f0]"></canvas>
+        <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0"></canvas>
       </section>
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
