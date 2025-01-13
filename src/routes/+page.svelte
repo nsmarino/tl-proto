@@ -630,7 +630,7 @@
       <section data-scroll-node data-product-video={i+1}></section>
 
       <!-- Product Text -->
-      <section data-scroll-node class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" style="visibility:{index > ((i*sectionsPerProduct+4)) ? "hidden":"visible"};">
+      <section data-scroll-node class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" >
         <h2 data-product-text={i+1} class="font-serif uppercase text-[24px]">
           {product.productText}
         </h2>
