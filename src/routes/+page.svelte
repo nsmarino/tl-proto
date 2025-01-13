@@ -710,7 +710,7 @@
   }
 
   .foreground-slot section {
-    height: 100vh;
+    height: 100vmax;
   }
   [data-scroll-node] .img-wrapper::after {
     content: "";
