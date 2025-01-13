@@ -322,7 +322,6 @@
               // entry.target.classList.remove("flipbook-entered")
             } else {
             let i = 0;
-            if (!isScrollingDown) return
             const flipbookInterval = setInterval(()=>{
               if (i < flipbookLength) {
                 drawImageScaled(flipbook[i], canvas_context)
