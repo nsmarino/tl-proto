@@ -144,7 +144,7 @@
   onMount(()=> {
 
     // hardcode the freaking height.
-    document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
+    document.documentElement.style.setProperty('--viewport-height', `100vmax`);
 
     timer.start() // Countdown clock in header
 
