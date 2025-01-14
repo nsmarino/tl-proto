@@ -3,7 +3,7 @@ import { writable } from "svelte/store";
 const now = new Date();
 
 // Define the target date (January 1, 2025)
-const targetDate = new Date('2025-02-03T00:00:00');
+const targetDate = new Date('2025-02-03T15:00:00');
 
 // Calculate the difference in milliseconds
 const timeDifference = targetDate - now;
