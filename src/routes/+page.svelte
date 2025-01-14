@@ -333,7 +333,6 @@
           }, productImageEnterSpeed)
           productCanvas.classList.add("flipbook-entered")
         } else {
-          console.log("SCROLLING UP! Fire flipbook exit")
           const flipbook = productFlipbookSets[entry.target.dataset.flipbookEnter]
           const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
           const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookEnter}"]`)
@@ -719,7 +718,7 @@
       </section>
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
-          <div class="absolute top-1/2 -transform-y-1/2 w-full h-[400px] border-2" data-scroll-node data-flipbook-enter={product.id} data-video-updater={i+1}></div>
+          <div class="absolute top-1/2 -transform-y-1/2 w-full h-[100px] border-2" data-scroll-node data-flipbook-enter={product.id} data-video-updater={i+1}></div>
           <!-- <div class="absolute bottom-0 -transform-y-1/2 w-full h-[300px]" data-scroll-node data-flipbook-exit={product.id} data-video-updater={i+1}></div> -->
         </section>
 
