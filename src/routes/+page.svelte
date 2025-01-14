@@ -280,7 +280,7 @@
     sectionsPerProduct=5,
     bgZoom = 1.5, 
     textEnterSpeed=30,
-    productImageEnterSpeed=18;
+    productImageEnterSpeed=20;
 
     function drawImageScaled(img, ctx) {
       var canvas = ctx.canvas;
@@ -779,7 +779,6 @@
 </Scroller>
 
 <style>
-
   .accepted {
     opacity: 0;
     transform: translateY(10px);
@@ -792,6 +791,9 @@
 
   :root {
     overflow: hidden;
+  }
+  html, body, .foreground-slot section {
+    height: 100%;
   }
 
   .foreground-slot section {
