@@ -585,7 +585,7 @@
   {/if}
 </button>
 
-<aside class:accepted={cookiesShown} class="fixed bottom-4 left-4 z-[40] right-4 md:right-unset md:max-w-[280px] rounded-xl flex flex-col gap-2 bg-white p-4 drop-shadow">
+<aside class:accepted={cookiesShown} class="fixed bottom-[88px] left-4 z-[40] right-4 md:right-unset md:max-w-[280px] rounded-xl flex flex-col gap-2 bg-white p-4 drop-shadow">
   <h3 class="font-bold text-[20px]">Cookies Consent</h3>
   <p class="!text-[10px]">We use cookies to enhance your browsing experience, analyze site traffic, and serve personalized content.</p> 
   <p class="!text-[10px]">By clicking 'Accept,' you agree to our use of cookies. You can manage your preferences or learn more in our <a href="https://touchland.com/pages/privacy-policy" target="_blank" class="underline">Privacy Policy</a>.</p>
