@@ -278,7 +278,7 @@
     sectionsPerProduct=5,
     bgZoom = 1.5, 
     textEnterSpeed=30,
-    productImageEnterSpeed=15;
+    productImageEnterSpeed=25;
 
     function drawImageScaled(img, ctx) {
       var canvas = ctx.canvas;
