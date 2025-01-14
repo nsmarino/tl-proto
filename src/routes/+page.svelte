@@ -792,7 +792,8 @@
   :root {
     overflow: hidden;
   }
-  html, body, .foreground-slot section {
+
+  :global(html), :global(body), .foreground-slot section {
     height: 100%;
   }
 
