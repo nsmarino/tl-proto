@@ -142,6 +142,10 @@
   }
 
   onMount(()=> {
+
+    // hardcode the freaking height.
+    document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
+
     timer.start() // Countdown clock in header
 
     // check local storage for cookiesaccepted:
@@ -613,7 +617,7 @@
 {/if}
 
 <div class="experience-container">
-  <div class="hero w-full h-screen md:h-[50vw] bg-[#fff] relative z-20">
+  <div class="hero w-full h-[var(--viewport-height)] md:h-[50vw] bg-[#fff] relative z-20">
     <div class="w-full h-1/2 md:h-auto md:aspect-square md:w-1/2 md:ml-[50%] object-cover relative mt-0">
       {#if windowWidth > 768}
       <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
@@ -626,7 +630,7 @@
       {/if}
     </div>
       
-      <div class="w-full min-h-[50vh] p-8 md:w-[50vw] md:h-screen md:fixed md:top-0 bg-[#fff] flex flex-col  md:justify-center gap-[12px]">
+      <div class="w-full min-h-[50vh] p-8 md:w-[50vw] md:h-[var(--viewport-height)] md:fixed md:top-0 bg-[#fff] flex flex-col  md:justify-center gap-[12px]">
         <div class="relative">
           <div class="new-label">New</div>
           <h1>Meet Power Essence.</h1>
@@ -664,13 +668,13 @@
 {#each products as product, i}
     <!-- This is kind of janky but the first section IS an edge case so it's ultimately easier to treat it as such -->
       {#if i==0}
-        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct-1)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct-1)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-[var(--viewport-height)] top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
           <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
             <source src="/products/{product.id}/product-bg.mp4" type="video/mp4" />
           </video>
         </div>
       {:else}
-        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-[var(--viewport-height)] top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
           <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
             <source src="/products/{product.id}/product-bg.mp4" type="video/mp4" />
           </video>
@@ -688,14 +692,14 @@
       <!-- Lifestyle Background -->
       <section data-scroll-onscreen data-scroll-node data-lifestyle-bg={i+1} class="sticky top-0 z-20 overflow-hidden" style="visibility:{index > ((i*sectionsPerProduct)) ? "hidden":"visible"};">
         <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? (offset>0.2 ? (100*(1-((offset*100)-20)/80)) : 100) : 100}%;)"> 
-          <div class="absolute top-0 left-0 w-screen h-screen md:w-[50vw] z-20 flex items-center justify-center">
+          <div class="absolute top-0 left-0 w-screen h-[var(--viewport-height)] md:w-[50vw] z-20 flex items-center justify-center">
             <h2 class="font-serif uppercase text-[#FFF]">
               {#each product.lifestyleText as char}
                 <span class="typewriter-char">{char}</span>
               {/each}
             </h2>
           </div>
-          <div class="img-wrapper relative w-screen h-screen md:w-[50vw]">
+          <div class="img-wrapper relative w-screen h-[var(--viewport-height)] md:w-[50vw]">
             {#if windowWidth > 768}
             <img src="/products/{product.id}/lifestyle-bg.jpg" class="w-full h-full object-cover object-center object-top" alt="">
             {:else}
@@ -730,7 +734,7 @@
         <section></section>
     {/each}
 
-    <section data-scroll-reset class="relative z-20 h-screen overflow-hidden">
+    <section data-scroll-reset class="relative z-20 overflow-hidden">
       <div class="w-full h-1/2 md:h-auto md:aspect-square object-cover relative z-20">
         {#if windowWidth > 768}
         <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
@@ -766,7 +770,7 @@
       </div>
 
       <div class="relative"> 
-        <div class="w-screen h-screen md:w-[50vw]">
+        <div class="w-screen h-[var(--viewport-height)] md:w-[50vw]">
           {#if windowWidth > 768}
           <img style="transform: scale(1.8) translateY(10%);" src="/products/{products[0].id}/lifestyle-bg.jpg" class="w-full h-full object-cover object-center object-top" alt="">
           {:else}
@@ -791,14 +795,11 @@
 
   :root {
     overflow: hidden;
-  }
-
-  :global(html), :global(body), .foreground-slot section {
-    height: 100%;
+    --viewport-height: 844px;
   }
 
   .foreground-slot section {
-    height: 100vh;
+    height: var(--viewport-height);
   }
   [data-scroll-node] .img-wrapper::after {
     content: "";
