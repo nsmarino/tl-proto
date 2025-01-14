@@ -207,7 +207,7 @@
     const loadFallback = setTimeout(()=>{
       onPreloadComplete()
       clearTimeout(loadFallback)
-    },7000)
+    },9000)
   })
 
   function onPreloadComplete(){
