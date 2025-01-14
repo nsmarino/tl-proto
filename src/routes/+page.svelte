@@ -309,7 +309,7 @@
         const flipbook = productFlipbookSets[entry.target.dataset.flipbookEnter]
         const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
         const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookEnter}"]`)
-        if (productCanvas.classList.contains("flipbook-animating")) return;
+        if (productCanvas.classList.contains("flipbook-animating") || productCanvas.classList.contains("flipbook-entered")) return;
         productCanvas.classList.add("flipbook-animating")
         
         const canvas_context = productCanvas.getContext('2d');
@@ -390,7 +390,6 @@
       if (entry.target.dataset.lifestyleBg) {
 
         if (isScrollingDown) {
-          console.log("I am pausing for the good of the country.", document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"] video`))
           if (!videosPaused) document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"] video`)?.pause()
         } else {
           document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"] video`)?.play()
