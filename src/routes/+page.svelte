@@ -242,7 +242,8 @@
           document.querySelector("svelte-scroller-outer").classList.add("entered")
           document.documentElement.style.overflow="unset"
         }
-        heroVideo.scrollIntoView() 
+        heroVideo.scrollIntoView()
+        headerIsBlack = false
       }
       }
       requestAnimationFrame(animateLoadPercentage)
@@ -400,10 +401,11 @@
         document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"]`).classList.add("entered")
       } else if (entry.target.dataset.headerBlack) {
         headerIsBlack = true
-        document.querySelector("[data-scroll-prompt]").classList.add("hidden")
 
       } else if (entry.target.dataset.headerWhite) {
         headerIsBlack = false
+        document.querySelector("[data-scroll-prompt]").classList.add("hidden")
+
         if (isScrollingDown) {
           // pause hero video
           heroVideo.pause()
@@ -682,7 +684,7 @@
     {#each products as product, i}
 
       <!-- Lifestyle Background -->
-      <section data-scroll-onscreen data-lifestyle-bg={i+1} class="sticky top-0 z-20 overflow-hidden" style="visibility:{index > ((i*sectionsPerProduct)) ? "hidden":"visible"};">
+      <section data-scroll-onscreen data-scroll-node data-lifestyle-bg={i+1} class="sticky top-0 z-20 overflow-hidden" style="visibility:{index > ((i*sectionsPerProduct)) ? "hidden":"visible"};">
         <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? (offset>0.2 ? (100*(1-((offset*100)-20)/80)) : 100) : 100}%;)"> 
           <div class="absolute top-0 left-0 w-screen h-screen md:w-[50vw] z-20 flex items-center justify-center">
             <h2 class="font-serif uppercase text-[#FFF]">
@@ -718,7 +720,7 @@
       </section>
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
-          <div class="absolute top-1/2 -transform-y-1/2 w-full h-[100px] border-2" data-scroll-node data-flipbook-enter={product.id} data-video-updater={i+1}></div>
+          <div class="absolute top-1/2 -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-enter={product.id} data-video-updater={i+1}></div>
           <!-- <div class="absolute bottom-0 -transform-y-1/2 w-full h-[300px]" data-scroll-node data-flipbook-exit={product.id} data-video-updater={i+1}></div> -->
         </section>
 
@@ -874,6 +876,9 @@
     color: black;
     transition: all 0.3s;
   }
+  header.is-black .anim-underline-always::after {
+    background-color: black;
+  }
   header .util {
     font-size: 12px;
     font-family: "NH Text Regular";
@@ -883,6 +888,9 @@
     header .util, header.is-black .util {
       color: white;
     }
+    header.is-black .anim-underline-always::after {
+    background-color: white;
+  }
     header svg, header.is-black svg {
       color: black;
     }
