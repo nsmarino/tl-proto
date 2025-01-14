@@ -223,14 +223,17 @@
           document.querySelector("[data-load-percentage]").textContent = loadPercentage
           requestAnimationFrame(animateLoadPercentage)
         } else {
+
+          // handle splash screen
         preloadReady = true;
+        document.querySelectorAll("[data-product-bg] video").forEach(video => video.pause())
         showSplash ? splashVideo?.play() : heroVideo?.play()
         if (!showSplash) {
           document.querySelector(".hero").classList.add("entered")
           document.querySelector("svelte-scroller-outer").classList.add("entered")
           document.documentElement.style.overflow="unset"
         }
-        heroVideo.scrollIntoView()        
+        heroVideo.scrollIntoView() 
       }
       }
       requestAnimationFrame(animateLoadPercentage)
@@ -634,7 +637,7 @@
         </div>
       {:else}
         <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
-          <video class="w-full h-full object-cover" loop muted playsinline preload="auto">
+          <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
             <source src="/products/{product.id}/product-bg.mp4" type="video/mp4" />
           </video>
         </div>
