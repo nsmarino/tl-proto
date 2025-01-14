@@ -17,7 +17,6 @@
   }
 
   function openWaitlistCapture() {
-    console.log("Klaviyo popup open")
     window._klOnsite = window._klOnsite || [];
     window._klOnsite.push(['openForm', 'U8x9KF']);
   }
@@ -169,7 +168,7 @@
     entranceManager = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          if(entry.intersectionRatio>=0.9) {
+          if(entry.intersectionRatio>=0.8) {
             handleOnScreen(entry)
           } else {
             handleEntrance(entry)
@@ -183,9 +182,7 @@
     });
     resetManager = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        console.log("RESET MANAGER FIRES!!!")
         if (entry.isIntersecting && entry.intersectionRatio >= 0.9) {
-          console.log("Resetting scene", entry.intersectionRatio)
           resetScene()
         }
       });
@@ -278,7 +275,7 @@
     sectionsPerProduct=5,
     bgZoom = 1.5, 
     textEnterSpeed=30,
-    productImageEnterSpeed=20;
+    productImageEnterSpeed=18;
 
     function drawImageScaled(img, ctx) {
       var canvas = ctx.canvas;
@@ -333,7 +330,6 @@
         }, productImageEnterSpeed)
         productCanvas.classList.add("flipbook-entered")
       } else if (entry.target.dataset.flipbookExit && !isScrollingDown) {
-
         const flipbook = productFlipbookSets[entry.target.dataset.flipbookExit]
         const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookExit}"]`)
         const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookExit}"]`)
@@ -360,10 +356,15 @@
         }, productImageEnterSpeed)
         productCanvas.classList.remove("flipbook-entered")
       } else if (entry.target.dataset.lifestyleBg) {
+
         // entry.target.querySelector("video").play()
       } else if (entry.target.dataset.productVideo) {
         // Play fixed video background which is outside scroller
-        if (!videosPaused) document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"] video`).play()
+        if (isScrollingDown) {
+          if (!videosPaused) document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"] video`).play()
+        } else {
+          if (!videosPaused) document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"] video`).pause()
+        }
         document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"]`).classList.add("entered")
       } else if (entry.target.dataset.headerBlack) {
         headerIsBlack = true
@@ -371,12 +372,26 @@
 
       } else if (entry.target.dataset.headerWhite) {
         headerIsBlack = false
+        if (isScrollingDown) {
+          // pause hero video
+          heroVideo.pause()
+        } else {
+          // play hero video
+          heroVideo.play()
+        }
       }
       entry.target.classList.add("entered");  
     }
 
     function handleOnScreen(entry) {
       if (entry.target.dataset.lifestyleBg) {
+
+        if (isScrollingDown) {
+          console.log("I am pausing for the good of the country.", document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"] video`))
+          if (!videosPaused) document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"] video`)?.pause()
+        } else {
+          document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"] video`)?.play()
+        }
         // When the lifestyle background is on screen, animate in the lifestyle text
         Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
           setTimeout(() => {
@@ -435,7 +450,6 @@
     function debounce(func, wait=200, immediate) {
       let timeout;
       return function() {
-        console.log("Attempt?")
         const context = this, args = arguments;
         const later = function() {
           timeout = null;
@@ -453,7 +467,6 @@
       // Instant scroll to top:
       window.scrollTo(0,0)
 
-
       // Remove all entrances AND reset flipbook canvases
       document.querySelector(".foreground-slot").querySelectorAll(".entered").forEach((el) => {
         el.classList.remove("entered")
@@ -468,6 +481,7 @@
       document.querySelectorAll("[data-product-landing]").forEach((img) => {
         img.style.opacity = 0
       })
+      heroVideo.play()
     }
 </script>
 
@@ -486,6 +500,8 @@
   <p style="font-family: 'NH Display Medium';" class=""><span data-load-percentage>{(videoLoadPercentage+imageLoadPercentage)}</span>%</p>
   <p class="block !w-fit whitespace-nowrap animate-pulse">Preparing the senses</p>
 </div>
+
+<!-- Pencil bar, hidden for now: -->
 <!-- <aside class="fixed top-[-1px] w-full h-[40px] z-30 flex justify-center items-center translate-y-[var(--pos)] will-change-transform transition-transform duration-300" style="background-image: url(touchland-gradient.png); background-size: cover; --pos: {header_position}%;">
   <a href="https://anewera.touchland.com/" class="flex items-center gap-2">
     <span class="underline text-[12px]">Enter the Move Your Mood Sweeps</span>
@@ -618,7 +634,7 @@
         </div>
       {:else}
         <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-screen top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
-          <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
+          <video class="w-full h-full object-cover" loop muted playsinline preload="auto">
             <source src="/products/{product.id}/product-bg.mp4" type="video/mp4" />
           </video>
         </div>
@@ -650,8 +666,6 @@
             {/if}
           </div>
         </div>
-        <!-- What does this do -->
-        <!-- <div data-product-bg-trigger={i+1} data-scroll-node class="w-full bg-transparent absolute bottom-0 h-[10%]"></div> -->
       </section>
 
       <!-- Product Background Trigger -->
@@ -672,7 +686,7 @@
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
           <div class="absolute top-1/2 -transform-y-1/2 w-full h-[400px]" data-scroll-node data-flipbook-enter={product.id}></div>
-          <div class="absolute bottom-[100px] -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-exit={product.id}></div>
+          <div class="absolute bottom-[100px] -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-exit={product.id} data-video-updater={i+1}></div>
         </section>
 
 <!-- spacer -->
