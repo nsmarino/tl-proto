@@ -144,7 +144,7 @@
   onMount(()=> {
 
     // hardcode the freaking height.
-    document.documentElement.style.setProperty('--viewport-height', `100vmax`);
+    document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
 
     timer.start() // Countdown clock in header
 
@@ -668,13 +668,13 @@
 {#each products as product, i}
     <!-- This is kind of janky but the first section IS an edge case so it's ultimately easier to treat it as such -->
       {#if i==0}
-        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct-1)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-[var(--viewport-height)] top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct-1)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-lvh top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
           <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
             <source src="/products/{product.id}/product-bg.mp4" type="video/mp4" />
           </video>
         </div>
       {:else}
-        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-[var(--viewport-height)] top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-lvh top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
           <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
             <source src="/products/{product.id}/product-bg.mp4" type="video/mp4" />
           </video>
@@ -799,7 +799,7 @@
   }
 
   .foreground-slot section {
-    height: var(--viewport-height);
+    height: 100lvh;
   }
   [data-scroll-node] .img-wrapper::after {
     content: "";
