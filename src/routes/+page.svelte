@@ -58,7 +58,7 @@
   let flipbook = []
   let productFlipbookSets = {}
 
-  let entranceManager, resetManager;
+  let entranceManager, onScreenManager, resetManager;
 
   let headerIsBlack = false
 
@@ -168,27 +168,33 @@
     entranceManager = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          if(entry.intersectionRatio>=0.9) {
-            handleOnScreen(entry)
-          } else {
             handleEntrance(entry)
-          } 
-        } else {
-          handleExit(entry)
         }
       });
     }, {
-      threshold: [animThreshold, onScreenThreshold]
+      threshold: [0.1,0.9]
     });
+
     resetManager = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.9) {
+        if (entry.isIntersecting) {
           resetScene()
         }
       });
     }, {
-      threshold: [0, 1]
+      threshold: 0.8
     });
+
+    onScreenManager = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          handleOnScreen(entry)
+        }
+      });
+    }, {
+      threshold: 0.7
+    });
+
     resetManager.observe(document.querySelector("[data-scroll-reset]"))
 
     // Turn header text black when over non-video part of hero
@@ -200,6 +206,9 @@
     // Handle scroll events in scroll sequence:
     document.querySelectorAll("[data-scroll-node]").forEach((node) => {
       entranceManager.observe(node)
+    })
+    document.querySelectorAll("[data-scroll-onscreen]").forEach((node) => {
+      onScreenManager.observe(node)
     })
 
     updateVideoLoadProgress(document.querySelectorAll("video"))
@@ -238,14 +247,6 @@
       }
       requestAnimationFrame(animateLoadPercentage)
     }
-    // preloadReady = true;
-    // showSplash ? splashVideo?.play() : heroVideo?.play()
-    // if (!showSplash) {
-    //   document.querySelector(".hero").classList.add("entered")
-    //   document.querySelector("svelte-scroller-outer").classList.add("entered")
-    //   document.documentElement.style.overflow="unset"
-    // }
-    // heroVideo.scrollIntoView()
   }
 
   function handleSplashEnd(){
@@ -304,71 +305,98 @@
       );
     }
     function handleEntrance(entry){
-      if (entry.target.dataset.flipbookEnter && isScrollingDown) {
-        console.log("I am here")
-        const flipbook = productFlipbookSets[entry.target.dataset.flipbookEnter]
-        const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
-        const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookEnter}"]`)
-        if (productCanvas.classList.contains("flipbook-animating")) return;
-        productCanvas.classList.add("flipbook-animating")
+      if (entry.target.dataset.flipbookEnter) {
+        if (isScrollingDown) {
+          const flipbook = productFlipbookSets[entry.target.dataset.flipbookEnter]
+          const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
+          const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookEnter}"]`)
+          
+          if (productCanvas.classList.contains("flipbook-animating") || productCanvas.classList.contains("flipbook-entered")) return;
+          productCanvas.classList.add("flipbook-animating")
+          
+          const canvas_context = productCanvas.getContext('2d');
+          const canvas_width = productCanvas.clientWidth;
+          const canvas_height = productCanvas.clientHeight;
+
+          // Use setInterval to draw image to the flipbook canvas until flipbookLength has been reached:
+          let i = 0;
+          const flipbookInterval = setInterval(()=>{
+            if (i < flipbookLength) {
+              drawImageScaled(flipbook[i], canvas_context)
+              i++
+            } else {
+              clearInterval(flipbookInterval)
+              productLanding.style.opacity = 1
+              canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+              productCanvas.classList.remove("flipbook-animating")
+            }
+          }, productImageEnterSpeed)
+          productCanvas.classList.add("flipbook-entered")
+        } else {
+          console.log("SCROLLING UP! Fire flipbook exit")
+          const flipbook = productFlipbookSets[entry.target.dataset.flipbookEnter]
+          const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
+          const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookEnter}"]`)
+
+          if (productCanvas.classList.contains("flipbook-animating") || !productCanvas.classList.contains("flipbook-entered") ) return;
+          productCanvas.classList.add("flipbook-animating")
+
+          const canvas_context = productCanvas.getContext('2d');
+          const canvas_width = productCanvas.clientWidth;
+          const canvas_height = productCanvas.clientHeight;
+
+          let i = flipbookLength-1;
+          const flipbookInterval = setInterval(()=>{
+            if (i >= 0) {
+              productLanding.style.opacity = "0"
+
+              canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+              drawImageScaled(flipbook[i], canvas_context)
+              i--
+            } else {
+              clearInterval(flipbookInterval)
+              productCanvas.classList.remove("flipbook-animating")
+            }
+          }, productImageEnterSpeed)
+          productCanvas.classList.remove("flipbook-entered")
+
+          // Unpause bg video!
+          document.querySelector(`[data-product-bg="${entry.target.dataset.videoUpdater}"] video`)?.play()
+        }
         
-        const canvas_context = productCanvas.getContext('2d');
-        const canvas_width = productCanvas.clientWidth;
-        const canvas_height = productCanvas.clientHeight;
-
-        // PUT TRACKER CLASSES ON THE CANVAS, NOT THE TRIGGERS !!!
-
-        // Use setInterval to draw image to the flipbook canvas until flipbookLength has been reached:
-        let i = 0;
-        const flipbookInterval = setInterval(()=>{
-          if (i < flipbookLength) {
-            drawImageScaled(flipbook[i], canvas_context)
-            i++
-          } else {
-            clearInterval(flipbookInterval)
-            productLanding.style.opacity = 1
-            canvas_context.clearRect(0, 0, canvas_width, canvas_height);
-            productCanvas.classList.remove("flipbook-animating")
-          }
-        }, productImageEnterSpeed)
-        productCanvas.classList.add("flipbook-entered")
       } else if (entry.target.dataset.flipbookExit && !isScrollingDown) {
-        console.log("Exiting!")
-        const flipbook = productFlipbookSets[entry.target.dataset.flipbookExit]
-        const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookExit}"]`)
-        const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookExit}"]`)
+        // console.log("Fire flipbook exit")
+        // const flipbook = productFlipbookSets[entry.target.dataset.flipbookExit]
+        // const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookExit}"]`)
+        // const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookExit}"]`)
 
-        if (productCanvas.classList.contains("flipbook-animating") || !productCanvas.classList.contains("flipbook-entered") ) return;
-        productCanvas.classList.add("flipbook-animating")
-        console.log("Reached")
+        // if (productCanvas.classList.contains("flipbook-animating") || !productCanvas.classList.contains("flipbook-entered") ) return;
+        // productCanvas.classList.add("flipbook-animating")
 
-        const canvas_context = productCanvas.getContext('2d');
-        const canvas_width = productCanvas.clientWidth;
-        const canvas_height = productCanvas.clientHeight;
+        // const canvas_context = productCanvas.getContext('2d');
+        // const canvas_width = productCanvas.clientWidth;
+        // const canvas_height = productCanvas.clientHeight;
 
-        let i = flipbookLength-1;
-        const flipbookInterval = setInterval(()=>{
-          if (i >= 0) {
-            productLanding.style.opacity = "0"
+        // let i = flipbookLength-1;
+        // const flipbookInterval = setInterval(()=>{
+        //   if (i >= 0) {
+        //     productLanding.style.opacity = "0"
 
-            canvas_context.clearRect(0, 0, canvas_width, canvas_height);
-            drawImageScaled(flipbook[i], canvas_context)
-            i--
-          } else {
-            clearInterval(flipbookInterval)
-            productCanvas.classList.remove("flipbook-animating")
-          }
-        }, productImageEnterSpeed)
-        productCanvas.classList.remove("flipbook-entered")
-      } else if (entry.target.dataset.lifestyleBg) {
-
-        // entry.target.querySelector("video").play()
+        //     canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+        //     drawImageScaled(flipbook[i], canvas_context)
+        //     i--
+        //   } else {
+        //     clearInterval(flipbookInterval)
+        //     productCanvas.classList.remove("flipbook-animating")
+        //   }
+        // }, productImageEnterSpeed)
+        // productCanvas.classList.remove("flipbook-entered")
       } else if (entry.target.dataset.productVideo) {
         // Play fixed video background which is outside scroller
         if (isScrollingDown) {
           if (!videosPaused) document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"] video`).play()
         } else {
-          if (!videosPaused) document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"] video`).pause()
+          document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"] video`).pause()
         }
         document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"]`).classList.add("entered")
       } else if (entry.target.dataset.headerBlack) {
@@ -394,7 +422,8 @@
         if (isScrollingDown) {
           if (!videosPaused) document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"] video`)?.pause()
         } else {
-          document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"] video`)?.play()
+          // This is failing
+          // document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"] video`)?.play()
         }
         // When the lifestyle background is on screen, animate in the lifestyle text
         Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
@@ -415,6 +444,7 @@
         })
       }
     }
+
     function handleExit(entry){
     }
 
@@ -435,7 +465,7 @@
       // ctx.imageSmoothingEnabled = false;
     }
 
-// update background scales based on scroll position
+    // update background scales based on scroll position
     function calculateLifestyleBgScale(productIndex){
       // special case for the first lifestyle background bc it is the only one where a negative offset is possible:
       if (productIndex == 0) return offset < 0 ? 1-(offset/2) : 1
@@ -653,7 +683,7 @@
     {#each products as product, i}
 
       <!-- Lifestyle Background -->
-      <section data-scroll-node data-lifestyle-bg={i+1} class="sticky top-0 z-20 overflow-hidden" style="visibility:{index > ((i*sectionsPerProduct)) ? "hidden":"visible"};">
+      <section data-scroll-onscreen data-lifestyle-bg={i+1} class="sticky top-0 z-20 overflow-hidden" style="visibility:{index > ((i*sectionsPerProduct)) ? "hidden":"visible"};">
         <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? (offset>0.2 ? (100*(1-((offset*100)-20)/80)) : 100) : 100}%;)"> 
           <div class="absolute top-0 left-0 w-screen h-screen md:w-[50vw] z-20 flex items-center justify-center">
             <h2 class="font-serif uppercase text-[#FFF]">
@@ -689,8 +719,8 @@
       </section>
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
-          <div class="absolute top-1/2 -transform-y-1/2 w-full h-[400px]" data-scroll-node data-flipbook-enter={product.id}></div>
-          <div class="absolute bottom-0 -transform-y-1/2 w-full h-[300px]" data-scroll-node data-flipbook-exit={product.id} data-video-updater={i+1}></div>
+          <div class="absolute top-1/2 -transform-y-1/2 w-full h-[400px] border-2" data-scroll-node data-flipbook-enter={product.id} data-video-updater={i+1}></div>
+          <!-- <div class="absolute bottom-0 -transform-y-1/2 w-full h-[300px]" data-scroll-node data-flipbook-exit={product.id} data-video-updater={i+1}></div> -->
         </section>
 
 <!-- spacer -->
