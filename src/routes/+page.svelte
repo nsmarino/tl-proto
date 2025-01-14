@@ -144,7 +144,7 @@
   onMount(()=> {
 
     // hardcode the freaking height.
-    document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
+    // document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
 
     timer.start() // Countdown clock in header
 
@@ -691,7 +691,7 @@
 
       <!-- Lifestyle Background -->
       <section data-scroll-onscreen data-scroll-node data-lifestyle-bg={i+1} class="sticky top-0 z-20 overflow-hidden" style="visibility:{index > ((i*sectionsPerProduct)) ? "hidden":"visible"};">
-        <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? (offset>0.2 ? (100*(1-((offset*100)-20)/80)) : 100) : 100}%;)"> 
+        <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? (offset>0.2 ? (100*(1-((offset*100)-20)/80)) : 100) : 100}lvh;)"> 
           <div class="absolute top-0 left-0 w-screen h-[var(--viewport-height)] md:w-[50vw] z-20 flex items-center justify-center">
             <h2 class="font-serif uppercase text-[#FFF]">
               {#each product.lifestyleText as char}
@@ -795,7 +795,7 @@
 
   :root {
     overflow: hidden;
-    --viewport-height: 844px;
+    --viewport-height: 100lvh;
   }
 
   .foreground-slot section {
