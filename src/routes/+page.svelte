@@ -168,7 +168,7 @@
     entranceManager = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          if(entry.intersectionRatio>=0.8) {
+          if(entry.intersectionRatio>=0.9) {
             handleOnScreen(entry)
           } else {
             handleEntrance(entry)
@@ -305,11 +305,11 @@
     }
     function handleEntrance(entry){
       if (entry.target.dataset.flipbookEnter && isScrollingDown) {
-
+        console.log("I am here")
         const flipbook = productFlipbookSets[entry.target.dataset.flipbookEnter]
         const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
         const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookEnter}"]`)
-        if (productCanvas.classList.contains("flipbook-animating") || productCanvas.classList.contains("flipbook-entered")) return;
+        if (productCanvas.classList.contains("flipbook-animating")) return;
         productCanvas.classList.add("flipbook-animating")
         
         const canvas_context = productCanvas.getContext('2d');
@@ -333,12 +333,14 @@
         }, productImageEnterSpeed)
         productCanvas.classList.add("flipbook-entered")
       } else if (entry.target.dataset.flipbookExit && !isScrollingDown) {
+        console.log("Exiting!")
         const flipbook = productFlipbookSets[entry.target.dataset.flipbookExit]
         const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookExit}"]`)
         const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookExit}"]`)
 
         if (productCanvas.classList.contains("flipbook-animating") || !productCanvas.classList.contains("flipbook-entered") ) return;
         productCanvas.classList.add("flipbook-animating")
+        console.log("Reached")
 
         const canvas_context = productCanvas.getContext('2d');
         const canvas_width = productCanvas.clientWidth;
@@ -688,7 +690,7 @@
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
           <div class="absolute top-1/2 -transform-y-1/2 w-full h-[400px]" data-scroll-node data-flipbook-enter={product.id}></div>
-          <div class="absolute bottom-[100px] -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-exit={product.id} data-video-updater={i+1}></div>
+          <div class="absolute bottom-0 -transform-y-1/2 w-full h-[300px]" data-scroll-node data-flipbook-exit={product.id} data-video-updater={i+1}></div>
         </section>
 
 <!-- spacer -->
