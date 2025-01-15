@@ -309,34 +309,54 @@
           centerShiftX, 0, newWidth, canvasHeight  // Destination dimensions
       );
     }
+
+    function handleFlipbookOnScrollDown(entry) {
+      const flipbook = productFlipbookSets[entry.target.dataset.flipbookEnter]
+          const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
+      const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookEnter}"]`)
+      
+      if (productCanvas.classList.contains("flipbook-animating") || productCanvas.classList.contains("flipbook-entered")) return;
+      productCanvas.classList.add("flipbook-animating")
+      
+      const canvas_context = productCanvas.getContext('2d');
+      const canvas_width = productCanvas.clientWidth;
+      const canvas_height = productCanvas.clientHeight;
+
+      let i = 0;
+      let lastTimestamp = 0;
+
+      function animate(timestamp) {
+        if (!lastTimestamp) lastTimestamp = timestamp; // Initialize the timestamp
+
+        const elapsed = timestamp - lastTimestamp;
+
+        if (elapsed >= productImageEnterSpeed) {
+          if (i < flipbookLength) {
+            drawImageScaled(flipbook[i], canvas_context); // Draw the current frame
+            i++;
+            lastTimestamp = timestamp; // Reset the timestamp after drawing
+          } else {
+            // Animation complete
+            productLanding.style.opacity = 1;
+            canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+            productCanvas.classList.remove("flipbook-animating");
+            return; // Stop the animation
+          }
+        }
+
+        requestAnimationFrame(animate); // Request the next frame
+      }
+
+      // Start the animation
+      requestAnimationFrame(animate);
+
+      productCanvas.classList.add("flipbook-entered")
+    }
+    
     function handleEntrance(entry){
       if (entry.target.dataset.flipbookEnter) {
         if (isScrollingDown) {
-          const flipbook = productFlipbookSets[entry.target.dataset.flipbookEnter]
-          const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
-          const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookEnter}"]`)
-          
-          if (productCanvas.classList.contains("flipbook-animating") || productCanvas.classList.contains("flipbook-entered")) return;
-          productCanvas.classList.add("flipbook-animating")
-          
-          const canvas_context = productCanvas.getContext('2d');
-          const canvas_width = productCanvas.clientWidth;
-          const canvas_height = productCanvas.clientHeight;
-
-          // Use setInterval to draw image to the flipbook canvas until flipbookLength has been reached:
-          let i = 0;
-          const flipbookInterval = setInterval(()=>{
-            if (i < flipbookLength) {
-              drawImageScaled(flipbook[i], canvas_context)
-              i++
-            } else {
-              clearInterval(flipbookInterval)
-              productLanding.style.opacity = 1
-              canvas_context.clearRect(0, 0, canvas_width, canvas_height);
-              productCanvas.classList.remove("flipbook-animating")
-            }
-          }, productImageEnterSpeed)
-          productCanvas.classList.add("flipbook-entered")
+          handleFlipbookOnScrollDown(entry)
         } else {
           const flipbook = productFlipbookSets[entry.target.dataset.flipbookEnter]
           const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
@@ -349,19 +369,49 @@
           const canvas_width = productCanvas.clientWidth;
           const canvas_height = productCanvas.clientHeight;
 
-          let i = flipbookLength-1;
-          const flipbookInterval = setInterval(()=>{
-            if (i >= 0) {
-              productLanding.style.opacity = "0"
+          // let i = flipbookLength-1;
+          // const flipbookInterval = setInterval(()=>{
+          //   if (i >= 0) {
+          //     productLanding.style.opacity = "0"
 
-              canvas_context.clearRect(0, 0, canvas_width, canvas_height);
-              drawImageScaled(flipbook[i], canvas_context)
-              i--
-            } else {
-              clearInterval(flipbookInterval)
-              productCanvas.classList.remove("flipbook-animating")
+          //     canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+          //     drawImageScaled(flipbook[i], canvas_context)
+          //     i--
+          //   } else {
+          //     clearInterval(flipbookInterval)
+          //     productCanvas.classList.remove("flipbook-animating")
+          //   }
+          // }, productImageEnterSpeed)
+
+          let i = flipbookLength-1;
+          let lastTimestamp = 0;
+
+          function animate(timestamp) {
+            if (!lastTimestamp) lastTimestamp = timestamp; // Initialize the timestamp
+
+            const elapsed = timestamp - lastTimestamp;
+
+            if (elapsed >= productImageEnterSpeed) {
+              if (i >= 0) {
+                
+                if (productLanding.style.opacity != "0") productLanding.style.opacity = "0"
+                canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+                drawImageScaled(flipbook[i], canvas_context)
+                i--
+                lastTimestamp = timestamp; // Reset the timestamp after drawing
+              } else {
+                // Animation complete
+                productCanvas.classList.remove("flipbook-animating")
+                return; // Stop the animation
+              }
             }
-          }, productImageEnterSpeed)
+
+            requestAnimationFrame(animate); // Request the next frame
+          }
+
+      // Start the animation
+      requestAnimationFrame(animate);
+
           productCanvas.classList.remove("flipbook-entered")
 
           // Unpause bg video!
@@ -727,7 +777,6 @@
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
           <div class="absolute top-1/2 -transform-y-1/2 w-full h-[100px]" data-scroll-node data-flipbook-enter={product.id} data-video-updater={i+1}></div>
-          <!-- <div class="absolute bottom-0 -transform-y-1/2 w-full h-[300px]" data-scroll-node data-flipbook-exit={product.id} data-video-updater={i+1}></div> -->
         </section>
 
 <!-- spacer -->
