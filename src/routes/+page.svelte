@@ -742,7 +742,7 @@
     {#each products as product, i}
 
       <!-- Lifestyle Background -->
-      <section data-scroll-onscreen data-scroll-node data-lifestyle-bg={i+1} class="sticky top-0 z-20 overflow-hidden">
+      <section data-scroll-onscreen data-scroll-node data-lifestyle-bg={i+1} class="sticky top-0 z-20 overflow-hidden" style="visibility:{index > (i*sectionsPerProduct-2) ? "visible":"hidden"};">
         <!-- <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? (offset>0.2 ? (100*(1-((offset*100)-20)/80)) : 100) : 100}lvh;)">  -->
         <div class="image-mask w-full overflow-hidden relative"> 
           <div class="absolute top-0 left-0 w-screen h-[var(--viewport-height)] md:w-[50vw] z-20 flex items-center justify-center">
