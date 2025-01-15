@@ -246,7 +246,7 @@
           document.querySelector("svelte-scroller-outer").classList.add("entered")
           document.documentElement.style.overflow="unset"
         }
-        debounce(()=>window.scrollTo(0,0),100)()
+        debounce(()=>window.scrollTo(0,40),100)()
         headerIsBlack = false
       }
       }
@@ -593,15 +593,15 @@
 </div>
 
 <!-- Pencil bar, hidden for now: -->
-<!-- <aside class="fixed top-[-1px] w-full h-[40px] z-30 flex justify-center items-center translate-y-[var(--pos)] will-change-transform transition-transform duration-300" style="background-image: url(touchland-gradient.png); background-size: cover; --pos: {header_position}%;">
-  <a href="https://anewera.touchland.com/" class="flex items-center gap-2">
-    <span class="underline text-[12px]">Enter the Move Your Mood Sweeps</span>
+<aside class="fixed top-[-1px] w-full h-[40px] z-30 flex justify-center items-center translate-y-[var(--pos)] will-change-transform transition-transform duration-300" style="background-image: url(touchland-gradient.png); background-size: cover; --pos: {header_position}%;">
+  <a href="https://touchland.com/collections/all-mist" class="flex items-center gap-2">
+    <span class="underline text-[12px]">Shop Touchland Hand Mist Collection</span>
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M12.0787 6.5L-6.55671e-07 6.5L-5.68248e-07 7.5L12.0788 7.5L6.2865 13.2922L7 14L14 7L7 -6.11959e-07L6.2865 0.707749L12.0787 6.5Z" fill="black"/>
     </svg>
   </a>
-</aside> -->
-<header class="fixed top-0 h-[50px] w-full z-30 flex justify-between items-center p-2 md:px-8 md:py-4" class:is-black={headerIsBlack} style=" --pos: {header_position}%;">
+</aside>
+<header class="fixed top-[39px] h-[50px] w-full z-30 flex justify-between items-center p-2 md:px-8 md:py-4 translate-y-[var(--pos)] will-change-transform transition-transform duration-300" class:is-black={headerIsBlack} style=" --pos: {header_position * 0.8}%;">
   <div class="w-fit">
     <a href="https://www.touchland.com" target="_blank" class="w-[120px] md:w-[110px] block">
       <svg class="w-full" viewBox="0 0 100 16" fill="none" xmlns="http://www.w3.org/2000/svg">
