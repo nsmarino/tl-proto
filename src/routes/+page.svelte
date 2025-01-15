@@ -477,22 +477,22 @@
           // document.querySelector(`[data-product-bg="${entry.target.dataset.lifestyleBg-1}"] video`)?.play()
         }
         // When the lifestyle background is on screen, animate in the lifestyle text
-        Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
-          setTimeout(() => {
-            char.classList.add("entered")
-          }, i*textEnterSpeed)
-        })
+        // Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
+        //   setTimeout(() => {
+        //     char.classList.add("entered")
+        //   }, i*textEnterSpeed)
+        // })
 
         // document.querySelector(`[data-product-bg="${entry.target.dataset.productText-1}"]`)?.pause()
       } else if (entry.target.dataset.productText) {
         // Ensure lifestyle video is paused
         // document.querySelector(`[data-lifestyle-bg="${entry.target.dataset.productText}"]`).querySelector("video").pause()
         // Once the container for the product text is fully on screen, animate in the text
-        Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
-          setTimeout(() => {
-            char.classList.add("entered")
-          }, i*textEnterSpeed)
-        })
+        // Array.from(entry.target.querySelectorAll(".typewriter-char")).forEach((char, i) => {
+        //   setTimeout(() => {
+        //     char.classList.add("entered")
+        //   }, i*textEnterSpeed)
+        // })
       }
     }
 
@@ -748,7 +748,7 @@
           <div class="absolute top-0 left-0 w-screen h-[var(--viewport-height)] md:w-[50vw] z-20 flex items-center justify-center">
             <h2 class="font-serif uppercase text-[#FFF]">
               {#each product.lifestyleText as char}
-                <span class="typewriter-char">{char}</span>
+                <span>{char}</span>
               {/each}
             </h2>
           </div>
