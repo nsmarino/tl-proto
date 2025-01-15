@@ -312,7 +312,7 @@
 
     function handleFlipbookOnScrollDown(entry) {
       const flipbook = productFlipbookSets[entry.target.dataset.flipbookEnter]
-          const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
+      const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookEnter}"]`)
       const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookEnter}"]`)
       
       if (productCanvas.classList.contains("flipbook-animating") || productCanvas.classList.contains("flipbook-entered")) return;
@@ -337,8 +337,8 @@
             lastTimestamp = timestamp; // Reset the timestamp after drawing
           } else {
             // Animation complete
-            productLanding.style.opacity = 1;
-            canvas_context.clearRect(0, 0, canvas_width, canvas_height);
+            // productLanding.style.opacity = 1;
+            // canvas_context.clearRect(0, 0, canvas_width, canvas_height);
             productCanvas.classList.remove("flipbook-animating");
             return; // Stop the animation
           }
@@ -393,8 +393,8 @@
 
             if (elapsed >= productImageEnterSpeed) {
               if (i >= 0) {
-                
-                if (productLanding.style.opacity != "0") productLanding.style.opacity = "0"
+
+                // if (productLanding.style.opacity != "0") productLanding.style.opacity = "0"
                 canvas_context.clearRect(0, 0, canvas_width, canvas_height);
                 drawImageScaled(flipbook[i], canvas_context)
                 i--
