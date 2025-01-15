@@ -439,11 +439,16 @@
       } else if (entry.target.dataset.productVideo) {
         // Play fixed video background which is outside scroller
         if (isScrollingDown) {
+          document.querySelector(`[data-lifestyle-bg="${entry.target.dataset.productVideo}"] .image-mask`).classList.add("diminished")
           if (!videosPaused) document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"] video`).play()
+          document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"]`).classList.add("entered")
+
         } else {
+          document.querySelector(`[data-lifestyle-bg="${entry.target.dataset.productVideo}"] .image-mask`).classList.remove("diminished")
           document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"] video`).pause()
+          document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"]`).classList.add("entered")
+
         }
-        document.querySelector(`[data-product-bg="${entry.target.dataset.productVideo}"]`).classList.add("entered")
       } else if (entry.target.dataset.headerBlack) {
         headerIsBlack = true
 
@@ -550,6 +555,12 @@
       // Remove all entrances AND reset flipbook canvases
       document.querySelector(".foreground-slot").querySelectorAll(".entered").forEach((el) => {
         el.classList.remove("entered")
+      })
+      document.querySelectorAll("[data-product-bg]").forEach((el) => {
+        el.classList.remove("entered")
+      })
+      document.querySelector(".foreground-slot").querySelectorAll(".diminished").forEach((el) => {
+        el.classList.remove("diminished")
       })
       document.querySelector(".foreground-slot").querySelectorAll(".flipbook-entered").forEach((el) => {
         el.classList.remove("flipbook-entered")
@@ -709,13 +720,13 @@
 {#each products as product, i}
     <!-- This is kind of janky but the first section IS an edge case so it's ultimately easier to treat it as such -->
       {#if i==0}
-        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct-1)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-lvh top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+        <div data-product-bg={i+1} class="w-full h-lvh top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
           <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
             <source src="/products/{product.id}/product-bg.mp4" type="video/mp4" />
           </video>
         </div>
       {:else}
-        <div style="visibility:{(index > (i*sectionsPerProduct) || (index==(i*(sectionsPerProduct)) && offset>0.2)) ? "visible":"hidden"};" data-product-bg={i+1} class="w-full h-lvh top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
+        <div data-product-bg={i+1} style="visibility:{index > (i*sectionsPerProduct-1) ? "visible":"hidden"};" class="w-full h-lvh top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
           <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
             <source src="/products/{product.id}/product-bg.mp4" type="video/mp4" />
           </video>
@@ -731,8 +742,9 @@
     {#each products as product, i}
 
       <!-- Lifestyle Background -->
-      <section data-scroll-onscreen data-scroll-node data-lifestyle-bg={i+1} class="sticky top-0 z-20 overflow-hidden" style="visibility:{index > ((i*sectionsPerProduct)) ? "hidden":"visible"};">
-        <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? (offset>0.2 ? (100*(1-((offset*100)-20)/80)) : 100) : 100}lvh;)"> 
+      <section data-scroll-onscreen data-scroll-node data-lifestyle-bg={i+1} class="sticky top-0 z-20 overflow-hidden">
+        <!-- <div class="image-mask w-full overflow-hidden relative" style="height: {index > ((i*sectionsPerProduct-1)) ? (offset>0.2 ? (100*(1-((offset*100)-20)/80)) : 100) : 100}lvh;)">  -->
+        <div class="image-mask w-full overflow-hidden relative"> 
           <div class="absolute top-0 left-0 w-screen h-[var(--viewport-height)] md:w-[50vw] z-20 flex items-center justify-center">
             <h2 class="font-serif uppercase text-[#FFF]">
               {#each product.lifestyleText as char}
@@ -751,7 +763,9 @@
       </section>
 
       <!-- Product Background Trigger -->
-      <section data-scroll-node data-product-video={i+1}></section>
+      <section class='flex flex-col justify-end'>
+        <div data-scroll-node data-product-video={i+1} class="w-full h-[300px]"></div>
+      </section>
 
       <!-- Product Text -->
       <section data-scroll-node class="sticky top-0 flex items-center justify-center text-[#fff] {i===0 && "pre-entered"}" style="visibility:{index > ((i*sectionsPerProduct+4)) ? "hidden":"visible"};">
@@ -850,6 +864,12 @@
     bottom: 0;
     background: rgba(0,0,0,0.05);
   }
+  [data-product-bg] {
+    display: none;
+  }
+  :global([data-product-bg].entered) {
+    display: block;
+  }
   [data-product-bg]::after {
     content: "";
     position: absolute;
@@ -869,6 +889,14 @@
 
   :global([data-lifestyle-bg] .image-mask) {
     transform-origin: top center;
+  }
+  :global([data-lifestyle-bg] .image-mask) {
+    height: 100lvh;
+    transition: height 1s ease;
+  }
+  :global([data-lifestyle-bg] .image-mask.diminished) {
+    height: 0lvh;
+    transition: height 1s ease;
   }
   :global([data-lifestyle-bg] img) {
     transform: scale(1.8) translateY(10%);
