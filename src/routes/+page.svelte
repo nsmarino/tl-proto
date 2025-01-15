@@ -334,12 +334,19 @@
           if (i < flipbookLength) {
             drawImageScaled(flipbook[i], canvas_context); // Draw the current frame
             i++;
+            if (i==flipbookLength) {
+              productCanvas.classList.add("flipbook-entered")
+              productCanvas.classList.remove("flipbook-animating")
+            }
+            lastTimestamp = timestamp; // Reset the timestamp after drawing
+          } else if (productCanvas.classList.contains("flipbook-entered")) {
+            drawImageScaled(flipbook[flipbook.length-1], canvas_context); // Draw the current frame
             lastTimestamp = timestamp; // Reset the timestamp after drawing
           } else {
             // Animation complete
             // productLanding.style.opacity = 1;
             // canvas_context.clearRect(0, 0, canvas_width, canvas_height);
-            productCanvas.classList.remove("flipbook-animating");
+
             return; // Stop the animation
           }
         }
@@ -349,8 +356,6 @@
 
       // Start the animation
       requestAnimationFrame(animate);
-
-      productCanvas.classList.add("flipbook-entered")
     }
     
     function handleEntrance(entry){
@@ -363,25 +368,12 @@
           const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookEnter}"]`)
 
           if (productCanvas.classList.contains("flipbook-animating") || !productCanvas.classList.contains("flipbook-entered") ) return;
+          productCanvas.classList.remove("flipbook-entered")
           productCanvas.classList.add("flipbook-animating")
 
           const canvas_context = productCanvas.getContext('2d');
           const canvas_width = productCanvas.clientWidth;
           const canvas_height = productCanvas.clientHeight;
-
-          // let i = flipbookLength-1;
-          // const flipbookInterval = setInterval(()=>{
-          //   if (i >= 0) {
-          //     productLanding.style.opacity = "0"
-
-          //     canvas_context.clearRect(0, 0, canvas_width, canvas_height);
-          //     drawImageScaled(flipbook[i], canvas_context)
-          //     i--
-          //   } else {
-          //     clearInterval(flipbookInterval)
-          //     productCanvas.classList.remove("flipbook-animating")
-          //   }
-          // }, productImageEnterSpeed)
 
           let i = flipbookLength-1;
           let lastTimestamp = 0;
@@ -409,10 +401,9 @@
             requestAnimationFrame(animate); // Request the next frame
           }
 
-      // Start the animation
-      requestAnimationFrame(animate);
+          // Start the animation
+          requestAnimationFrame(animate);
 
-          productCanvas.classList.remove("flipbook-entered")
 
           // Unpause bg video!
           document.querySelector(`[data-product-bg="${entry.target.dataset.videoUpdater}"] video`)?.play()
