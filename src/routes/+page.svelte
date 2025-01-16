@@ -305,6 +305,7 @@
     productImageEnterSpeed=20;
 
     function drawImageScaled(img, ctx) {
+      console.log("IMAGE TO DRAW TO CANVAS", img)
       var canvas = ctx.canvas;
       var canvasWidth = canvas.width;
       var canvasHeight = canvas.height;
@@ -597,8 +598,8 @@
 <svelte:head>
 
   {#each preloadImageUrls as image, i}
-    {console.log(image.src)}
     {#if image.mobile}
+    {console.log("PRELOAD THIS:", image.src)}
 
       <link rel="preload" as="image" media="(max-width: 768px)" href={image.src} onload={updateImageLoadProgress} />
     {:else}
@@ -793,11 +794,7 @@
           {product.productText}
         </h2>
         <canvas use:prepareCanvasForFlipbook data-product-canvas={product.id} class="absolute inset-0 will-change-transform"></canvas>
-        {#if windowWidth > 768}
-          <img class="absolute inset-0 w-full h-full object-cover opacity-0" data-product-landing={product.id} src="/products/{product.id}/flipbook/desktop/{product.filePrefix}30.png" alt="">
-        {:else}
-          <img class="absolute inset-0 w-full h-full object-cover opacity-0" data-product-landing={product.id} src="/products/{product.id}/flipbook/mobile/{product.filePrefix}30.png" alt="">
-        {/if}
+
       </section>
 
         <section class="sticky top-0" style="visibility:{index > ((i*sectionsPerProduct+5)) ? "hidden":"visible"};">
