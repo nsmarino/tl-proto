@@ -11,7 +11,7 @@
 		"remotePatterns": [
 			{
 				"protocol": "https",
-				"host": "moveyourmood.touchland.com",
+				"hostname": "moveyourmood.touchland.com",
 				"pathname": "/products/**"
 			}
 		]
