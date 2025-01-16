@@ -14,7 +14,7 @@ const config = {
 				],
 				formats: ['image/avif', 'image/webp'],
 				minimumCacheTTL: 300,
-				domains: ['touchland-clp-git-staging-zero-studios.app',],
+				domains: ['https://touchland-clp-git-image-optimize-zero-studios.vercel.app/',],
 			  }
 		}),
 	}
