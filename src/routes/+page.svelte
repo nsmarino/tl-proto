@@ -177,11 +177,11 @@
           productFlipbookSets[product.id].push(new Image(800,800))
 
           // Use srcset for Vercel Image optimization here:
-          const staticSrc = `https://touchland-clp-git-image-optimize-zero-studios.vercel.app/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
+          const staticSrc = `https://tl-proto.vercel.app.vercel.app/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
           productFlipbookSets[product.id][i].src = `/_vercel/image?url=${encodeURIComponent(staticSrc)}&w=${800}&q=80`
         } else {
           productFlipbookSets[product.id].push(new Image(1920,1920))
-          const staticSrc = `https://touchland-clp-git-image-optimize-zero-studios.vercel.app/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
+          const staticSrc = `https://tl-proto.vercel.app/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
           productFlipbookSets[product.id][i].src = `/_vercel/image?url=${staticSrc}&w=${1920}&q=80`
         }
       }
