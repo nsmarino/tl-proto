@@ -10,6 +10,8 @@
 		],
 		"localPatterns": [
 			{
+				"protocol": "https",
+				"host": "moveyourmood.touchland.com",
 				"pathname": "/products/**"
 			}
 		]
