@@ -11,7 +11,7 @@
 		"remotePatterns": [
 			{
 				"protocol": "https",
-				"hostname": "moveyourmood.touchland.com",
+				"hostname": "tl-proto.vercel.app",
 				"pathname": "/products/**"
 			}
 		]
