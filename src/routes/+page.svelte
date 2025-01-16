@@ -5,6 +5,7 @@
   import {timer, time} from "$lib/stores/timer"
   import { beforeNavigate } from "$app/navigation";
 
+  
   let cookiesShown = true
   function handleCookieAccept(accepted){
     cookiesShown = true
@@ -142,6 +143,9 @@
   }
 
   onMount(()=> {
+    document.addEventListener("cookiesAccepted", () => {
+      console.log("CUSTOM EVENT - COOKIES ACCEPTED")
+    })
 
     // hardcode the freaking height.
     // document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
