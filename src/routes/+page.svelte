@@ -587,7 +587,7 @@
 <meta property="og:description" content="Skincare-infused body & hair fragrance mist designed to move your mood." />
 <meta property="og:image" content="/social-card-image.png" />
 <meta property="og:image:alt" content="A model in a fuzzy green sweater holds up the Rich Pistachio Power Essence." />
-<meta property="og:url" content="moveyourmood.touchland.com" />
+<meta property="og:url" content="https://www.moveyourmood.touchland.com" />
 <meta property="og:type" content="website" />
 
 <!-- Twitter Card Meta Tags -->
