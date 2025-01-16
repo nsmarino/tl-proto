@@ -70,8 +70,8 @@
 
     for (let i=0;i<flipbookLength;i++) { 
       
-      const staticSrcDesktop = `https://tl-proto.vercel.app/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
-      const staticSrcMobile = `https://tl-proto.vercel.app/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
+      const staticSrcDesktop = `/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
+      const staticSrcMobile = `/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
 
       const vercelSrcDesktop = `/_vercel/image?url=${encodeURIComponent(staticSrcDesktop)}&w=1920&q=80`
       const vercelSrcMobile = `/_vercel/image?url=${encodeURIComponent(staticSrcMobile)}&w=800&q=80`
@@ -176,12 +176,12 @@
           productFlipbookSets[product.id].push(new Image(800,800))
 
           // Use srcset for Vercel Image optimization here:
-          const staticSrc = `https://tl-proto.vercel.app/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
+          const staticSrc = `/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
           productFlipbookSets[product.id][i].src = `/_vercel/image?url=${staticSrc}&w=${800}&q=80`
           console.log("Issue loading image", productFlipbookSets[product.id][i])
         } else {
           productFlipbookSets[product.id].push(new Image(1920,1920))
-          const staticSrc = `https://tl-proto.vercel.app/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
+          const staticSrc = `/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
           productFlipbookSets[product.id][i].src = `/_vercel/image?url=${staticSrc}&w=${1920}&q=80`
         }
       }
