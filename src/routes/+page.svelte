@@ -73,8 +73,8 @@
       const staticSrcDesktop = `https://touchland-clp-git-image-optimize-zero-studios.vercel.app/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
       const staticSrcMobile = `https://touchland-clp-git-image-optimize-zero-studios.vercel.app/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
 
-      const vercelSrcDesktop = `/_vercel/image?url=${encodeURIComponent(staticSrcDesktop)}&w=1920&q=80`
-      const vercelSrcMobile = `/_vercel/image?url=${encodeURIComponent(staticSrcMobile)}&w=800&q=80`
+      const vercelSrcDesktop = `https://touchland-clp-git-image-optimize-zero-studios.vercel.app/_vercel/image?url=${encodeURIComponent(staticSrcDesktop)}&w=1920&q=80`
+      const vercelSrcMobile = `https://touchland-clp-git-image-optimize-zero-studios.vercel.app/_vercel/image?url=${encodeURIComponent(staticSrcMobile)}&w=800&q=80`
 
       productImages.push(
         {
