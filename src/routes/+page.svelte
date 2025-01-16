@@ -178,7 +178,7 @@
 
           // Use srcset for Vercel Image optimization here:
           const staticSrc = `https://tl-proto.vercel.app.vercel.app/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
-          productFlipbookSets[product.id][i].src = `/_vercel/image?url=${encodeURIComponent(staticSrc)}&w=${800}&q=80`
+          productFlipbookSets[product.id][i].src = `/_vercel/image?url=${staticSrc}&w=${800}&q=80`
         } else {
           productFlipbookSets[product.id].push(new Image(1920,1920))
           const staticSrc = `https://tl-proto.vercel.app/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
@@ -305,6 +305,7 @@
     productImageEnterSpeed=20;
 
     function drawImageScaled(img, ctx) {
+      
       console.log("IMAGE TO DRAW TO CANVAS", img)
       var canvas = ctx.canvas;
       var canvasWidth = canvas.width;
