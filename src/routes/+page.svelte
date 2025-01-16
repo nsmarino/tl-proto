@@ -577,6 +577,35 @@
 </script>
 
 <svelte:head>
+  <!-- Basic Meta Tags -->
+<meta name="description" content="Skincare-infused body & hair fragrance mist designed to move your mood." />
+<meta name="author" content="Touchland" />
+<meta name="keywords" content="Skincare, fragrance, mist, mood" />
+
+<!-- Open Graph Meta Tags (for Facebook, LinkedIn, etc.) -->
+<meta property="og:title" content="Touchland | Meet Power Essence" />
+<meta property="og:description" content="Skincare-infused body & hair fragrance mist designed to move your mood." />
+<meta property="og:image" content="/social-card-image.png" />
+<meta property="og:image:alt" content="A model in a fuzzy green sweater holds up the Rich Pistachio Power Essence." />
+<meta property="og:url" content="moveyourmood.touchland.com" />
+<meta property="og:type" content="website" />
+
+<!-- Twitter Card Meta Tags -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Touchland | Meet Power Essence" />
+<meta name="twitter:description" content="Skincare-infused body & hair fragrance mist designed to move your mood." />
+<meta name="twitter:image" content="/social-card-image.png" />
+<meta name="twitter:image:alt" content="A model in a fuzzy green sweater holds up the Rich Pistachio Power Essence." />
+
+<!-- Favicon and App Icons -->
+<link rel="icon" href="/favicon.ico" />
+
+<!-- Robots (SEO settings for search engines) -->
+<meta name="robots" content="index, follow" />
+
+<!-- Additional Meta Tags -->
+<meta property="og:site_name" content="Touchland | Meet Power Essence" />
+<meta property="og:locale" content="en_US" />
 
   {#each preloadImageUrls as image, i}
     {#if image.mobile}
@@ -669,7 +698,7 @@
 {/if}
 
 <div class="experience-container">
-  <div class="hero w-full h-[var(--viewport-height)] md:h-[50vw] bg-[#fff] relative z-20">
+  <div class="hero w-full h-[var(--viewport-height)] md:h-[50vw] bg-[#fff] relative z-20 pt-[39px]">
     <div class="w-full h-1/2 md:h-auto md:aspect-square md:w-1/2 md:ml-[50%] object-cover relative mt-0">
       {#if windowWidth > 768}
       <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
