@@ -165,10 +165,14 @@
       for (let i = 0; i < flipbookLength; i++) {
         if (window.innerWidth < 768) {
           productFlipbookSets[product.id].push(new Image(800,800))
-          productFlipbookSets[product.id][i].src = `/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
+          
+          // Use srcset for Vercel Image optimization here:
+          const staticSrc = `/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
+          productFlipbookSets[product.id][i].src = `/_vercel/image?url=${encodeURIComponent(staticSrc)}&w=${800}&q=${quality}`
         } else {
           productFlipbookSets[product.id].push(new Image(1920,1920))
-          productFlipbookSets[product.id][i].src = `/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
+          const staticSrc = `/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
+          productFlipbookSets[product.id][i].src = `/_vercel/image?url=${encodeURIComponent(staticSrc)}&w=${1920}&q=${quality}`
         }
       }
     })
