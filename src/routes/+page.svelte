@@ -154,7 +154,6 @@
 
   onMount(()=> {
     document.addEventListener("cookiesAccepted", () => {
-      console.log("CUSTOM EVENT - COOKIES ACCEPTED")
     })
 
     // hardcode the freaking height.
@@ -179,6 +178,7 @@
           // Use srcset for Vercel Image optimization here:
           const staticSrc = `https://tl-proto.vercel.app.vercel.app/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
           productFlipbookSets[product.id][i].src = `/_vercel/image?url=${staticSrc}&w=${800}&q=80`
+          console.log("Issue loading image", productFlipbookSets[product.id][i])
         } else {
           productFlipbookSets[product.id].push(new Image(1920,1920))
           const staticSrc = `https://tl-proto.vercel.app/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
@@ -430,7 +430,6 @@
         }
         
       } else if (entry.target.dataset.flipbookExit && !isScrollingDown) {
-        // console.log("Fire flipbook exit")
         // const flipbook = productFlipbookSets[entry.target.dataset.flipbookExit]
         // const productCanvas = document.querySelector(`[data-product-canvas="${entry.target.dataset.flipbookExit}"]`)
         // const productLanding = document.querySelector(`[data-product-landing="${entry.target.dataset.flipbookExit}"]`)
@@ -600,8 +599,6 @@
 
   {#each preloadImageUrls as image, i}
     {#if image.mobile}
-    {console.log("PRELOAD THIS:", image.src)}
-
       <link rel="preload" as="image" media="(max-width: 768px)" href={image.src} onload={updateImageLoadProgress} />
     {:else}
       <link rel="preload" as="image" media="(min-width: 768px)" href={image.src} onload={updateImageLoadProgress} />
