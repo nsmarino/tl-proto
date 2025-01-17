@@ -14,7 +14,7 @@ const config = {
 				],
 				formats: ['image/avif', 'image/webp'],
 				minimumCacheTTL: 300,
-				domains: ['https://tl-proto.vercel.app/',],
+				domains: ['https://moveyourmood.touchland.com/',],
 			  }
 		}),
 	}
