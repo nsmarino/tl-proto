@@ -613,8 +613,8 @@
 
 <!-- Pencil bar, hidden for now: -->
 <aside class="fixed top-[-1px] w-full h-[40px] z-30 flex justify-center items-center translate-y-[var(--pos)] will-change-transform transition-transform duration-300" style="background-image: url(touchland-gradient.png); background-size: cover; --pos: {header_position}%;">
-  <a href="https://touchland.com/collections/all-mist" target="_blank" class="flex items-center gap-2">
-    <span class="underline text-[12px]">Shop Touchland Hand Mist Collection</span>
+  <a href="https://anewera.touchland.com/" target="_blank" class="flex items-center gap-2">
+    <span class="underline text-[12px]">Enter the Move Your Mood Sweeps</span>
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M12.0787 6.5L-6.55671e-07 6.5L-5.68248e-07 7.5L12.0788 7.5L6.2865 13.2922L7 14L14 7L7 -6.11959e-07L6.2865 0.707749L12.0787 6.5Z" fill="black"/>
     </svg>
