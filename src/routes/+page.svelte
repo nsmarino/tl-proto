@@ -69,8 +69,8 @@
     // Add vercel image connections here as well:
     const staticBgSrcDesktop = `/products/${product.id}/lifestyle-bg.jpg`
     const staticBgSrcMobile = `/products/${product.id}/lifestyle-bg-mobile.jpg`
-    const vercelBgDesktop = `/_vercel/image?url=${encodeURIComponent(staticBgSrcDesktop)}&w=1440&q=80`
-    const vercelBgMobile = `/_vercel/image?url=${encodeURIComponent(staticBgSrcMobile)}&w=1125&q=80`
+    const vercelBgDesktop = `/_vercel/image?url=${encodeURIComponent(staticBgSrcDesktop)}&w=1920&q=80`
+    const vercelBgMobile = `/_vercel/image?url=${encodeURIComponent(staticBgSrcMobile)}&w=800&q=80`
 
     for (let i=0;i<flipbookLength;i++) { 
       
@@ -773,9 +773,9 @@
           </div>
           <div class="img-wrapper relative w-screen h-[var(--viewport-height)] md:w-[50vw]">
             {#if windowWidth > 768}
-              <img src="/_vercel/image?url={encodeURIComponent(`/products/${product.id}/lifestyle-bg.jpg`)}&w=1440&q=80" class="w-full h-full object-cover object-center object-top" alt="">
+              <img src="/_vercel/image?url={encodeURIComponent(`/products/${product.id}/lifestyle-bg.jpg`)}&w=1920&q=80" class="w-full h-full object-cover object-center object-top" alt="">
             {:else}
-              <img src="/_vercel/image?url={encodeURIComponent(`/products/${product.id}/lifestyle-bg.mobile.jpg`)}&w=1125&q=80" class="w-full h-full object-cover object-center object-top" alt="">
+              <img src="/_vercel/image?url={encodeURIComponent(`/products/${product.id}/lifestyle-bg.mobile.jpg`)}&w=800&q=80" class="w-full h-full object-cover object-center object-top" alt="">
             {/if}
           </div>
         </div>
