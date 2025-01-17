@@ -263,7 +263,7 @@
           document.querySelector("svelte-scroller-outer").classList.add("entered")
           document.documentElement.style.overflow="unset"
         }
-        debounce(()=>window.scrollTo(0,40),100)()
+        debounce(()=>window.scrollTo(0,0),100)()
         headerIsBlack = false
       }
       }
