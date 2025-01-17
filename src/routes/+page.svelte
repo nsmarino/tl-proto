@@ -673,13 +673,13 @@
 {#if showSplash && windowWidth > 768}
   <div class="fixed inset-0 z-40">
     <video class="w-full h-full object-cover" bind:this={splashVideo} muted autoplay playsinline preload="auto" onended={handleSplashEnd} aria-label="Text scrolls across the screen reading 'I want to feel transported' in all caps, followed by a quick succession of product images, showing the body mist capsules in front of vivid backgrounds of ingredients used in each fragrance.">
-        <source src="/videos/splash-desktop-compressed.mp4" type="video/mp4" />
+        <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/splash-desktop-compressed.mp4" type="video/mp4" />
     </video>
   </div>
 {:else if showSplash}
   <div class="fixed inset-0 z-40">
     <video class="w-full h-full object-cover" bind:this={splashVideo} muted autoplay playsinline preload="auto" onended={handleSplashEnd} aria-label="Text scrolls across the screen reading 'I want to feel transported' in all caps, followed by a quick succession of product images, showing the body mist capsules in front of vivid backgrounds of ingredients used in each fragrance.">
-        <source src="/videos/splash-mobile-compressed.mp4" type="video/mp4" />
+        <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/splash-mobile-compressed.mp4" type="video/mp4" />
     </video>
   </div>
 {/if}
@@ -689,11 +689,14 @@
     <div class="w-full h-1/2 md:h-auto md:aspect-square md:w-1/2 md:ml-[50%] object-cover relative mt-0">
       {#if windowWidth > 768}
       <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
-          <source src="/videos/hero-desktop-compressed.mp4" type="video/mp4" />
+          <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/hero-desktop-compressed.mp4" type="video/mp4" />
       </video>
       {:else}
       <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
-          <source src="/videos/hero-mobile-compressed.mp4" type="video/mp4" />
+          <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/hero-mobile-compressed.mp4
+
+
+" type="video/mp4" />
       </video>
       {/if}
     </div>
