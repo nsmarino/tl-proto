@@ -741,13 +741,13 @@
       {#if i==0}
         <div data-product-bg={i+1} class="w-full h-lvh top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
           <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
-            <source src="/products/{product.id}/product-bg-compressed.mp4" type="video/mp4" />
+            <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/{product.id}-product-bg-compressed.mp4" type="video/mp4" />
           </video>
         </div>
       {:else}
         <div data-product-bg={i+1} style="visibility:{index > (i*sectionsPerProduct-1) ? "visible":"hidden"};" class="w-full h-lvh top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
           <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
-            <source src="/products/{product.id}/product-bg-compressed.mp4" type="video/mp4" />
+            <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/{product.id}-product-bg-compressed.mp4" type="video/mp4" />
           </video>
         </div>
       {/if}
