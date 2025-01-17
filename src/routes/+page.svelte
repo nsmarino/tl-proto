@@ -178,7 +178,6 @@
           // Use srcset for Vercel Image optimization here:
           const staticSrc = `/products/${product.id}/flipbook/mobile/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
           productFlipbookSets[product.id][i].src = `/_vercel/image?url=${staticSrc}&w=${800}&q=80`
-          console.log("Issue loading image", productFlipbookSets[product.id][i])
         } else {
           productFlipbookSets[product.id].push(new Image(1920,1920))
           const staticSrc = `/products/${product.id}/flipbook/desktop/${product.filePrefix}${i< 10 ? "0"+i : i}.png`
@@ -304,9 +303,7 @@
     textEnterSpeed=30,
     productImageEnterSpeed=20;
 
-    function drawImageScaled(img, ctx) {
-      
-      console.log("IMAGE TO DRAW TO CANVAS", img)
+    function drawImageScaled(img, ctx) { 
       var canvas = ctx.canvas;
       var canvasWidth = canvas.width;
       var canvasHeight = canvas.height;
