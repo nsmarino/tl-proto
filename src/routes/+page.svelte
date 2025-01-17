@@ -775,7 +775,7 @@
             {#if windowWidth > 768}
               <img src="/_vercel/image?url={encodeURIComponent(`/products/${product.id}/lifestyle-bg.jpg`)}&w=1920&q=80" class="w-full h-full object-cover object-center object-top" alt="">
             {:else}
-              <img src="/_vercel/image?url={encodeURIComponent(`/products/${product.id}/lifestyle-bg.mobile.jpg`)}&w=800&q=80" class="w-full h-full object-cover object-center object-top" alt="">
+              <img src="/_vercel/image?url={encodeURIComponent(`/products/${product.id}/lifestyle-bg-mobile.jpg`)}&w=800&q=80" class="w-full h-full object-cover object-center object-top" alt="">
             {/if}
           </div>
         </div>
