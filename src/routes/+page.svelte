@@ -106,7 +106,7 @@
 
   const preloadVideoUrls = products.map(product => {
     return [
-      `/products/${product.id}/product-bg-compressed.mp4`
+      `https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/${product.id}-product-bg-compressed.mp4`
     ];
   }).flat()
 
@@ -807,11 +807,11 @@
       <div class="w-full h-1/2 md:h-auto md:aspect-square object-cover relative z-20">
         {#if windowWidth > 768}
         <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
-            <source src="/videos/hero-desktop.mp4" type="video/mp4" />
+            <source src="/videos/hero-desktop-compressed.mp4" type="video/mp4" />
         </video>
         {:else}
         <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
-            <source src="/videos/hero-mobile.mp4" type="video/mp4" />
+            <source src="/videos/hero-mobile-compressed.mp4" type="video/mp4" />
         </video>
         {/if}
       </div>
