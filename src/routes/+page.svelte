@@ -91,13 +91,13 @@
     }
     productImages.push(
       {
-        src: `/products/${product.id}/lifestyle-bg.jpg`,
+        src: `/_vercel/image?url=/products/${product.id}/lifestyle-bg.jpg&w=1440&q=80`,
         mobile: false,
       }
     )
     productImages.push(
       {
-        src: `/products/${product.id}/lifestyle-bg-mobile.jpg`,
+        src: `/_vercel/image?url=/products/${product.id}/lifestyle-bg-mobile.jpg&w=1125&q=80`,
         mobile: true,
       }
     )
@@ -683,7 +683,6 @@
     </video>
   </div>
 {/if}
-
 <div class="experience-container">
   <div class="hero w-full h-[var(--viewport-height)] md:h-[50vw] bg-[#fff] relative z-20 pt-[39px]">
     <div class="w-full h-1/2 md:h-auto md:aspect-square md:w-1/2 md:ml-[50%] object-cover relative mt-0">
@@ -693,14 +692,10 @@
       </video>
       {:else}
       <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
-          <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/hero-mobile-compressed.mp4
-
-
-" type="video/mp4" />
+          <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/hero-mobile-compressed.mp4" type="video/mp4" />
       </video>
       {/if}
     </div>
-      
       <div class="w-full min-h-[50vh] p-8 md:w-[50vw] md:h-[var(--viewport-height)] md:fixed md:top-0 bg-[#fff] flex flex-col  md:justify-center gap-[12px]">
         <div class="relative">
           <div class="new-label">New</div>
@@ -708,7 +703,6 @@
         </div>
         <p>Skincare-infused body & hair fragrance mist designed to move your mood.</p>
         <button class="cta-btn" onclick={openWaitlistCapture}>Join the waitlist</button>
-
       </div>
       <div class="w-full h-[80px] bg-transparent absolute bottom-[50vh] pointer-events-none" data-header-black="black"></div>
       <div class="w-full h-[80px] bg-transparent pointer-events-none" data-header-white="white"></div>
@@ -773,9 +767,9 @@
           </div>
           <div class="img-wrapper relative w-screen h-[var(--viewport-height)] md:w-[50vw]">
             {#if windowWidth > 768}
-            <img src="/products/{product.id}/lifestyle-bg.jpg" class="w-full h-full object-cover object-center object-top" alt="">
+              <img src="/_vercel/image?url=/products/{product.id}/lifestyle-bg.jpg&w=1440&q=80" class="w-full h-full object-cover object-center object-top" alt="">
             {:else}
-              <img src="/products/{product.id}/lifestyle-bg-mobile.jpg" class="w-full h-full object-cover object-center object-top" alt="">
+              <img src="/_vercel/image?url=/products/{product.id}/lifestyle-bg-mobile.jpg&w=1125&q=80" class="w-full h-full object-cover object-center object-top" alt="">
             {/if}
           </div>
         </div>
