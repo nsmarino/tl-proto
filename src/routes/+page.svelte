@@ -673,13 +673,13 @@
 {#if showSplash && windowWidth > 768}
   <div class="fixed inset-0 z-40">
     <video class="w-full h-full object-cover" bind:this={splashVideo} muted autoplay playsinline preload="auto" onended={handleSplashEnd} aria-label="Text scrolls across the screen reading 'I want to feel transported' in all caps, followed by a quick succession of product images, showing the body mist capsules in front of vivid backgrounds of ingredients used in each fragrance.">
-        <source src="/videos/splash-desktop-compressed.mp4" type="video/mp4" />
+        <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/splash-desktop-compressed.mp4" type="video/mp4" />
     </video>
   </div>
 {:else if showSplash}
   <div class="fixed inset-0 z-40">
     <video class="w-full h-full object-cover" bind:this={splashVideo} muted autoplay playsinline preload="auto" onended={handleSplashEnd} aria-label="Text scrolls across the screen reading 'I want to feel transported' in all caps, followed by a quick succession of product images, showing the body mist capsules in front of vivid backgrounds of ingredients used in each fragrance.">
-        <source src="/videos/splash-mobile-compressed.mp4" type="video/mp4" />
+        <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/splash-mobile-compressed.mp4" type="video/mp4" />
     </video>
   </div>
 {/if}
@@ -689,11 +689,14 @@
     <div class="w-full h-1/2 md:h-auto md:aspect-square md:w-1/2 md:ml-[50%] object-cover relative mt-0">
       {#if windowWidth > 768}
       <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
-          <source src="/videos/hero-desktop-compressed.mp4" type="video/mp4" />
+          <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/hero-desktop-compressed.mp4" type="video/mp4" />
       </video>
       {:else}
       <video class="w-full h-full object-cover" bind:this={heroVideo} loop muted autoplay playsinline preload="auto">
-          <source src="/videos/hero-mobile-compressed.mp4" type="video/mp4" />
+          <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/hero-mobile-compressed.mp4
+
+
+" type="video/mp4" />
       </video>
       {/if}
     </div>
@@ -738,13 +741,13 @@
       {#if i==0}
         <div data-product-bg={i+1} class="w-full h-lvh top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
           <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
-            <source src="/products/{product.id}/product-bg-compressed.mp4" type="video/mp4" />
+            <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/{product.id}-product-bg-compressed.mp4" type="video/mp4" />
           </video>
         </div>
       {:else}
         <div data-product-bg={i+1} style="visibility:{index > (i*sectionsPerProduct-1) ? "visible":"hidden"};" class="w-full h-lvh top-0 left-0 bottom-0 right-0 object-cover origin-top fixed md:w-[50vw] md:right-0 md:left-1/2" alt="">
           <video class="w-full h-full object-cover" loop muted autoplay playsinline preload="auto">
-            <source src="/products/{product.id}/product-bg-compressed.mp4" type="video/mp4" />
+            <source src="https://pub-4f07e87cd034401c89285d81277106a8.r2.dev/{product.id}-product-bg-compressed.mp4" type="video/mp4" />
           </video>
         </div>
       {/if}
