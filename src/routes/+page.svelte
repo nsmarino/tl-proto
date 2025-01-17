@@ -69,8 +69,8 @@
     // Add vercel image connections here as well:
     const staticBgSrcDesktop = `/products/${product.id}/lifestyle-bg.jpg`
     const staticBgSrcMobile = `/products/${product.id}/lifestyle-bg-mobile.jpg`
-    const vercelBgDesktop = `/_vercel/image?url=${encodeURIComponent(staticBgSrcDesktop)}&w=1920&q=80`
-    const vercelBgMobile = `/_vercel/image?url=${encodeURIComponent(staticBgSrcMobile)}&w=800&q=80`
+    const vercelBgDesktop = `/_vercel/image?url=${encodeURIComponent(staticBgSrcDesktop)}&w=1440&q=80`
+    const vercelBgMobile = `/_vercel/image?url=${encodeURIComponent(staticBgSrcMobile)}&w=1125&q=80`
 
     for (let i=0;i<flipbookLength;i++) { 
       

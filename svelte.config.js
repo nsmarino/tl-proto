@@ -10,6 +10,8 @@ const config = {
 			images: {
 				sizes: [
 					800,
+					1125,
+					1440,
 					1920,
 				],
 				formats: ['image/avif', 'image/webp'],
