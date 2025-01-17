@@ -76,6 +76,9 @@
       const vercelSrcDesktop = `/_vercel/image?url=${encodeURIComponent(staticSrcDesktop)}&w=1920&q=80`
       const vercelSrcMobile = `/_vercel/image?url=${encodeURIComponent(staticSrcMobile)}&w=800&q=80`
 
+      const staticBgSrcDesktop = `/products/${product.id}/lifestyle-bg.jpg`
+      const staticBgSrcMobile = `/products/${product.id}/lifestyle-bg-mobile.jpg`
+      console.log()
       productImages.push(
         {
           src: vercelSrcDesktop,
@@ -91,16 +94,18 @@
     }
     productImages.push(
       {
-        src: `/_vercel/image?url=/products/${product.id}/lifestyle-bg.jpg&w=1440&q=80`,
+        src: `/_vercel/image?url=${encodeURIComponent(staticBgSrcDesktop)}&w=1440&q=80`,
         mobile: false,
       }
     )
     productImages.push(
       {
-        src: `/_vercel/image?url=/products/${product.id}/lifestyle-bg-mobile.jpg&w=1125&q=80`,
+        src: `/_vercel/image?url=${encodeURIComponent(staticBgSrcMobile)}&w=1125&q=80`,
         mobile: true,
       }
     )
+    console.log(`/_vercel/image?url=${encodeURIComponent(staticBgSrcMobile)}&w=1125&q=80`)
+    console.log(`/_vercel/image?url=${encodeURIComponent(staticBgSrcDesktop)}&w=1440&q=80`)
     return productImages;
   }).flat()
 
