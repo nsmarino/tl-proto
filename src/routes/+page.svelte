@@ -841,9 +841,9 @@
       <div class="relative"> 
         <div class="w-screen h-[var(--viewport-height)] md:w-[50vw]">
           {#if windowWidth > 768}
-          <img style="transform: scale(1.8) translateY(10%);" src="/products/{products[0].id}/lifestyle-bg.jpg" class="w-full h-full object-cover object-center object-top" alt="">
+          <img style="transform: scale(1.8) translateY(10%);" src="/_vercel/image?url=%2Fproducts%2Fpeachy-lychee%2Flifestyle-bg.jpg&w=1920&q=80" class="w-full h-full object-cover object-center object-top" alt="">
           {:else}
-            <img style="transform: scale(1.8) translateY(10%);" src="/products/{products[0].id}/lifestyle-bg-mobile.jpg" class="w-full h-full object-cover object-center object-top" alt="">
+            <img style="transform: scale(1.8) translateY(10%);" src="/_vercel/image?url=%2Fproducts%2Fpeachy-lychee%2Flifestyle-bg-mobile.jpg&w=800&q=80" class="w-full h-full object-cover object-center object-top" alt="">
           {/if}
         </div>
       </div>
