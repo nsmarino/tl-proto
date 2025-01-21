@@ -263,8 +263,14 @@
           // handle splash screen
         preloadReady = true;
         document.querySelectorAll("[data-product-bg] video").forEach(video => video.pause())
-        showSplash ? splashVideo?.play() : heroVideo?.play()
-        if (!showSplash) {
+
+        if (showSplash) {
+          splashVideo?.play()
+          setTimeout(() => {
+            if (splashVideo.parentElement) handleSplashEnd()
+          }, 5000)
+        } else {
+          heroVideo?.play()
           document.querySelector(".hero").classList.add("entered")
           document.querySelector("svelte-scroller-outer").classList.add("entered")
           document.documentElement.style.overflow="unset"
