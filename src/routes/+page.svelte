@@ -609,7 +609,7 @@
   {/each}
 </svelte:head>
 
-<div class="h-dvh w-full flex items-end fixed justify-between inset-0 bg-[#fff] z-[60] p-8" class:hide-preload={preloadReady}>
+<div class="h-dvh w-full flex items-end fixed justify-between inset-0 bg-[#fff] z-[60] p-8 pb-16 md:px-16" class:hide-preload={preloadReady}>
   <p style="font-family: 'NH Display Medium';" class=""><span data-load-percentage>{(videoLoadPercentage+imageLoadPercentage)}</span>%</p>
   <p class="block !w-fit whitespace-nowrap animate-pulse">Preparing the senses</p>
 </div>
