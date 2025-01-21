@@ -652,7 +652,7 @@
   </div>
 </header>
 
-<button class="fixed bottom-4 left-4 flex items-center justify-center w-8 h-8 bg-[rgba(0,0,0,0.2)] rounded-full z-[40]" onclick={handleVideoPause}>
+<button class="fixed bottom-4 right-4 flex items-center justify-center w-8 h-8 bg-[rgba(0,0,0,0.2)] rounded-full z-[40]" onclick={handleVideoPause}>
   {#if videosPaused}
     <span class="text-white">▶</span>
   {:else}
@@ -712,7 +712,7 @@
       </div>
       <div class="w-full h-[80px] bg-transparent absolute bottom-[50vh] pointer-events-none" data-header-black="black"></div>
       <div class="w-full h-[80px] bg-transparent pointer-events-none" data-header-white="white"></div>
-      <button data-scroll-prompt aria-label="Begin Scroll" class="fixed bottom-4 right-4" onclick={()=>{scrollContainer.scrollIntoView({behavior:"smooth",block:"start"})}}>
+      <button data-scroll-prompt aria-label="Begin Scroll" class="fixed bottom-4 right-16" onclick={()=>{scrollContainer.scrollIntoView({behavior:"smooth",block:"start"})}}>
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_406_643)">
           <rect x="36" width="36" height="36" rx="18" transform="rotate(90 36 0)" fill="black"/>
